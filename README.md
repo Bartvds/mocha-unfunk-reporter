@@ -4,7 +4,7 @@
 
 ## What?
 
-unfunk mocha reporter is a spec-style reprter that sucks less in windows console.
+unfunk mocha reporter is a spec-style console reporter that doesn't confuse windows
 
 ## Develop
 
