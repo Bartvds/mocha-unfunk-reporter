@@ -2,8 +2,10 @@
 
 > console reporter without funkyness
 
-makes mocha windows console friendly, with output similar to default spec reporter
+## What?
+
+unfunk mocha reporter is a spec-style reprter that sucks less in windows console.
 
 ## Develop
 
-Built using grunt and TypeScript: run `$ grunt` to rebuild and run visual test
+uses grunt and TypeScript: run `$ grunt` to rebuild and run visual test
