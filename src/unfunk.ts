@@ -1,12 +1,5 @@
 ///<reference path="_ref.ts" />
-
-
-/**
- * Initialize a new `Spec` test reporter.
- *
- * @param {Runner} runner
- * @api public
- */
+///<reference path="writer.ts" />
 
 var format = require('format');
 var util = require('util');
@@ -14,116 +7,118 @@ var inspect = (value) => {
 	console.log(util.inspect(value, true, 4));
 };
 
-class Stats {
-	suites = 0;
-	tests = 0;
-	passes = 0;
-	pending = 0;
-	failures = 0;
+interface TestError {
+	message:string;
+	type:string;
+	arguments:any[];
+	stack:any;
 }
-class Unfunk {
+interface TestSuite {
+	title:string;
+	parent:TestSuite;
+	root:bool;
+	tests:Test[];
+	suites:TestSuite[];
+	pending:bool;
+	ctx:any;
+}
+interface Test {
+	title:string;
+	parent:TestSuite;
+	speed:string;
+	duration:number;
+	async:number;
+	timedOut:bool;
+	pending:bool;
+	ctx:any;
+}
 
-	lineBuffer:string = '';
-	stats = new Stats();
-	indent = '  ';
-	failures = [];
-
-	constructor(runner) {
-		var self = this;
-		var indents = 0;
-
-		var indent = (add?:number = 0):string => {
-			return Array(indents + add).join(self.indent);
-		};
-		var pluralize = (word:string, amount:number):string => {
-			return amount + ' ' + (1 == amount ? word : word + 's');
-		};
-
-		runner.on('start', () => {
-			//self.writeln('start');
-		});
-
-		runner.on('suite', (suite) => {
-			self.stats.suites++;
-			++indents;
-			if (!suite.root) {
-				self.writeln('%s%s', indent(), suite.title);
-			}
-		});
-
-		runner.on('suite end', (suite) => {
-			--indents;
-			if (1 == indents && !suite.root) {
-				self.writeln();
-			}
-		});
-
-		runner.on('test', (test) => {
-			self.stats.tests++;
-			self.write('%s%s.. ', indent(1), test.title);
-		});
-
-		runner.on('pending', (test) => {
-			self.stats.pending++;
-			self.writeln('%s%s %s.. ', indent(), 'pending', test.title);
-		});
-
-		runner.on('pass', (test) => {
-			self.stats.passes++;
-			if ('fast' == test.speed) {
-				self.writeln('%s', 'pass');
-			} else {
-				self.writeln('%s (%dms)', 'pass', test.duration);
-			}
-		});
-
-		runner.on('fail', (test, err) => {
-			self.stats.failures++;
-			self.writeln('%s', 'fail');
-			if (err) {
-				self.writeln('%s-> %s', indent(2), self.cleanError(err));
-			}
-		});
-
-		runner.on('end', () => {
-			self.writeln('executed %s with %s', pluralize('test', self.stats.tests), pluralize('failure', self.stats.failures));
-
-			self.flushLineBuffer();
-		});
+module unfunk {
+	export class Stats {
+		suites = 0;
+		tests = 0;
+		passes = 0;
+		pending = 0;
+		failures = 0;
 	}
+	export class Unfunk {
 
-	cleanError(err):string{
-		return String(err).replace(/^Error:\s*/, '');
-	}
+		writer:LineWriter = new ConsoleWriter();
+		stats:Stats = new Stats();
+		indent:string = '  ';
+		failures:Test[] = [];
 
-	write(...args:any[]) {
-		if (args.length > 0) {
-			this.lineBuffer += format.apply(null, args);
+		constructor(runner) {
+			this.init(runner);
 		}
-	}
+		init(runner){
+			var self:Unfunk = this;
+			var writer = this.writer;
+			var indents = 0;
 
-	writeln(...args:any[]) {
-		if (args.length > 0) {
-			this.flushLine(this.lineBuffer + format.apply(null, args));
-		}
-		else {
-			this.flushLine(this.lineBuffer);
-		}
-		this.lineBuffer = '';
-	}
+			var indent = (add?:number = 0):string => {
+				return Array(indents + add).join(self.indent);
+			};
+			var pluralize = (word:string, amount:number):string => {
+				return amount + ' ' + (1 == amount ? word : word + 's');
+			};
 
-	flushLine(str?:string) {
-		if (arguments.length == 0) {
-			str = '';
-		}
-		console.log(str);
-	}
+			runner.on('start', () => {
+				//self.writeln('start');
+				writer.start();
+			});
 
-	flushLineBuffer() {
-		if (this.lineBuffer.length > 0) {
-			this.writeln(this.lineBuffer);
-			this.lineBuffer = '';
+			runner.on('suite', (suite:TestSuite) => {
+				self.stats.suites++;
+				++indents;
+				if (!suite.root) {
+					writer.writeln('%s%s', indent(), suite.title);
+				}
+			});
+
+			runner.on('suite end', (suite:TestSuite) => {
+				--indents;
+				if (1 == indents && !suite.root) {
+					writer.writeln();
+				}
+			});
+
+			runner.on('test', (test:Test) => {
+				self.stats.tests++;
+				writer.write('%s%s.. ', indent(1), test.title);
+			});
+
+			runner.on('pending', (test:Test) => {
+				self.stats.pending++;
+				writer.writeln('%s%s %s.. ', indent(), 'pending', test.title);
+			});
+
+			runner.on('pass', (test:Test) => {
+				self.stats.passes++;
+				if ('fast' == test.speed) {
+					writer.writeln('%s', 'pass');
+				} else {
+					writer.writeln('%s (%dms)', 'pass', test.duration);
+				}
+			});
+
+			runner.on('fail', (test:Test, err:TestError) => {
+				self.stats.failures++;
+				writer.writeln('%s', 'fail');
+				if (err) {
+					writer.writeln('%s-> %s', indent(2), self.cleanError(err));
+				}
+			});
+
+			runner.on('end', () => {
+				writer.writeln('executed %s with %s', pluralize('test', self.stats.tests), pluralize('failure', self.stats.failures));
+				writer.finish();
+			});
+		}
+
+		cleanError(err):string {
+			return String(err).replace(/^Error:\s*/, '');
 		}
 	}
 }
-exports = (module).exports = Unfunk;
+exports = (module).exports = unfunk.Unfunk;
