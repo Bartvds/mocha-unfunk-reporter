@@ -1,6 +1,6 @@
 ///<reference path="_ref.ts" />
 
-describe.skip('async tests', () => {
+describe('async tests', () => {
 	it('first passes', (done:() => void) => {
 		process.nextTick(() => {
 			expect(true).to.equal(true);
