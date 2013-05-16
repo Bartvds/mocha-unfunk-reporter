@@ -100,7 +100,7 @@ var unfunk;
             });
             runner.on('pending', function (test) {
                 self.stats.pending++;
-                writer.writeln(indent() + test.title + ' pending.. ');
+                writer.writeln(indent(1) + test.title + '..  pending');
             });
             runner.on('pass', function (test) {
                 self.stats.passes++;

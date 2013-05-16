@@ -1,46 +1,46 @@
 {
-	"name": "mocha-unfunk-reporter",
-	"version": "0.1.0",
-	"description": "mocha console reporter without funkyness",
-	"author": {
-		"name": "Bart van der Schoor",
-		"email": "bartvanderschoor@gmail.com"
-	},
-	"homepage": "https://github.com/Bartvds/mocha-unfunk-reporter",
-	"repository": {
-		"type": "git",
-		"url": "grit://github.com/Bartvds/mocha-unfunk-reporter.git"
-	},
-	"bugs": {
-		"url": "https://github.com/Bartvds/mocha-unfunk-reporter/issues"
-	},
-	"licenses": [
-		{
-			"type": "MIT",
-			"url": "https://github.com/Bartvds/mocha-unfunk-reporter/blob/master/LICENSE-MIT"
-		}
-	],
-	"keywords": [
-		"mocha",
-		"reporter",
-		"windows",
-		"console",
-		"unfunk"
-	],
-	"main": "build/unfunk.js",
-	"scripts": {
-		"test": "grunt test"
-	},
-	"dependencies": {
-	},
-	"devDependencies": {
-		"grunt": "~0.4.1",
-		"grunt-typescript": "~0.1.5",
-		"grunt-contrib-clean": "~0.4.1",
-		"grunt-mocha-test": "~0.2.2",
-		"expect.js": "~0.2.0"
-	},
-	"optionalDependencies": {
-		"source-map-support": "~0.1.5"
-	}
+  "name": "mocha-unfunk-reporter",
+  "version": "0.1.0",
+  "description": "mocha console reporter without funkyness",
+  "author": {
+    "name": "Bart van der Schoor",
+    "email": "bartvanderschoor@gmail.com"
+  },
+  "homepage": "https://github.com/Bartvds/mocha-unfunk-reporter",
+  "repository": {
+    "type": "git",
+    "url": "grit://github.com/Bartvds/mocha-unfunk-reporter.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Bartvds/mocha-unfunk-reporter/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/Bartvds/mocha-unfunk-reporter/blob/master/LICENSE-MIT"
+    }
+  ],
+  "keywords": [
+    "mocha",
+    "reporter",
+    "windows",
+    "console",
+    "unfunk"
+  ],
+  "main": "build/unfunk.js",
+  "scripts": {
+    "test": "grunt test"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-typescript": "~0.1.5",
+    "grunt-contrib-clean": "~0.4.1",
+    "grunt-mocha-test": "~0.2.2",
+    "expect.js": "~0.2.0",
+    "chai": "~1.6.0"
+  },
+  "optionalDependencies": {
+    "source-map-support": "~0.1.5"
+  }
 }

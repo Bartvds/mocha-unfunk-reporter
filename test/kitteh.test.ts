@@ -1,40 +1,31 @@
 ///<reference path="_ref.ts" />
 
-var expect = require('expect.js');
-
 describe('kitteh', () => {
 	describe('can', () => {
 		it('meow', () => {
-			expect(true, 'once').to.be(true);
+			expect(true, 'once').to.equal(true);
 		});
 		describe('has', () => {
 			it('milk', () => {
-				expect(true).to.be(true);
+				expect(true).to.equal(true);
 			});
 			it('cheeseburgers', () => {
-				expect(true).to.be(true);
-				expect(true).to.be(true);
-				expect(true).to.be(true);
+				expect(true).to.equal(true);
+				expect(true).to.equal(true);
+				expect(true).to.equal(true);
 			});
-			describe('and', () => {
+			describe('and some', () => {
 				it('yarn', () => {
-					expect(2).to.be(2);
-				});
-				it('pinacolada', () => {
-					expect('drinks').not.to.be('nasty');
+					expect(2).to.equal(2);
 				});
 				it('hats', () => {
-					expect('hat').to.be('silly');
+					expect('hat').to.equal('silly');
 				});
 			});
-			describe('also', () => {
-				it('dogs', (done:() => void) => {
-					this.timeout(1000);
-					setTimeout(() => {
-						expect(true).to.be(true);
-						expect('dogs').to.be('not here');
-						done();
-					}, 250);
+			describe('and also', () => {
+				it('dogs', () => {
+					expect(true).to.equal(true);
+					expect('dogs').to.equal('not here');
 				});
 			});
 		});

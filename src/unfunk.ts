@@ -88,7 +88,7 @@ module unfunk {
 			runner.on('pending', (test:Test) => {
 				self.stats.pending++;
 				//TODO properly handle pending
-				writer.writeln(indent() + test.title + ' pending.. ');
+				writer.writeln(indent(1) + test.title + '..  pending');
 			});
 
 			runner.on('pass', (test:Test) => {

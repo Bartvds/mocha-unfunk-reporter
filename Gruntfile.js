@@ -32,6 +32,8 @@ module.exports = function (grunt) {
 			}
 		},
 		mochaTest: {
+			//unfunk: ['node_modules/grunt-mocha-test/test/mocha.test.js']
+			//unfunk: ['test/*.test.js', 'node_modules/grunt-mocha-test/test/mocha.test.js']
 			unfunk: ['test/*.test.js']
 		},
 		mochaTestConfig: {
