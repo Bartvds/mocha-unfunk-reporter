@@ -100,7 +100,7 @@ var unfunk;
             });
             runner.on('pending', function (test) {
                 self.stats.pending++;
-                writer.writeln(indent(1) + test.title + '..  pending');
+                writer.writeln('? ' + indent() + test.title + '..  pending');
             });
             runner.on('pass', function (test) {
                 self.stats.passes++;
@@ -113,9 +113,7 @@ var unfunk;
             runner.on('fail', function (test, err) {
                 self.stats.failures++;
                 writer.writeln('fail');
-                if(err) {
-                    writer.writeln(indent(2) + '-> ' + self.cleanError(err));
-                }
+                writer.writeln('!!' + indent(1) + self.cleanError(err));
             });
             runner.on('end', function () {
                 writer.writeln('executed ' + pluralize('test', self.stats.tests) + ' with ' + pluralize('failure', self.stats.failures) + ' (' + (Date.now() - start) + 'ms)');
