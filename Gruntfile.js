@@ -23,44 +23,50 @@ module.exports = function (grunt) {
 			}
 		},
 		clean: {
-			tests: ['index.js', 'test/tmp', 'test/_tmp.*.js']
+			tests: ['build', 'test/tmp', 'test/_tmp.*.js']
 		},
 		typescript: {
-			options: {
-				target: 'es5',
-				base_path: 'src/'
-			},
+			options: { target: 'es5', declaration: false, sourcemap: false },
 			reporter: {
 				options: {
-					module: 'commonjs'
+					base_path: 'src/'
 				},
 				src: ['src/unfunk.ts'],
-				dest: 'index.js'
+				dest: 'build/unfunk.js'
 			},
 			test: {
+				options: {
+					base_path: 'test/'
+				},
 				src: ['test/*.test.ts'],
 				dest: 'test/_tmp.test.js'
 			}
 		},
 		mochaTest: {
-			all: ['test/*.test.js']
+			list: ['test/*.test.js'],
+			unfunk: ['test/*.test.js']
 		},
 		mochaTestConfig: {
-			all: {
+			list: {
 				options: {
-					reporter: './index.js'
+					reporter: 'list'
+				}
+			},
+			unfunk: {
+				options: {
+					reporter: __dirname +'/build/unfunk'
 				}
 			}
 		}
 	});
 
-	grunt.loadTasks('tasks');
-
 	grunt.loadNpmTasks('grunt-contrib-jshint');
 	grunt.loadNpmTasks('grunt-contrib-clean');
+	grunt.loadNpmTasks('grunt-mocha-test');
+	grunt.loadNpmTasks('grunt-typescript');
 
-	grunt.registerTask('build', ['clean', 'jshint']);
-	grunt.registerTask('test', ['build', 'mochaTest']);
+	grunt.registerTask('build', ['clean', 'jshint', 'typescript:reporter']);
+	grunt.registerTask('test', ['build', 'typescript:test', 'mochaTest:unfunk']);
 
 	grunt.registerTask('default', ['jshint', 'test']);
 
