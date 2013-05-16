@@ -8,19 +8,33 @@ describe('kitteh', () => {
 			expect(true, 'once').to.be(true);
 		});
 		describe('has', () => {
-			it('cheeseburger', () => {
-				expect(true, 'nom').to.be(true);
-				expect(true, 'yummy').to.be(true);
-				expect(true, 'nomnomnom').to.be(true);
+			it('milk', () => {
+				expect(true).to.be(true);
+			});
+			it('cheeseburgers', () => {
+				expect(true).to.be(true);
+				expect(true).to.be(true);
+				expect(true).to.be(true);
 			});
 			describe('and', () => {
+				it('yarn', () => {
+					expect(2).to.be(2);
+				});
 				it('pinacolada', () => {
-					expect(false, 'no drinks').to.be(true);
+					expect('drinks').not.to.be('nasty');
+				});
+				it('hats', () => {
+					expect('hat').to.be('silly');
 				});
 			});
 			describe('also', () => {
-				it('hats', () => {
-					expect(false, 'no hats').to.be(true);
+				it('dogs', (done:() => void) => {
+					this.timeout(1000);
+					setTimeout(() => {
+						expect(true).to.be(true);
+						expect('dogs').to.be('not here');
+						done();
+					}, 250);
 				});
 			});
 		});
