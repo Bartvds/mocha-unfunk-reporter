@@ -31,6 +31,18 @@ module.exports = function (grunt) {
 				dest: 'test/_tmp.test.js'
 			}
 		},
+		simplemocha: {
+			unfunk: ['test/*.test.js'],
+			options: {
+				reporter: __dirname //yess
+			}
+		},
+		cafemocha: {
+			unfunk: ['test/*.test.js'],
+			options: {
+				reporter: __dirname //yess
+			}
+		},
 		mochaTest: {
 			unfunk: ['test/*.test.js'] //, 'node_modules/grunt-mocha-test/test/mocha.test.js']
 		},
@@ -43,12 +55,14 @@ module.exports = function (grunt) {
 		}
 	});
 
+	grunt.loadNpmTasks('grunt-simple-mocha');
+	grunt.loadNpmTasks('grunt-cafe-mocha');
 	grunt.loadNpmTasks('grunt-contrib-clean');
 	grunt.loadNpmTasks('grunt-mocha-test');
 	grunt.loadNpmTasks('grunt-typescript');
 
 	grunt.registerTask('build', ['clean', 'typescript:reporter']);
-	grunt.registerTask('test', ['build', 'typescript:test', 'mochaTest']);
+	grunt.registerTask('test', ['build', 'typescript:test', 'simplemocha']);
 
 	grunt.registerTask('default', ['test']);
 
