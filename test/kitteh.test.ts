@@ -16,7 +16,7 @@ describe('kitteh', () => {
 				expect(true, 'yummy').to.be(true);
 				expect(true, 'nomnomnom').to.be(true);
 			});
-			describe('and', () => {
+			/*describe('and', () => {
 				it('pinacolada', () => {
 					expect(false, 'no drinks').to.be(true);
 				});
@@ -25,7 +25,7 @@ describe('kitteh', () => {
 				it('hats', () => {
 					expect(false, 'no hats').to.be(true);
 				});
-			});
+			});*/
 		});
 	});
 });
