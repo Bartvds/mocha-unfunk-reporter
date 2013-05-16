@@ -22,13 +22,13 @@ module unfunk {
 
 		write(...args:any[]) {
 			if (args.length > 0) {
-				this.lineBuffer += format.apply(null, args);
+				this.lineBuffer += args.join('');
 			}
 		}
 
 		writeln(...args:any[]) {
 			if (args.length > 0) {
-				this.flushLine(this.lineBuffer + format.apply(null, args));
+				this.flushLine(this.lineBuffer + args.join(''));
 			}
 			else {
 				this.flushLine(this.lineBuffer);

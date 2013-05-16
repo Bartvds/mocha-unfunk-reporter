@@ -1,10 +1,18 @@
 # mocha-unfunk-reporter
 
-> console reporter without funkyness
+> mocha console reporter without funkyness
 
 ## What?
 
-unfunk mocha reporter is a spec-style console reporter that doesn't confuse windows
+unfunk is a spec-style console reporter that doesn't confuse windows with funky console tricks
+
+main use case is `grunt-mocha-test` but should work in all cli-console mocha flavours
+
+## Usage
+
+install using `npm install mocha-unfunk-reporter`
+
+then use  'mocha-unfunk-reporter' as mocha's reporter parameter
 
 ## Develop
 

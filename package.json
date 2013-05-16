@@ -1,13 +1,25 @@
 {
 	"name": "mocha-unfunk-reporter",
 	"version": "0.1.0",
-	"description": "console reporter without funkyness",
+	"description": "mocha console reporter without funkyness",
 	"author": {
 		"name": "Bart van der Schoor",
 		"email": "bartvanderschoor@gmail.com"
 	},
-	"repository": "",
-	"license": "MIT",
+	"homepage": "https://github.com/Bartvds/mocha-unfunk-reporter",
+	"repository": {
+		"type": "git",
+		"url": "grit://github.com/Bartvds/mocha-unfunk-reporter.git"
+	},
+	"bugs": {
+		"url": "https://github.com/Bartvds/mocha-unfunk-reporter/issues"
+	},
+	"licenses": [
+		{
+			"type": "MIT",
+			"url": "https://github.com/Bartvds/mocha-unfunk-reporter/blob/master/LICENSE-MIT"
+		}
+	],
 	"keywords": [
 		"mocha",
 		"reporter",

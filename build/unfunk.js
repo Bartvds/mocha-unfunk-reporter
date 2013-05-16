@@ -13,7 +13,7 @@ var unfunk;
                 args[_i] = arguments[_i + 0];
             }
             if(args.length > 0) {
-                this.lineBuffer += format.apply(null, args);
+                this.lineBuffer += args.join('');
             }
         };
         ConsoleWriter.prototype.writeln = function () {
@@ -22,7 +22,7 @@ var unfunk;
                 args[_i] = arguments[_i + 0];
             }
             if(args.length > 0) {
-                this.flushLine(this.lineBuffer + format.apply(null, args));
+                this.flushLine(this.lineBuffer + args.join(''));
             } else {
                 this.flushLine(this.lineBuffer);
             }
@@ -44,11 +44,6 @@ var unfunk;
     })();
     unfunk.ConsoleWriter = ConsoleWriter;    
 })(unfunk || (unfunk = {}));
-var format = require('format');
-var util = require('util');
-var inspect = function (value) {
-    console.log(util.inspect(value, true, 4));
-};
 var unfunk;
 (function (unfunk) {
     var Stats = (function () {
@@ -81,14 +76,16 @@ var unfunk;
             var pluralize = function (word, amount) {
                 return amount + ' ' + (1 == amount ? word : word + 's');
             };
+            var start;
             runner.on('start', function () {
                 writer.start();
+                start = Date.now();
             });
             runner.on('suite', function (suite) {
                 self.stats.suites++;
                 ++indents;
                 if(!suite.root) {
-                    writer.writeln('%s%s', indent(), suite.title);
+                    writer.writeln(indent() + suite.title);
                 }
             });
             runner.on('suite end', function (suite) {
@@ -99,29 +96,29 @@ var unfunk;
             });
             runner.on('test', function (test) {
                 self.stats.tests++;
-                writer.write('%s%s.. ', indent(1), test.title);
+                writer.write(indent(1) + test.title + '.. ');
             });
             runner.on('pending', function (test) {
                 self.stats.pending++;
-                writer.writeln('%s%s %s.. ', indent(), 'pending', test.title);
+                writer.writeln(indent() + test.title + ' pending.. ');
             });
             runner.on('pass', function (test) {
                 self.stats.passes++;
                 if('fast' == test.speed) {
-                    writer.writeln('%s', 'pass');
+                    writer.writeln('pass');
                 } else {
-                    writer.writeln('%s (%dms)', 'pass', test.duration);
+                    writer.writeln('pass (' + test.duration + 'ms)');
                 }
             });
             runner.on('fail', function (test, err) {
                 self.stats.failures++;
-                writer.writeln('%s', 'fail');
+                writer.writeln('fail');
                 if(err) {
-                    writer.writeln('%s-> %s', indent(2), self.cleanError(err));
+                    writer.writeln(indent(2) + '-> ' + self.cleanError(err));
                 }
             });
             runner.on('end', function () {
-                writer.writeln('executed %s with %s', pluralize('test', self.stats.tests), pluralize('failure', self.stats.failures));
+                writer.writeln('executed ' + pluralize('test', self.stats.tests) + ' with ' + pluralize('failure', self.stats.failures) + ' (' + (Date.now() - start) + 'ms)');
                 writer.finish();
             });
         };
@@ -133,4 +130,3 @@ var unfunk;
     unfunk.Unfunk = Unfunk;    
 })(unfunk || (unfunk = {}));
 exports = (module).exports = unfunk.Unfunk;
-//@ sourceMappingURL=unfunk.js.map

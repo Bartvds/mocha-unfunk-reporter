@@ -15,7 +15,7 @@ module.exports = function (grunt) {
 			tests: ['build', 'test/tmp', 'test/_tmp.*']
 		},
 		typescript: {
-			options: { target: 'es5', declaration: false, sourcemap: true },
+			options: { target: 'es5', sourcemap: false },
 			reporter: {
 				options: {
 					base_path: 'src/'
@@ -37,7 +37,7 @@ module.exports = function (grunt) {
 		mochaTestConfig: {
 			unfunk: {
 				options: {
-					reporter: __dirname + '/build/unfunk'
+					reporter: __dirname //yess
 				}
 			}
 		}

@@ -1,12 +1,6 @@
 ///<reference path="_ref.ts" />
 ///<reference path="writer.ts" />
 
-var format = require('format');
-var util = require('util');
-var inspect = (value) => {
-	console.log(util.inspect(value, true, 4));
-};
-
 interface TestError {
 	message:string;
 	type:string;
@@ -63,16 +57,19 @@ module unfunk {
 				return amount + ' ' + (1 == amount ? word : word + 's');
 			};
 
+			var start;
+
 			runner.on('start', () => {
 				//self.writeln('start');
 				writer.start();
+				start = Date.now();
 			});
 
 			runner.on('suite', (suite:TestSuite) => {
 				self.stats.suites++;
 				++indents;
 				if (!suite.root) {
-					writer.writeln('%s%s', indent(), suite.title);
+					writer.writeln(indent() + suite.title);
 				}
 			});
 
@@ -85,33 +82,34 @@ module unfunk {
 
 			runner.on('test', (test:Test) => {
 				self.stats.tests++;
-				writer.write('%s%s.. ', indent(1), test.title);
+				writer.write(indent(1) + test.title + '.. ');
 			});
 
 			runner.on('pending', (test:Test) => {
 				self.stats.pending++;
-				writer.writeln('%s%s %s.. ', indent(), 'pending', test.title);
+				//TODO properly handle pending
+				writer.writeln(indent() + test.title + ' pending.. ');
 			});
 
 			runner.on('pass', (test:Test) => {
 				self.stats.passes++;
 				if ('fast' == test.speed) {
-					writer.writeln('%s', 'pass');
+					writer.writeln('pass');
 				} else {
-					writer.writeln('%s (%dms)', 'pass', test.duration);
+					writer.writeln('pass (' + test.duration + 'ms)');
 				}
 			});
 
 			runner.on('fail', (test:Test, err:TestError) => {
 				self.stats.failures++;
-				writer.writeln('%s', 'fail');
+				writer.writeln('fail');
 				if (err) {
-					writer.writeln('%s-> %s', indent(2), self.cleanError(err));
+					writer.writeln(indent(2) + '-> ' + self.cleanError(err));
 				}
 			});
 
 			runner.on('end', () => {
-				writer.writeln('executed %s with %s', pluralize('test', self.stats.tests), pluralize('failure', self.stats.failures));
+				writer.writeln('executed ' + pluralize('test', self.stats.tests) + ' with ' + pluralize('failure', self.stats.failures) + ' (' + (Date.now() - start) +'ms)');
 				writer.finish();
 			});
 		}
