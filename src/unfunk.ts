@@ -11,7 +11,7 @@
 var format = require('format');
 var util = require('util');
 var inspect = (value) => {
-	console.log(util.inspect(value, false, 4));
+	console.log(util.inspect(value, true, 4));
 };
 
 class Stats {
@@ -25,13 +25,15 @@ class Unfunk {
 
 	lineBuffer:string = '';
 	stats = new Stats();
+	indent = '  ';
+	failures = [];
 
 	constructor(runner) {
 		var self = this;
 		var indents = 0;
 
 		var indent = (add?:number = 0):string => {
-			return Array(indents + add).join('  ')
+			return Array(indents + add).join(self.indent);
 		};
 		var pluralize = (word:string, amount:number):string => {
 			return amount + ' ' + (1 == amount ? word : word + 's');
@@ -58,7 +60,7 @@ class Unfunk {
 
 		runner.on('test', (test) => {
 			self.stats.tests++;
-			self.write('%s%s %s.. ', indent(1), 'test', test.title);
+			self.write('%s%s.. ', indent(1), test.title);
 		});
 
 		runner.on('pending', (test) => {
@@ -79,9 +81,8 @@ class Unfunk {
 			self.stats.failures++;
 			self.writeln('%s', 'fail');
 			if (err) {
-				self.writeln('%s%s', indent(2), err);
+				self.writeln('%s-> %s', indent(2), self.cleanError(err));
 			}
-			//inspect(arguments);
 		});
 
 		runner.on('end', () => {
@@ -89,6 +90,10 @@ class Unfunk {
 
 			self.flushLineBuffer();
 		});
+	}
+
+	cleanError(err):string{
+		return String(err).replace(/^Error:\s*/, '');
 	}
 
 	write(...args:any[]) {

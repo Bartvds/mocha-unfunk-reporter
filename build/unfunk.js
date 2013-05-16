@@ -2,7 +2,7 @@ require('source-map-support').install();
 var format = require('format');
 var util = require('util');
 var inspect = function (value) {
-    console.log(util.inspect(value, false, 4));
+    console.log(util.inspect(value, true, 4));
 };
 var Stats = (function () {
     function Stats() {
@@ -18,11 +18,13 @@ var Unfunk = (function () {
     function Unfunk(runner) {
         this.lineBuffer = '';
         this.stats = new Stats();
+        this.indent = '  ';
+        this.failures = [];
         var self = this;
         var indents = 0;
         var indent = function (add) {
             if (typeof add === "undefined") { add = 0; }
-            return Array(indents + add).join('  ');
+            return Array(indents + add).join(self.indent);
         };
         var pluralize = function (word, amount) {
             return amount + ' ' + (1 == amount ? word : word + 's');
@@ -44,7 +46,7 @@ var Unfunk = (function () {
         });
         runner.on('test', function (test) {
             self.stats.tests++;
-            self.write('%s%s %s.. ', indent(1), 'test', test.title);
+            self.write('%s%s.. ', indent(1), test.title);
         });
         runner.on('pending', function (test) {
             self.stats.pending++;
@@ -62,7 +64,7 @@ var Unfunk = (function () {
             self.stats.failures++;
             self.writeln('%s', 'fail');
             if(err) {
-                self.writeln('%s%s', indent(2), err);
+                self.writeln('%s-> %s', indent(2), self.cleanError(err));
             }
         });
         runner.on('end', function () {
@@ -70,6 +72,9 @@ var Unfunk = (function () {
             self.flushLineBuffer();
         });
     }
+    Unfunk.prototype.cleanError = function (err) {
+        return String(err).replace(/^Error:\s*/, '');
+    };
     Unfunk.prototype.write = function () {
         var args = [];
         for (var _i = 0; _i < (arguments.length - 0); _i++) {

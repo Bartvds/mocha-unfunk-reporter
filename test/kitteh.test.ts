@@ -19,6 +19,10 @@ describe('kitteh', () => {
 			describe('and', () => {
 				it('pinacolada', () => {
 					expect(false, 'no drinks').to.be(true);
+				});
+			});
+			describe('also', () => {
+				it('hats', () => {
 					expect(false, 'no hats').to.be(true);
 				});
 			});
