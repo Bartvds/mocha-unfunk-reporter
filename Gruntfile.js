@@ -10,13 +10,12 @@
 
 module.exports = function (grunt) {
 
-	// Project configuration.
 	grunt.initConfig({
 		clean: {
-			tests: ['build', 'test/tmp', 'test/_tmp.*.js']
+			tests: ['build', 'test/tmp', 'test/_tmp.*']
 		},
 		typescript: {
-			options: { target: 'es5', declaration: false, sourcemap: false },
+			options: { target: 'es5', declaration: false, sourcemap: true },
 			reporter: {
 				options: {
 					base_path: 'src/'
@@ -38,7 +37,7 @@ module.exports = function (grunt) {
 		mochaTestConfig: {
 			unfunk: {
 				options: {
-					reporter: __dirname +'/build/unfunk'
+					reporter: __dirname + '/build/unfunk'
 				}
 			}
 		}
@@ -49,8 +48,8 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-typescript');
 
 	grunt.registerTask('build', ['clean', 'typescript:reporter']);
-	grunt.registerTask('test', ['build', 'typescript:test', 'mochaTest:unfunk']);
+	grunt.registerTask('test', ['build', 'typescript:test', 'mochaTest']);
 
-	grunt.registerTask('default', ['jshint', 'test']);
+	grunt.registerTask('default', ['test']);
 
 };

@@ -1,32 +1,34 @@
 {
-  "name": "mocha-unfunk-reporter",
-  "version": "0.0.1",
-  "description": "console reporter without funkyness",
-  "author": {
-    "name": "Bart van der Schoor",
-    "email": "bartvanderschoor@gmail.com"
-  },
-  "repository": "",
-  "license": "MIT",
-  "keywords": [
-    "mocha",
-    "reporter",
-    "windows",
-    "console",
-    "unfunk"
-  ],
-  "main": "build/unfunk.js",
-  "scripts": {
-    "test": "grunt test"
-  },
-  "dependencies": {
-    "superagent": "~0.14.2"
-  },
-  "devDependencies": {
-    "grunt": "~0.4.1",
-    "grunt-typescript": "~0.1.5",
-    "grunt-contrib-clean": "~0.4.1"
-    "grunt-mocha-test": "~0.2.2",
-    "expect.js": "~0.2.0"
-  }
+	"name": "mocha-unfunk-reporter",
+	"version": "0.0.1",
+	"description": "console reporter without funkyness",
+	"author": {
+		"name": "Bart van der Schoor",
+		"email": "bartvanderschoor@gmail.com"
+	},
+	"repository": "",
+	"license": "MIT",
+	"keywords": [
+		"mocha",
+		"reporter",
+		"windows",
+		"console",
+		"unfunk"
+	],
+	"main": "build/unfunk.js",
+	"scripts": {
+		"test": "grunt test"
+	},
+	"dependencies": {
+	},
+	"devDependencies": {
+		"grunt": "~0.4.1",
+		"grunt-typescript": "~0.1.5",
+		"grunt-contrib-clean": "~0.4.1",
+		"grunt-mocha-test": "~0.2.2",
+		"expect.js": "~0.2.0"
+	},
+	"optionalDependencies": {
+		"source-map-support": "~0.1.5"
+	}
 }
