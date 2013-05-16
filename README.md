@@ -1,6 +1,8 @@
 # mocha-unfunk-reporter
 
-> robust mocha reporter without funkyness, great for windows console output
+> console reporter without funkyness
+
+makes mocha windows console friendly, with output similar to default spec reporter
 
 ## Develop
 

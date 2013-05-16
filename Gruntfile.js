@@ -12,16 +12,6 @@ module.exports = function (grunt) {
 
 	// Project configuration.
 	grunt.initConfig({
-		jshint: {
-			all: [
-				'Gruntfile.js',
-				'index.js',
-				'test/**/*.js'
-			],
-			options: {
-				jshintrc: '.jshintrc'
-			}
-		},
 		clean: {
 			tests: ['build', 'test/tmp', 'test/_tmp.*.js']
 		},
@@ -43,15 +33,9 @@ module.exports = function (grunt) {
 			}
 		},
 		mochaTest: {
-			list: ['test/*.test.js'],
 			unfunk: ['test/*.test.js']
 		},
 		mochaTestConfig: {
-			list: {
-				options: {
-					reporter: 'list'
-				}
-			},
 			unfunk: {
 				options: {
 					reporter: __dirname +'/build/unfunk'
@@ -60,12 +44,11 @@ module.exports = function (grunt) {
 		}
 	});
 
-	grunt.loadNpmTasks('grunt-contrib-jshint');
 	grunt.loadNpmTasks('grunt-contrib-clean');
 	grunt.loadNpmTasks('grunt-mocha-test');
 	grunt.loadNpmTasks('grunt-typescript');
 
-	grunt.registerTask('build', ['clean', 'jshint', 'typescript:reporter']);
+	grunt.registerTask('build', ['clean', 'typescript:reporter']);
 	grunt.registerTask('test', ['build', 'typescript:test', 'mochaTest:unfunk']);
 
 	grunt.registerTask('default', ['jshint', 'test']);
