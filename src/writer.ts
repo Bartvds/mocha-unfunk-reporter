@@ -54,7 +54,7 @@ module unfunk {
 			}
 		}
 
-		//flush everything as one chunky log();
+		//flush everything as one single chunky log();
 		export class ConsoleBulkWriter extends BaseWriter {
 
 			buffer:string[] = [];

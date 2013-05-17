@@ -33,7 +33,7 @@ describe('kitteh', function () {
                 expect(true).to.equal(true);
                 expect(true).to.equal(true);
             });
-            describe('and some', function () {
+            describe('some', function () {
                 it('yarn', function () {
                     expect(2).to.equal(2);
                 });
@@ -41,7 +41,7 @@ describe('kitteh', function () {
                     expect('hat').to.equal('silly');
                 });
             });
-            describe('and also', function () {
+            describe('no', function () {
                 it('dogs', function () {
                     expect(true).to.equal(true);
                     expect('dogs').to.equal('not here');

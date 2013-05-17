@@ -6,7 +6,11 @@
 
 unfunk is a minimal spec-style console reporter that doesn't confuse lesser enviroments with funky display tricks.
 
-main use-case is running mocha as external tool in IDE's like webstorm but should work in all cli/console mocha flavours, and can easily be adapted to alternate unfunky displays.
+main use-case is running mocha as external tool in IDE's like WebStorm but should work in all cli/console mocha flavours, and can easily be adapted to alternate unfunky displays.
+
+## Todo
+
+Add proper color mode switch.
 
 ## Usage
 
