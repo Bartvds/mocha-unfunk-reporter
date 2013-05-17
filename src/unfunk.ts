@@ -57,23 +57,34 @@ module unfunk {
 
 	export class Unfunk {
 
-		writer:LineWriter;
-		style:Styler;
-		stats:Stats = new Stats();
-		indent:string = '  ';
+		//TODO expose alternate writer/styler choices?
+		//TODO fix/auto switch colors
 
 		constructor(runner) {
-			this.writer = new ConsoleLineWriter();
-			this.style = new ANSIStyler();
 			this.init(runner);
 		}
-		init(runner){
-			var self:Unfunk = this;
-			var writer = this.writer;
+
+		getStyler(runner):Styler {
+			//if (Unfunk.styler === 'ansi') {
+			return new styler.AnsiStyler();
+			//}
+			return new styler.NullStyler();
+		}
+
+		getWriter(runner):LineWriter {
+			return new writer.ConsoleLineWriter();
+		}
+
+		init(runner) {
+			var stats = new Stats();
+			var out = this.getWriter(runner);
+			var style = this.getStyler(runner);
+
+			var indenter:string = '  ';
 			var indents = 0;
 
 			var indent = (add?:number = 0):string => {
-				return Array(indents + add).join(self.indent);
+				return Array(indents + add).join(indenter);
 			};
 			var pluralize = (word:string, amount:number):string => {
 				return amount + ' ' + (1 == amount ? word : word + 's');
@@ -83,65 +94,66 @@ module unfunk {
 
 			runner.on('start', () => {
 				//self.writeln('start');
-				writer.start();
+				out.start();
 				start = Date.now();
 			});
 
 			runner.on('suite', (suite:TestSuite) => {
-				self.stats.suites++;
+				stats.suites++;
 				++indents;
 				if (!suite.root) {
-					writer.writeln(indent() + self.style.suite(suite.title));
+					out.writeln(indent() + style.suite(suite.title));
 				}
 			});
 
 			runner.on('suite end', (suite:TestSuite) => {
 				--indents;
 				if (1 == indents && !suite.root) {
-					writer.writeln();
+					out.writeln();
 				}
 			});
 
 			runner.on('test', (test:Test) => {
-				self.stats.tests++;
-				writer.write(indent(1) + self.style.test(test.title + '.. '));
+				stats.tests++;
+				out.write(indent(1) + style.test(test.title + '.. '));
 			});
 
 			runner.on('pending', (test:Test) => {
-				self.stats.pending++;
+				stats.pending++;
 				//TODO properly handle pending
-				writer.writeln(self.style.warning('?-') + indent() + test.title + '.. '+ self.style.warning('pending'));
+				out.writeln(style.warning('?-') + indent() + test.title + '.. ' + style.warning('pending'));
 			});
 
 			runner.on('pass', (test:Test) => {
-				self.stats.passes++;
+				stats.passes++;
 				if ('fast' == test.speed) {
-					writer.writeln(self.style.success('pass'));
+					out.writeln(style.success('pass'));
 				} else {
-					writer.writeln(self.style.success('pass') + ' (' + test.duration + 'ms)');
+					out.writeln(style.success('pass') + ' (' + test.duration + 'ms)');
 				}
 			});
 
 			runner.on('fail', (test:Test, err:TestError) => {
-				self.stats.failures++;
-				writer.writeln(self.style.error('fail'));
-				writer.writeln(self.style.error('!!') + indent(1) + self.style.error(''+err));
+				stats.failures++;
+				out.writeln(style.error('fail'));
+				out.writeln(style.error('!!') + indent(1) + style.error('' + err));
 			});
 
 			runner.on('end', () => {
-				var txt:string = 'executed ' + pluralize('test', self.stats.tests) + ' with ';
+				var txt:string = 'executed ' + pluralize('test', stats.tests) + ' with ';
 
-				if (self.stats.failures > 0){
-					txt += self.style.error(pluralize('failure', self.stats.failures))
+				if (stats.failures > 0) {
+					txt += style.error(pluralize('failure', stats.failures))
 				} else {
-					txt += self.style.success(pluralize('failure', self.stats.failures))
+					txt += style.success(pluralize('failure', stats.failures))
 				}
-				if (self.stats.pending > 0){
-					txt += ' and ' + self.style.warning(self.stats.pending + ' pending');
+				if (stats.pending > 0) {
+					txt += ' and ' + style.warning(stats.pending + ' pending');
 				}
-				txt += ' (' + (Date.now() - start) +'ms)';
-				writer.writeln(txt);
-				writer.finish();
+				txt += ' (' + (Date.now() - start) + 'ms)';
+				out.writeln(txt);
+				out.writeln();
+				out.finish();
 			});
 		}
 	}
