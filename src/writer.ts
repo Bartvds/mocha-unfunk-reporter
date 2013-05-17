@@ -1,15 +1,8 @@
+///<reference path="unfunk.ts" />
+
 module unfunk {
 
-	export interface LineWriter {
-		start();
-		write(...args:any[]);
-		writeln(...args:any[]);
-		flushLine(str:string);
-		flushLineBuffer();
-		finish();
-	}
-
-	export class ConsoleWriter implements LineWriter {
+	export class BaseWriter implements LineWriter {
 
 		lineBuffer:string = '';
 
@@ -37,7 +30,7 @@ module unfunk {
 		}
 
 		flushLine(str:string) {
-			console.log(str);
+			//null
 		}
 
 		flushLineBuffer() {
@@ -49,6 +42,29 @@ module unfunk {
 
 		finish() {
 			this.flushLineBuffer();
+		}
+	}
+
+	//flush each line as seperate log()
+	export class ConsoleLineWriter extends BaseWriter {
+
+		flushLine(str:string) {
+			console.log(str);
+		}
+	}
+
+	//flush everything as one chunky log();
+	export class ConsoleBulkWriter extends BaseWriter {
+
+		buffer:string[] = [];
+
+		flushLine(str:string) {
+			this.buffer.push(str);
+		}
+
+		finish() {
+			console.log(this.buffer.join('\n'));
+			this.buffer = [];
 		}
 	}
 }

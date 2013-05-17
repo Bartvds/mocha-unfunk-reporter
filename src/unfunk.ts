@@ -1,5 +1,6 @@
 ///<reference path="_ref.ts" />
 ///<reference path="writer.ts" />
+///<reference path="styler.ts" />
 
 interface TestError {
 	message:string;
@@ -28,6 +29,24 @@ interface Test {
 }
 
 module unfunk {
+
+	export interface LineWriter {
+		start();
+		write(...args:any[]);
+		writeln(...args:any[]);
+		flushLine(str:string);
+		flushLineBuffer();
+		finish();
+	}
+
+	export interface Styler {
+		error(str:string):string;
+		warning(str:string):string;
+		success(str:string):string;
+		suite(str:string):string;
+		test(str:string):string;
+	}
+
 	export class Stats {
 		suites = 0;
 		tests = 0;
@@ -35,14 +54,17 @@ module unfunk {
 		pending = 0;
 		failures = 0;
 	}
+
 	export class Unfunk {
 
-		writer:LineWriter = new ConsoleWriter();
+		writer:LineWriter;
+		style:Styler;
 		stats:Stats = new Stats();
 		indent:string = '  ';
-		failures:Test[] = [];
 
 		constructor(runner) {
+			this.writer = new ConsoleLineWriter();
+			this.style = new ANSIStyler();
 			this.init(runner);
 		}
 		init(runner){
@@ -69,7 +91,7 @@ module unfunk {
 				self.stats.suites++;
 				++indents;
 				if (!suite.root) {
-					writer.writeln(indent() + suite.title);
+					writer.writeln(indent() + self.style.suite(suite.title));
 				}
 			});
 
@@ -82,39 +104,47 @@ module unfunk {
 
 			runner.on('test', (test:Test) => {
 				self.stats.tests++;
-				writer.write(indent(1) + test.title + '.. ');
+				writer.write(indent(1) + self.style.test(test.title + '.. '));
 			});
 
 			runner.on('pending', (test:Test) => {
 				self.stats.pending++;
 				//TODO properly handle pending
-				writer.writeln('? ' + indent() + test.title + '..  pending');
+				writer.writeln(self.style.warning('?-') + indent() + test.title + '.. '+ self.style.warning('pending'));
 			});
 
 			runner.on('pass', (test:Test) => {
 				self.stats.passes++;
 				if ('fast' == test.speed) {
-					writer.writeln('pass');
+					writer.writeln(self.style.success('pass'));
 				} else {
-					writer.writeln('pass (' + test.duration + 'ms)');
+					writer.writeln(self.style.success('pass') + ' (' + test.duration + 'ms)');
 				}
 			});
 
 			runner.on('fail', (test:Test, err:TestError) => {
 				self.stats.failures++;
-				writer.writeln('fail');
-				writer.writeln('!!' + indent(1) + self.cleanError(err));
+				writer.writeln(self.style.error('fail'));
+				writer.writeln(self.style.error('!!') + indent(1) + self.style.error(''+err));
 			});
 
 			runner.on('end', () => {
-				writer.writeln('executed ' + pluralize('test', self.stats.tests) + ' with ' + pluralize('failure', self.stats.failures) + ' (' + (Date.now() - start) +'ms)');
+				var txt:string = 'executed ' + pluralize('test', self.stats.tests) + ' with ';
+
+				if (self.stats.failures > 0){
+					txt += self.style.error(pluralize('failure', self.stats.failures))
+				} else {
+					txt += self.style.success(pluralize('failure', self.stats.failures))
+				}
+				if (self.stats.pending > 0){
+					txt += ' and ' + self.style.warning(self.stats.pending + ' pending');
+				}
+				txt += ' (' + (Date.now() - start) +'ms)';
+				writer.writeln(txt);
 				writer.finish();
 			});
 		}
-
-		cleanError(err):string {
-			return String(err).replace(/^Error:\s*/, '');
-		}
 	}
 }
+
 exports = (module).exports = unfunk.Unfunk;
