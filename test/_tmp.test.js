@@ -1,22 +1,22 @@
 var expect = require('chai').expect;
 describe('async tests', function () {
     it('first passes', function (done) {
-        process.nextTick(function () {
+        setTimeout(function () {
             expect(true).to.equal(true);
             done();
-        });
+        }, 10);
     });
-    it('second fails', function (done) {
-        process.nextTick(function () {
+    it.skip('second fails', function (done) {
+        setTimeout(function () {
             expect(true).to.equal(false);
             done();
-        });
+        }, 10);
     });
     it('third passes', function (done) {
-        process.nextTick(function () {
+        setTimeout(function () {
             expect(true).to.equal(true);
             done();
-        });
+        }, 10);
     });
 });
 describe('kitteh', function () {

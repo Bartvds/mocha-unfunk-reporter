@@ -2,21 +2,21 @@
 
 describe('async tests', () => {
 	it('first passes', (done:() => void) => {
-		process.nextTick(() => {
+		setTimeout(() => {
 			expect(true).to.equal(true);
 			done();
-		});
+		}, 10);
 	});
-	it('second fails', (done:() => void) => {
-		process.nextTick(() => {
+	it.skip('second fails', (done:() => void) => {
+		setTimeout(() => {
 			expect(true).to.equal(false);
 			done();
-		});
+		}, 10);
 	});
 	it('third passes', (done:() => void) => {
-		process.nextTick(() => {
+		setTimeout(() => {
 			expect(true).to.equal(true);
 			done();
-		});
+		}, 10);
 	});
 });

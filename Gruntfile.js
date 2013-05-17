@@ -1,6 +1,6 @@
 /*
- * grunt-execute
- * https://github.com/Bartvds/grunt-execute
+ * mocha-unfunk-reporter
+ * https://github.com/Bartvds/mocha-unfunk-reporter
  *
  * Copyright (c) 2013 Bart van der Schoor
  * Licensed under the MIT license.
@@ -44,7 +44,7 @@ module.exports = function (grunt) {
 			}
 		},
 		mochaTest: {
-			unfunk: ['test/*.test.js'] //, 'node_modules/grunt-mocha-test/test/mocha.test.js']
+			unfunk: ['test/*.test.js', 'node_modules/grunt-mocha-test/test/mocha.test.js']
 		},
 		mochaTestConfig: {
 			unfunk: {
@@ -62,7 +62,7 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-typescript');
 
 	grunt.registerTask('build', ['clean', 'typescript:reporter']);
-	grunt.registerTask('test', ['build', 'typescript:test', 'simplemocha']);
+	grunt.registerTask('test', ['build', 'typescript:test', 'mochaTest']);
 
 	grunt.registerTask('default', ['test']);
 
