@@ -36,7 +36,7 @@ Unfunk-reporter is written in TypeScript and built using `grunt`: so run `grunt`
 
 May or may not be up-2-date with actual output.
 
-```
+````
   kitteh
     can
       meow.. pass
@@ -95,3 +95,4 @@ executed 28 tests with 3 failures and 1 pending (85ms)
         at next (D:\_Editing\github\mocha\test\node_modules\mocha\lib\runner.js:234:23)
         at Object._onImmediate (D:\_Editing\github\mocha\test\node_modules\mocha\lib\runner.js:254:5)
         at processImmediate [as _immediateCallback] (timers.js:309:15)
+````
