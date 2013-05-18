@@ -26,7 +26,7 @@ Install in your project using `npm install mocha-unfunk-reporter`, maybe global 
 
 ## Versions
 
-0.1.1 - basic version, colors disabled
+0.1.2 - basic version, colors disabled
 
 ## Develop
 
