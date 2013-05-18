@@ -10,6 +10,13 @@
 
 module.exports = function (grunt) {
 
+	grunt.loadNpmTasks('grunt-typescript');
+	grunt.loadNpmTasks('grunt-contrib-clean');
+
+	grunt.loadNpmTasks('grunt-simple-mocha');
+	grunt.loadNpmTasks('grunt-cafe-mocha');
+	grunt.loadNpmTasks('grunt-mocha-test');
+
 	grunt.initConfig({
 		clean: {
 			tests: ['build', 'test/tmp', 'test/_tmp.*']
@@ -31,6 +38,7 @@ module.exports = function (grunt) {
 				dest: 'test/_tmp.test.js'
 			}
 		},
+		//all will fail on async assertion error.. beh
 		simplemocha: {
 			unfunk: ['test/*.test.js'],
 			options: {
@@ -54,16 +62,7 @@ module.exports = function (grunt) {
 			}
 		}
 	});
-
-	grunt.loadNpmTasks('grunt-simple-mocha');
-	grunt.loadNpmTasks('grunt-cafe-mocha');
-	grunt.loadNpmTasks('grunt-contrib-clean');
-	grunt.loadNpmTasks('grunt-mocha-test');
-	grunt.loadNpmTasks('grunt-typescript');
-
 	grunt.registerTask('build', ['clean', 'typescript:reporter']);
 	grunt.registerTask('test', ['build', 'typescript:test', 'mochaTest']);
-
 	grunt.registerTask('default', ['test']);
-
 };
