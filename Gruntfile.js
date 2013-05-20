@@ -12,7 +12,6 @@ module.exports = function (grunt) {
 
 	grunt.loadNpmTasks('grunt-typescript');
 	grunt.loadNpmTasks('grunt-contrib-clean');
-
 	grunt.loadNpmTasks('grunt-mocha-spawn');
 
 	grunt.initConfig({

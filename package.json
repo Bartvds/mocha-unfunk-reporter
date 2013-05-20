@@ -33,16 +33,12 @@
     "test": "grunt test"
   },
   "dependencies": {
-    "underscore": "~1.4.4",
-    "mocha": "~1.9.0"
   },
   "devDependencies": {
     "grunt": "~0.4.1",
     "grunt-typescript": "~0.1.5",
     "grunt-contrib-clean": "~0.4.1",
-    "expect.js": "~0.2.0",
     "chai": "~1.6.0",
-    "grunt-mocha-spawn": "~0.1.0",
-    "mocha": "~1.9.0"
+    "grunt-mocha-spawn": "~0.1.0"
   }
 }
