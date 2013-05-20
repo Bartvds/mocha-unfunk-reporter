@@ -7,7 +7,7 @@ describe('async tests', () => {
 			done();
 		}, 10);
 	});
-	it.skip('second fails', (done:() => void) => {
+	it('second fails', (done:() => void) => {
 		setTimeout(() => {
 			expect(true).to.equal(false);
 			done();

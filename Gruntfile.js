@@ -13,9 +13,7 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-typescript');
 	grunt.loadNpmTasks('grunt-contrib-clean');
 
-	grunt.loadNpmTasks('grunt-simple-mocha');
-	grunt.loadNpmTasks('grunt-cafe-mocha');
-	grunt.loadNpmTasks('grunt-mocha-test');
+	grunt.loadNpmTasks('grunt-mocha-spawn');
 
 	grunt.initConfig({
 		clean: {
@@ -38,24 +36,10 @@ module.exports = function (grunt) {
 				dest: 'test/_tmp.test.js'
 			}
 		},
-		//all will fail on async assertion error.. beh
-		simplemocha: {
-			unfunk: ['test/*.test.js'],
-			options: {
-				reporter: __dirname //yess
-			}
-		},
-		cafemocha: {
-			unfunk: ['test/*.test.js'],
-			options: {
-				reporter: __dirname //yess
-			}
-		},
-		mochaTest: {
-			unfunk: ['test/*.test.js', 'node_modules/grunt-mocha-test/test/mocha.test.js']
-		},
-		mochaTestConfig: {
+		//buh
+		mocha_spawn: {
 			unfunk: {
+				src:['test/*.test.js'],
 				options: {
 					reporter: __dirname //yess
 				}
@@ -63,6 +47,6 @@ module.exports = function (grunt) {
 		}
 	});
 	grunt.registerTask('build', ['clean', 'typescript:reporter']);
-	grunt.registerTask('test', ['build', 'typescript:test', 'mochaTest']);
+	grunt.registerTask('test', ['build', 'typescript:test', 'mocha_spawn:unfunk']);
 	grunt.registerTask('default', ['test']);
 };

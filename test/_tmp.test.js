@@ -6,7 +6,7 @@ describe('async tests', function () {
             done();
         }, 10);
     });
-    it.skip('second fails', function (done) {
+    it('second fails', function (done) {
         setTimeout(function () {
             expect(true).to.equal(false);
             done();

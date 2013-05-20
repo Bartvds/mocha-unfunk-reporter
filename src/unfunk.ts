@@ -156,20 +156,17 @@ module unfunk {
 			});
 
 			runner.on('end', () => {
-				var txt:string = 'executed ' + pluralize('test', stats.tests) + ' with ';
+				var summary:string = 'executed ' + pluralize('test', stats.tests) + ' with ';
 
 				if (stats.failures > 0) {
-					txt += style.error(pluralize('failure', stats.failures))
+					summary += style.error(pluralize('failure', stats.failures))
 				} else {
-					txt += style.success(pluralize('failure', stats.failures))
+					summary += style.success(pluralize('failure', stats.failures))
 				}
 				if (stats.pending > 0) {
-					txt += ' and ' + style.warning(stats.pending + ' pending');
+					summary += ' and ' + style.warning(stats.pending + ' pending');
 				}
-				txt += ' (' + (Date.now() - start) + 'ms)';
-
-				out.writeln(txt);
-				out.writeln();
+				summary += ' (' + (Date.now() - start) + 'ms)';
 
 				indents += 1;
 
@@ -194,6 +191,10 @@ module unfunk {
 					}
 					out.writeln();
 				});
+
+				out.writeln(summary);
+				out.writeln();
+
 				out.finish();
 			});
 		}
