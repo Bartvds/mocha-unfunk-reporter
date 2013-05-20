@@ -102,8 +102,8 @@ module unfunk {
 			var indent = (add?:number = 0):string => {
 				return Array(indents + add).join(indenter);
 			};
-			var pluralize = (word:string, amount:number):string => {
-				return amount + ' ' + (1 == amount ? word : word + 's');
+			var pluralize = (word:string, amount:number, plurl='s'):string => {
+				return amount + ' ' + (1 == amount ? word : word + plurl);
 			};
 			var start;
 			var counter = 0;
@@ -182,9 +182,9 @@ module unfunk {
 				}
 				var passes;
 				if (stats.tests > 0) {
-					passes = style.success(pluralize('passes', stats.passes))
+					passes = style.success(pluralize('pass', stats.passes, 'es'))
 				} else {
-					passes = style.success(pluralize('passes', stats.passes))
+					passes = style.success(pluralize('pass', stats.passes, 'es'))
 				}
 
 				var fail;

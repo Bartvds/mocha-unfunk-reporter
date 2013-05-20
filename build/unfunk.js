@@ -301,8 +301,9 @@ var unfunk;
                 if (typeof add === "undefined") { add = 0; }
                 return Array(indents + add).join(indenter);
             };
-            var pluralize = function (word, amount) {
-                return amount + ' ' + (1 == amount ? word : word + 's');
+            var pluralize = function (word, amount, plurl) {
+                if (typeof plurl === "undefined") { plurl = 's'; }
+                return amount + ' ' + (1 == amount ? word : word + plurl);
             };
             var start;
             var counter = 0;
@@ -368,9 +369,9 @@ var unfunk;
                 }
                 var passes;
                 if(stats.tests > 0) {
-                    passes = style.success(pluralize('passes', stats.passes));
+                    passes = style.success(pluralize('pass', stats.passes, 'es'));
                 } else {
-                    passes = style.success(pluralize('passes', stats.passes));
+                    passes = style.success(pluralize('pass', stats.passes, 'es'));
                 }
                 var fail;
                 if(stats.failures > 0) {
