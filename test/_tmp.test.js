@@ -1,4 +1,5 @@
-var expect = require('chai').expect;
+var expect = require('expect.js');
+process.env['mocha-unfunk-color'] = true;
 describe('async tests', function () {
     it('first passes', function (done) {
         setTimeout(function () {
@@ -13,6 +14,12 @@ describe('async tests', function () {
         }, 10);
     });
     it('third passes', function (done) {
+        setTimeout(function () {
+            expect(true).to.equal(true);
+            done();
+        }, 10);
+    });
+    it.skip('fouth pending', function (done) {
         setTimeout(function () {
             expect(true).to.equal(true);
             done();

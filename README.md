@@ -4,7 +4,7 @@
 
 ## What?
 
-Unfunk-reporter is a minimal spec-style console reporter that doesn't confuse lesser enviroments with funky display tricks, line overwrites, escapes or weird encodings. Main use-case is running `mocha`'s node module as external tool in IDE's like WebStorm or other basic consoles, but should work in all cli/console mocha flavours if you manage to pass it to mocha as `--reporter`. It should easily be adapted to alternate unfunky displays.
+Unfunk-reporter is a minimal `spec`-style console reporter that doesn't confuse lesser console enviroments with funky display tricks, line overwrites, escapes or weird encodings. Main use-case is running `mocha`'s node module as external tool in IDE's like WebStorm or other basic consoles and low-tech buffered output, but should work in all mocha node.js module flavours if you manage to pass it to mocha as `reporter`. It should easily be adapted to alternate unfunky displays.
 
 The reporter does *not* extend `mocha`'s default Base reporter prototype, because that is main source of funkyness, so not all of mocha's reporter related options are supported.
 
@@ -24,8 +24,19 @@ It defaults to colorless display, although there is a functional ANSI styler. Bu
 
 Install in your project using `npm install mocha-unfunk-reporter`, maybe global for command line mocha. Then use `mocha-unfunk-reporter` as mocha's `reporter` parameter.
 
+## Options
+
+Pass extra options using process.env (until I find a better way)
+
+
+````
+//enable colors, using ANSI codes (we all need *some* functional funk :)
+process.env['mocha-unfunk-color'] = true;
+````
+
 ## Versions
 
+0.1.4 - expose color option using process.env
 0.1.3 - cleaned test and dev dependencies
 0.1.2 - basic version, colors disabled
 
@@ -33,67 +44,7 @@ Install in your project using `npm install mocha-unfunk-reporter`, maybe global 
 
 Unfunk-reporter is written in TypeScript and built using `grunt`: so run `grunt` to rebuild and display a test, and `grunt build` for a clean rebuild.
 
-## Example output
+## Credit
 
-May or may not be up-2-date with actual output.
-
-````
-  kitteh
-    can
-      meow.. pass
-      has
-        milk.. pass
-        cheeseburgers.. pass
-        some
-          yarn.. pass
-          hats.. fail
-        no
-          dogs.. fail
-
-  mocha grunt task
-    should register a multi task.. pass
-    should run asynchronously.. pass
-    should clear the require cache before sending tests to mocha so that it can be run from a watch task.. pass
-    should load mocha options from mochaTestConfig.. pass
-    should use named config where available.. pass
-    should expand and add the file list to files in Mocha.. pass
-    should catch and log exceptions thrown by Mocha to the console before failing the task so that it can be run from a watch task.. pass
-    should fail if any tests fail.. pass
-    should succeed if no tests fail.. pass
-    should add a single file added to the require option.. pass
-    should expose global variables from the file added with the require option.. fail
-    invert option
-      should not call the invert chainable function by default.. pass
-      should pass through the invert option to the invert chainable function.. pass
-    ignoreLeaks option
-      should not call the ignoreLeaks chainable function by default.. pass
-      should pass through the ignoreLeaks option to the ignoreLeaks chainable function.. pass
-    growl option
-      should not call the growl chainable function by default.. pass
-      should pass through the growl option to the growl chainable function.. pass
-    globals option
-      should not call the globals chainable function by default.. pass
-      should pass through the globals option to the globals chainable function.. pass
-    with grunt 0.4.x
-      should expand and add the file list to files in Mocha.. pass
-
-executed 28 tests with 3 failures and 1 pending (85ms)
-
-1: kitteh can has some hats
-      expected 'hat' to equal 'silly'
-
-2: kitteh can has no dogs
-      expected 'dogs' to equal 'not here'
-
-3: mocha grunt task should expose global variables from the file added with the require option
-      ReferenceError: testVar is not defined
-        at Context.<anonymous> (D:\_Editing\github\mocha\test\mocha.test.js:188:14)
-        at Test.Runnable.run (D:\_Editing\github\mocha\test\node_modules\mocha\lib\runnable.js:213:32)
-        at Runner.runTest (D:\_Editing\github\mocha\test\node_modules\mocha\lib\runner.js:351:10)
-        at D:\_Editing\github\mocha\test\node_modules\mocha\lib\runner.js:397:12
-        at next (D:\_Editing\github\mocha\test\node_modules\mocha\lib\runner.js:277:14)
-        at D:\_Editing\github\mocha\test\node_modules\mocha\lib\runner.js:286:7
-        at next (D:\_Editing\github\mocha\test\node_modules\mocha\lib\runner.js:234:23)
-        at Object._onImmediate (D:\_Editing\github\mocha\test\node_modules\mocha\lib\runner.js:254:5)
-        at processImmediate [as _immediateCallback] (timers.js:309:15)
-````
+* Color codes taken from [colors.js](https://github.com/marak/colors.js/) by Marak Squires & Alexis Sellier (cloudhead)
+* Has some bits and bobs from default reporters

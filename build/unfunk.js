@@ -276,15 +276,21 @@ var unfunk;
     var util = require('util');
     var Unfunk = (function () {
         function Unfunk(runner) {
+            this.options = {
+            };
             this.init(runner);
         }
         Unfunk.prototype.getStyler = function (runner) {
+            if(this.stringTrue(this.options.color)) {
+                return new unfunk.styler.AnsiStyler();
+            }
             return new unfunk.styler.NullStyler();
         };
         Unfunk.prototype.getWriter = function (runner) {
             return new unfunk.writer.ConsoleLineWriter();
         };
         Unfunk.prototype.init = function (runner) {
+            this.importOptions();
             var stats = new Stats();
             var out = this.getWriter(runner);
             var style = this.getStyler(runner);
@@ -303,8 +309,13 @@ var unfunk;
             runner.on('start', function () {
                 start = Date.now();
                 out.start();
+                out.writeln();
             });
             runner.on('suite', function (suite) {
+                if(indents === 0) {
+                    out.writeln(style.suite('->') + ' running ' + style.suite(pluralize('suite', suite.suites.length)));
+                    out.writeln();
+                }
                 stats.suites++;
                 indents++;
                 if(!suite.root) {
@@ -343,42 +354,80 @@ var unfunk;
                 out.writeln(style.error('fail'));
                 counter++;
                 if(err.message) {
+                    out.writeln(style.error(counter + ': ') + indent(1) + '' + style.warning(err.message));
                 }
                 test.err = err;
                 failures.push(test);
             });
             runner.on('end', function () {
-                var summary = 'executed ' + pluralize('test', stats.tests) + ' with ';
-                if(stats.failures > 0) {
-                    summary += style.error(pluralize('failure', stats.failures));
+                var test;
+                if(stats.tests > 0) {
+                    test = style.suite(pluralize('test', stats.tests));
                 } else {
-                    summary += style.success(pluralize('failure', stats.failures));
+                    test = style.warning(pluralize('test', stats.tests));
                 }
+                var passes;
+                if(stats.tests > 0) {
+                    passes = style.success(pluralize('passes', stats.passes));
+                } else {
+                    passes = style.success(pluralize('passes', stats.passes));
+                }
+                var fail;
+                if(stats.failures > 0) {
+                    fail = style.error(pluralize('failure', stats.failures));
+                } else {
+                    fail = style.success(pluralize('failure', stats.failures));
+                }
+                var pending = '';
                 if(stats.pending > 0) {
-                    summary += ' and ' + style.warning(stats.pending + ' pending');
+                    pending = ' and ' + style.warning(stats.pending + ' pending');
                 }
-                summary += ' (' + (Date.now() - start) + 'ms)';
                 indents += 1;
-                failures.forEach(function (test, i) {
-                    var title = test.fullTitle();
-                    var pre = title.lastIndexOf(test.title);
-                    out.writeln(indent() + style.error((i + 1) + ': ') + style.suite(title.substr(0, pre)) + style.test(title.substr(pre)));
-                    var err = test.err;
-                    var message = err.message || '';
-                    var stack = err.stack || message;
-                    var index = stack.indexOf(message) + message.length;
-                    var msg = stack.slice(0, index);
-                    out.writeln(indent(3) + style.warning(msg));
-                    stack = stack.slice(index ? index + 1 : index);
-                    if(stack) {
-                        out.writeln(stack.replace(/^[ \t]*/gm, indent(4)));
-                    }
+                if(failures.length > 0) {
+                    out.writeln(style.suite('->') + ' reporting ' + fail);
                     out.writeln();
-                });
-                out.writeln(summary);
+                    failures.forEach(function (test, i) {
+                        var title = test.fullTitle();
+                        var pre = title.lastIndexOf(test.title);
+                        var err = test.err;
+                        var message = err.message || '';
+                        var stack = err.stack || message;
+                        var index = stack.indexOf(message) + message.length;
+                        var msg = stack.slice(0, index);
+                        out.writeln(indent() + style.error((i + 1) + ': ') + style.test(title.substr(0, pre)) + style.suite(title.substr(pre)));
+                        out.writeln(indent(3) + style.warning(msg));
+                        stack = stack.slice(index ? index + 1 : index);
+                        if(stack) {
+                            out.writeln(stack.replace(/^[ \t]*/gm, indent(4)));
+                        }
+                        out.writeln();
+                    });
+                }
+                out.writeln(style.suite('->') + ' executed ' + test + ' with ' + passes + (stats.pending > 0 ? ', ' : ' and ') + fail + pending + ' (' + (Date.now() - start) + 'ms)');
                 out.writeln();
                 out.finish();
             });
+        };
+        Unfunk.prototype.stringTrue = function (str) {
+            str = ('' + str).toLowerCase();
+            return str != '' && str != 'false' && str != '0' && str != 'null' && str != 'undefined';
+        };
+        Unfunk.prototype.importOptions = function () {
+            var pattern = /^mocha-unfunk-([\w][\w_-]*[\w])/g;
+            var obj;
+            if(typeof process !== 'undefined' && process.env) {
+                obj = process.env;
+            }
+            if(obj) {
+                for(var name in obj) {
+                    if(Object.prototype.hasOwnProperty.call(obj, name)) {
+                        var match = pattern.exec(name);
+                        if(match && match.length > 1) {
+                            this.options[match[1]] = obj[name];
+                        }
+                    }
+                }
+            }
         };
         return Unfunk;
     })();

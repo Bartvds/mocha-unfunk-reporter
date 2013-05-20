@@ -5,6 +5,7 @@
 		colors.js
 		Copyright (c) 2010
 		Marak Squires & Alexis Sellier (cloudhead)
+		https://github.com/marak/colors.js/
 		MIT
 */
 
