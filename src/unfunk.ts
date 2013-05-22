@@ -1,12 +1,15 @@
 ///<reference path="_ref.ts" />
 ///<reference path="writer.ts" />
 ///<reference path="styler.ts" />
+///<reference path="diff.ts" />
 
 interface TestError {
 	message:string;
 	type:string;
 	arguments:any[];
 	stack:any;
+	actual:any;
+	expected:any;
 }
 interface TestSuite {
 	title:string;
@@ -54,6 +57,11 @@ module unfunk {
 		success(str:string):string;
 		suite(str:string):string;
 		test(str:string):string;
+		pass(str:string):string;
+	}
+
+	export interface DiffFormat {
+		styleObjectDiff(actual:any, expected:any, indent?:string):string;
 	}
 
 	export class Stats {
@@ -66,6 +74,7 @@ module unfunk {
 
 	var util = require('util');
 
+
 	export class Unfunk {
 
 		//TODO expose alternate writer/styler choices?
@@ -77,36 +86,40 @@ module unfunk {
 			this.init(runner);
 		}
 
-		getStyler(runner):Styler {
-			if (this.stringTrue(this.options.color)) {
+		getStyler():Styler {
+			if (this.stringTrueish(this.options.color)) {
 				return new styler.AnsiStyler();
 			}
 			return new styler.NullStyler();
 		}
 
-		getWriter(runner):LineWriter {
+		getWriter():LineWriter {
 			return new writer.ConsoleLineWriter();
+		}
+
+		getDiffFormat(styler):DiffFormat {
+			return new diff.DiffStylerFormat(styler);
 		}
 
 		init(runner) {
 			this.importOptions();
 
 			var stats = new Stats();
-			var out = this.getWriter(runner);
-			var style = this.getStyler(runner);
+			var out = this.getWriter();
+			var style = this.getStyler();
+			var diff = this.getDiffFormat(style);
 
-			var indenter:string = '  ';
 			var indents = 0;
+			var indenter:string = '  ';
 			var failures = [];
 
 			var indent = (add?:number = 0):string => {
 				return Array(indents + add).join(indenter);
 			};
-			var pluralize = (word:string, amount:number, plurl='s'):string => {
+			var pluralize = (word:string, amount:number, plurl = 's'):string => {
 				return amount + ' ' + (1 == amount ? word : word + plurl);
 			};
 			var start;
-			var counter = 0;
 
 			runner.on('start', () => {
 				start = Date.now();
@@ -164,9 +177,8 @@ module unfunk {
 			runner.on('fail', (test:Test, err:TestError) => {
 				stats.failures++;
 				out.writeln(style.error('fail'));
-				counter++;
 				if (err.message) {
-					out.writeln(style.error(counter + ': ') + indent(1) + '' + style.warning(err.message));
+					out.writeln(style.error(stats.failures + ': ') + indent(1) + '' + style.warning(err.message));
 				}
 				test.err = err;
 				failures.push(test);
@@ -224,18 +236,21 @@ module unfunk {
 						if (stack) {
 							out.writeln(stack.replace(/^[ \t]*/gm, indent(4)));
 						}
+
+						out.writeln(diff.styleObjectDiff(err.actual, err.expected, indent(3)));
+
 						out.writeln();
 					});
 				}
-				out.writeln(style.suite('->') + ' executed ' + test + ' with '+passes + (stats.pending > 0 ? ', ' :  ' and ') + fail + pending +  ' (' + (Date.now() - start) + 'ms)');
+				out.writeln(style.suite('->') + ' executed ' + test + ' with ' + passes + (stats.pending > 0 ? ', ' : ' and ') + fail + pending + ' (' + (Date.now() - start) + 'ms)');
 				out.writeln();
 
 				out.finish();
 			});
 		}
 
-		stringTrue(str:string) {
-			str = (''+str).toLowerCase();
+		stringTrueish(str:string) {
+			str = ('' + str).toLowerCase();
 			return str != '' && str != 'false' && str != '0' && str != 'null' && str != 'undefined';
 		}
 
@@ -247,14 +262,14 @@ module unfunk {
 				obj = document.env;
 			}
 			else*/
-			if (typeof process !== 'undefined' && process.env){
+			if (typeof process !== 'undefined' && process.env) {
 				obj = process.env;
 			}
 			if (obj) {
 				for (var name in obj) {
 					if (Object.prototype.hasOwnProperty.call(obj, name)) {
 						var match = pattern.exec(name);
-						if (match && match.length > 1){
+						if (match && match.length > 1) {
 							this.options[match[1]] = obj[name];
 						}
 					}
@@ -264,5 +279,4 @@ module unfunk {
 		}
 	}
 }
-
 exports = (module).exports = unfunk.Unfunk;

@@ -32,12 +32,15 @@
   "scripts": {
     "test": "grunt test"
   },
-  "dependencies": {},
+  "dependencies": {
+
+  },
   "devDependencies": {
     "grunt": "~0.4.1",
     "grunt-typescript": "~0.1.5",
     "grunt-contrib-clean": "~0.4.1",
     "grunt-mocha-spawn": "~0.1.0",
-    "expect.js": "~0.2.0"
+    "chai": "~1.6.0",
+    "underscore": "~1.4.4"
   }
 }

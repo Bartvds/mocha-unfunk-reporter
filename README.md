@@ -6,7 +6,7 @@
 
 Unfunk-reporter is a minimal `spec`-style console reporter for [mocha](http://visionmedia.github.io/mocha/) that doesn't confuse lesser console environments with funky display tricks, line overwrites, cursor tricks, escape codes or weird encodings. 
 
-Main use-case is running mocha's node module embedded in external tools though IDE's like WebStorm or other basic consoles and low-tech buffered output. It works in all mocha node.js module flavours if you pass it to mocha as `reporter`. It could easily be adapted to alternate unfunky displays.
+Main use-case is running mocha's node module embedded in external tools though IDE's like WebStorm or other basic consoles and low-tech buffered output. It works in all mocha node.js module flavors if you pass it to mocha as `reporter`. It could easily be adapted to alternate unfunky displays.
 
 The reporter does *not* extend mocha's default Base reporter prototype, because that is a main source of funkyness, so not all of mocha's reporter related options are supported.
 
@@ -33,9 +33,9 @@ process.env['mocha-unfunk-color'] = true;
 
 ## Versions
 
-0.1.4 - expose color option using process.env
-0.1.3 - cleaned test and dev dependencies
-0.1.2 - basic version, colors disabled
+* 0.1.4 - expose color option using process.env
+* 0.1.3 - cleaned test and dev dependencies
+* 0.1.2 - basic version, colors disabled
 
 ## Develop
 

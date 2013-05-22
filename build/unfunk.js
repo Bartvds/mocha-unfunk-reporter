@@ -1,3 +1,4 @@
+var objectDiff = require('../lib/objectDiff');
 var __extends = this.__extends || function (d, b) {
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
@@ -100,6 +101,9 @@ var unfunk;
             NullStyler.prototype.test = function (str) {
                 return str;
             };
+            NullStyler.prototype.pass = function (str) {
+                return str;
+            };
             return NullStyler;
         })();
         styler.NullStyler = NullStyler;        
@@ -129,6 +133,9 @@ var unfunk;
                 }
                 var tmp = this.styles[style];
                 return tmp[0] + str + tmp[1];
+            };
+            WrapStyler.prototype.pass = function (str) {
+                return str;
             };
             return WrapStyler;
         })();
@@ -262,6 +269,136 @@ var unfunk;
 })(unfunk || (unfunk = {}));
 var unfunk;
 (function (unfunk) {
+    (function (diff) {
+        var DiffChange = (function () {
+            function DiffChange() { }
+            DiffChange.PRIMITIVE = 'primitive change';
+            DiffChange.OBJECT = 'object change';
+            DiffChange.ADDED = 'added';
+            DiffChange.REMOVED = 'removed';
+            DiffChange.EQUAL = 'equal';
+            return DiffChange;
+        })();
+        diff.DiffChange = DiffChange;        
+        var DiffStylerFormat = (function () {
+            function DiffStylerFormat(style) {
+                this.style = style;
+                this.prepend = '';
+                this.indents = 0;
+                this.indentert = '  ';
+                this.markAdded = '+ ';
+                this.markRemov = '- ';
+                this.markChang = '? ';
+                this.markEqual = '. ';
+                this.markSpace = '';
+            }
+            DiffStylerFormat.prototype.styleObjectDiff = function (actual, expected, prepend) {
+                if (typeof prepend === "undefined") { prepend = ''; }
+                this.prepend = prepend;
+                this.indents = 0;
+                var ret = '';
+                if(typeof actual === 'object' && typeof expected === 'object') {
+                    var objDiff = objectDiff.diff(actual, expected);
+                    ret = this.getIndent() + this.markSpace + this.convertToLogString(objDiff);
+                }
+                return ret;
+            };
+            DiffStylerFormat.prototype.addIndent = function (amount) {
+                this.indents += amount;
+                return '';
+            };
+            DiffStylerFormat.prototype.getIndent = function (id) {
+                if (typeof id === "undefined") { id = ''; }
+                var ret = [];
+                for(var i = 0; i < this.indents; i++) {
+                    ret.push(this.indentert);
+                }
+                return id + this.prepend + ret.join('');
+            };
+            DiffStylerFormat.prototype.convertToLogString = function (changes) {
+                var properties = [];
+                this.addIndent(1);
+                var diff = changes.value;
+                if(changes.changed == 'equal') {
+                    return this.inspect(changes);
+                }
+                for(var key in diff) {
+                    var changed = diff[key].changed;
+                    switch(changed) {
+                        case 'equal':
+                            properties.push(this.getIndent() + this.style.pass(this.markEqual + this.stringifyObjectKey(this.escapeString(key)) + ': ') + this.inspect(diff[key].value));
+                            break;
+                        case 'removed':
+                            properties.push(this.getIndent() + this.style.error(this.markRemov + this.stringifyObjectKey(this.escapeString(key)) + ': ') + this.inspect(diff[key].value) + '');
+                            break;
+                        case 'added':
+                            properties.push(this.getIndent() + this.style.success(this.markAdded + this.stringifyObjectKey(this.escapeString(key)) + ': ') + this.inspect(diff[key].value) + '');
+                            break;
+                        case 'primitive change':
+                            var prefix = this.stringifyObjectKey(this.escapeString(key));
+                            properties.push(this.getIndent() + this.style.success(this.markAdded + prefix + ': ') + this.inspect(diff[key].removed) + ',\n' + this.getIndent() + this.style.error(this.markRemov + prefix + ': ') + this.inspect(diff[key].added) + '');
+                            break;
+                        case 'object change':
+                            properties.push(this.getIndent() + this.style.suite(this.markChang + this.stringifyObjectKey(key) + ': ') + this.convertToLogString(diff[key]));
+                            break;
+                    }
+                }
+                return '{\n' + properties.join(',\n') + '\n' + this.addIndent(-1) + this.getIndent() + this.markSpace + '}';
+            };
+            DiffStylerFormat.prototype.stringifyObjectKey = function (key) {
+                return /^[a-z0-9_$]*$/i.test(key) ? key : JSON.stringify(key);
+            };
+            DiffStylerFormat.prototype.escapeString = function (string) {
+                return string.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            };
+            DiffStylerFormat.prototype.inspect = function (obj) {
+                return this._inspect('', obj);
+            };
+            DiffStylerFormat.prototype._inspect = function (accumulator, obj) {
+                switch(typeof obj) {
+                    case 'object':
+                        if(!obj) {
+                            accumulator += 'null';
+                            break;
+                        }
+                        var keys = Object.keys(obj);
+                        var length = keys.length;
+                        if(length === 0) {
+                            accumulator += '{}';
+                        } else {
+                            accumulator += '{\n';
+                            for(var i = 0; i < length; i++) {
+                                var key = keys[i];
+                                this.addIndent(1);
+                                accumulator = this._inspect(accumulator + this.getIndent() + this.markEqual + this.stringifyObjectKey(this.escapeString(key)) + ': ', obj[key]);
+                                if(i < length - 1) {
+                                    accumulator += ',\n';
+                                }
+                                this.addIndent(-1);
+                            }
+                            accumulator += '\n' + this.getIndent() + '}';
+                        }
+                        break;
+                    case 'string':
+                        accumulator += JSON.stringify(this.escapeString(obj));
+                        break;
+                    case 'undefined':
+                        accumulator += 'undefined';
+                        break;
+                    default:
+                        accumulator += this.escapeString(String(obj));
+                        break;
+                }
+                return accumulator;
+            };
+            return DiffStylerFormat;
+        })();
+        diff.DiffStylerFormat = DiffStylerFormat;        
+    })(unfunk.diff || (unfunk.diff = {}));
+    var diff = unfunk.diff;
+})(unfunk || (unfunk = {}));
+var unfunk;
+(function (unfunk) {
     var Stats = (function () {
         function Stats() {
             this.suites = 0;
@@ -280,22 +417,26 @@ var unfunk;
             };
             this.init(runner);
         }
-        Unfunk.prototype.getStyler = function (runner) {
-            if(this.stringTrue(this.options.color)) {
+        Unfunk.prototype.getStyler = function () {
+            if(this.stringTrueish(this.options.color)) {
                 return new unfunk.styler.AnsiStyler();
             }
             return new unfunk.styler.NullStyler();
         };
-        Unfunk.prototype.getWriter = function (runner) {
+        Unfunk.prototype.getWriter = function () {
             return new unfunk.writer.ConsoleLineWriter();
+        };
+        Unfunk.prototype.getDiffFormat = function (styler) {
+            return new unfunk.diff.DiffStylerFormat(styler);
         };
         Unfunk.prototype.init = function (runner) {
             this.importOptions();
             var stats = new Stats();
-            var out = this.getWriter(runner);
-            var style = this.getStyler(runner);
-            var indenter = '  ';
+            var out = this.getWriter();
+            var style = this.getStyler();
+            var diff = this.getDiffFormat(style);
             var indents = 0;
+            var indenter = '  ';
             var failures = [];
             var indent = function (add) {
                 if (typeof add === "undefined") { add = 0; }
@@ -306,7 +447,6 @@ var unfunk;
                 return amount + ' ' + (1 == amount ? word : word + plurl);
             };
             var start;
-            var counter = 0;
             runner.on('start', function () {
                 start = Date.now();
                 out.start();
@@ -353,9 +493,8 @@ var unfunk;
             runner.on('fail', function (test, err) {
                 stats.failures++;
                 out.writeln(style.error('fail'));
-                counter++;
                 if(err.message) {
-                    out.writeln(style.error(counter + ': ') + indent(1) + '' + style.warning(err.message));
+                    out.writeln(style.error(stats.failures + ': ') + indent(1) + '' + style.warning(err.message));
                 }
                 test.err = err;
                 failures.push(test);
@@ -401,6 +540,7 @@ var unfunk;
                         if(stack) {
                             out.writeln(stack.replace(/^[ \t]*/gm, indent(4)));
                         }
+                        out.writeln(diff.styleObjectDiff(err.actual, err.expected, indent(3)));
                         out.writeln();
                     });
                 }
@@ -409,7 +549,7 @@ var unfunk;
                 out.finish();
             });
         };
-        Unfunk.prototype.stringTrue = function (str) {
+        Unfunk.prototype.stringTrueish = function (str) {
             str = ('' + str).toLowerCase();
             return str != '' && str != 'false' && str != '0' && str != 'null' && str != 'undefined';
         };

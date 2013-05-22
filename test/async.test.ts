@@ -1,27 +1,34 @@
 ///<reference path="_ref.ts" />
 
+declare var assert:chai.Assert;
+
 describe('async tests', () => {
 	it('first passes', (done:() => void) => {
 		setTimeout(() => {
-			expect(true).to.equal(true);
+			assert.ok(true);
 			done();
 		}, 10);
 	});
 	it('second fails', (done:() => void) => {
 		setTimeout(() => {
-			expect(true).to.equal(false);
+			assert.ok(!true);
 			done();
 		}, 10);
 	});
-	it('third passes', (done:() => void) => {
+	it('third errors', (done:() => void) => {
 		setTimeout(() => {
-			expect(true).to.equal(true);
 			done();
 		}, 10);
 	});
 	it.skip('fouth pending', (done:() => void) => {
 		setTimeout(() => {
-			expect(true).to.equal(true);
+			assert.ok(true);
+			done();
+		}, 10);
+	});
+	it('fifth passes', (done:() => void) => {
+		setTimeout(() => {
+			assert.ok(true);
 			done();
 		}, 10);
 	});

@@ -32,6 +32,9 @@ module unfunk {
 			test(str:string):string {
 				return str;
 			}
+			pass(str:string):string {
+				return str;
+			}
 		}
 
 		export class WrapStyler implements Styler {
@@ -64,6 +67,10 @@ module unfunk {
 				}
 				var tmp = this.styles[style];
 				return tmp[0] + str + tmp[1];
+			}
+
+			pass(str:string):string {
+				return str;
 			}
 		}
 
