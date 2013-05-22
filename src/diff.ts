@@ -24,6 +24,7 @@ module unfunk {
 		/*
 			uses objectDiff by 'NV'
 			https://github.com/NV/objectDiff.js
+
 			MIT license
 
 			diff output algorithm based on objectDiff HTML printer

@@ -28,10 +28,13 @@ describe('kitteh', () => {
 					assert.equal('hat', 'silly');
 				});
 				it('yarn', () => {
+					var now = new Date();
 					var original = {
 						aa: 'red',
 						bb: 1,
 						cc: [1, 2, 3],
+						now: now,
+						next: now,
 						dd: {
 							a: 'yo',
 							b: 1,
@@ -49,8 +52,10 @@ describe('kitteh', () => {
 					};
 					var different = {
 						aa: 'blue',
-						bb: 1,
 						cc: [3, 2, 1],
+						bb: 1,
+						now: now,
+						next: new Date(new Date().getTime() + 123456),
 						dd: {
 							a: 'yo',
 							b: 1,
