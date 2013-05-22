@@ -286,11 +286,11 @@ var unfunk;
                 this.prepend = '';
                 this.indents = 0;
                 this.indentert = '   ';
-                this.markAdded = ' + ';
-                this.markRemov = ' - ';
-                this.markChang = ' ? ';
-                this.markEqual = ' . ';
-                this.markSpace = ' ';
+                this.markAdded = '+  ';
+                this.markRemov = '-  ';
+                this.markChang = '?  ';
+                this.markEqual = '.  ';
+                this.markSpace = '';
             }
             DiffStylerFormat.prototype.styleObjectDiff = function (actual, expected, prepend) {
                 if (typeof prepend === "undefined") { prepend = ''; }
@@ -336,7 +336,7 @@ var unfunk;
                             break;
                         case 'primitive change':
                             var prefix = this.stringifyObjectKey(this.escapeString(key));
-                            properties.push(this.getIndent() + this.style.success(this.markAdded + prefix + ': ') + this.inspect(diff[key].removed) + ',\n' + this.getIndent() + this.style.error(this.markRemov + prefix + ': ') + this.inspect(diff[key].added) + '');
+                            properties.push(this.getIndent() + this.style.success(this.markAdded + prefix + ': ') + this.inspect(diff[key].removed) + '\n' + this.getIndent() + this.style.error(this.markRemov + prefix + ': ') + this.inspect(diff[key].added) + '');
                             break;
                         case 'object change':
                             properties.push(this.getIndent() + this.style.suite(this.markChang + this.stringifyObjectKey(key) + ': ') + '\n' + this.convertToLogString(diff[key]));

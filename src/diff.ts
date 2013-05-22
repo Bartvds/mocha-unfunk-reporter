@@ -36,12 +36,11 @@ module unfunk {
 			indents:number = 0;
 
 			indentert:string = '   ';
-
-			markAdded:string = ' + ';
-			markRemov:string = ' - ';
-			markChang:string = ' ? ';
-			markEqual:string = ' . ';
-			markSpace:string = ' ';
+			markAdded:string = '+  ';
+			markRemov:string = '-  ';
+			markChang:string = '?  ';
+			markEqual:string = '.  ';
+			markSpace:string = '';
 
 			constructor(public style:Styler) {
 
@@ -101,7 +100,7 @@ module unfunk {
 						case 'primitive change':
 							var prefix = this.stringifyObjectKey(this.escapeString(key));
 							properties.push(
-								this.getIndent() +  this.style.success(this.markAdded + prefix + ': ') + this.inspect(diff[key].removed) + ',\n' +
+								this.getIndent() +  this.style.success(this.markAdded + prefix + ': ') + this.inspect(diff[key].removed) + '\n' +
 								this.getIndent() +  this.style.error(this.markRemov + prefix + ': ') + this.inspect(diff[key].added) + ''
 							);
 							break;
