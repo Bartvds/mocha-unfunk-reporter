@@ -35,13 +35,13 @@ module unfunk {
 			prepend = '';
 			indents:number = 0;
 
-			indentert:string = '  ';
+			indentert:string = '   ';
 
-			markAdded:string = '+ ';
-			markRemov:string = '- ';
-			markChang:string = '? ';
-			markEqual:string = '. ';
-			markSpace:string = '';
+			markAdded:string = ' + ';
+			markRemov:string = ' - ';
+			markChang:string = ' ? ';
+			markEqual:string = ' . ';
+			markSpace:string = ' ';
 
 			constructor(public style:Styler) {
 
@@ -111,7 +111,8 @@ module unfunk {
 							break;
 					}
 				}
-				return '{\n' + properties.join(',\n') + '\n' + this.addIndent(-1) + this.getIndent() + this.markSpace + '}';
+				//return '{\n' + properties.join(',\n') + '\n' + this.addIndent(-1) + this.getIndent() + this.markSpace + '}';
+				return '\n' + properties.join('\n')  + this.addIndent(-1) + this.getIndent() + this.markSpace;
 			}
 
 			stringifyObjectKey(key) {
@@ -145,17 +146,19 @@ module unfunk {
 						if (length === 0) {
 							accumulator += '{}';
 						} else {
-							accumulator += '{\n';
+							//accumulator += '{\n';
+							accumulator += '\n';
 							for (var i = 0; i < length; i++) {
 								var key = keys[i];
 								this.addIndent(1)
-								accumulator = this._inspect(accumulator + this.getIndent() + this.markEqual + this.stringifyObjectKey(this.escapeString(key)) + ': ', obj[key]);
+								accumulator = this._inspect(accumulator + this.getIndent() + this.style.pass(this.markEqual + this.stringifyObjectKey(this.escapeString(key)) + ': '), obj[key]);
 								if (i < length - 1) {
-									accumulator += ',\n';
+									//accumulator += ',\n';
+									accumulator += '\n';
 								}
 								this.addIndent(-1)
 							}
-							accumulator += '\n' + this.getIndent() + '}'
+							//accumulator += '\n' + this.getIndent() + '}'
 						}
 						break;
 
