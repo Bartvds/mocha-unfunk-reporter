@@ -239,12 +239,41 @@ describe('kitteh', function () {
                     assert.equal('dogs', 'not here');
                 });
                 it('computer skills', function () {
-                    throw (new Error('pretty stack trace'));
+                    throw (new Error('pretty stack trace is pretty'));
                 });
             });
             describe('some', function () {
                 it('hats', function () {
                     assert.equal('hat', 'silly');
+                });
+                it('fun', function () {
+                    assert.deepEqual([
+                        [
+                            1
+                        ], 
+                        [
+                            1, 
+                            2
+                        ], 
+                        [
+                            1, 
+                            2, 
+                            3
+                        ]
+                    ], [
+                        [
+                            1
+                        ], 
+                        [
+                            1, 
+                            2
+                        ], 
+                        [
+                            1, 
+                            2, 
+                            3
+                        ]
+                    ]);
                 });
                 it('yarn', function () {
                     var now = new Date();

@@ -20,10 +20,13 @@ describe('kitteh', () => {
 				});
 
 				it('computer skills', () => {
-					throw(new Error('pretty stack trace'));
+					throw(new Error('pretty stack trace is pretty'));
 				});
 			});
 			describe('some', () => {
+				it('fun', () => {
+					assert.deepEqual([[1],[1,2],[1,2,3]], [[1],[1,2],[1,2,3]]);
+				});
 				it('hats', () => {
 					assert.equal('hat', 'silly');
 				});
