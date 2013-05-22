@@ -86,7 +86,7 @@ module unfunk {
 					var changed = diff[key].changed;
 					switch (changed) {
 						case 'equal':
-							properties.push(this.getIndent() + this.style.pass(this.markEqual + this.stringifyObjectKey(this.escapeString(key)) + ': ') + this.inspect(diff[key].value));
+							properties.push(this.getIndent() + this.style.suite(this.markEqual + this.stringifyObjectKey(this.escapeString(key)) + ': ') + this.inspect(diff[key].value));
 							break;
 
 						case 'removed':
@@ -106,7 +106,7 @@ module unfunk {
 							break;
 
 						case 'object change':
-							properties.push(this.getIndent() + this.style.suite(this.markChang + this.stringifyObjectKey(key) + ': ') + '\n' + this.convertToLogString(diff[key]));
+							properties.push(this.getIndent() + this.style.warning(this.markChang + this.stringifyObjectKey(key) + ': ') + '\n' + this.convertToLogString(diff[key]));
 							break;
 					}
 				}
@@ -148,7 +148,7 @@ module unfunk {
 							for (var i = 0; i < length; i++) {
 								var key = keys[i];
 								this.addIndent(1)
-								accumulator = this._inspect(accumulator + this.getIndent() + this.style.pass(this.markEqual + this.stringifyObjectKey(this.escapeString(key)) + ': '), obj[key]);
+								accumulator = this._inspect(accumulator + this.getIndent() + this.style.suite(this.markEqual + this.stringifyObjectKey(this.escapeString(key)) + ': '), obj[key]);
 								if (i < length - 1) {
 									accumulator += '\n';
 								}
