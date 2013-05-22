@@ -299,7 +299,7 @@ var unfunk;
                 var ret = '';
                 if(typeof actual === 'object' && typeof expected === 'object') {
                     var objDiff = objectDiff.diff(actual, expected);
-                    ret = this.getIndent() + this.markSpace + this.convertToLogString(objDiff);
+                    ret = this.convertToLogString(objDiff);
                 }
                 return ret;
             };
@@ -339,11 +339,11 @@ var unfunk;
                             properties.push(this.getIndent() + this.style.success(this.markAdded + prefix + ': ') + this.inspect(diff[key].removed) + ',\n' + this.getIndent() + this.style.error(this.markRemov + prefix + ': ') + this.inspect(diff[key].added) + '');
                             break;
                         case 'object change':
-                            properties.push(this.getIndent() + this.style.suite(this.markChang + this.stringifyObjectKey(key) + ': ') + this.convertToLogString(diff[key]));
+                            properties.push(this.getIndent() + this.style.suite(this.markChang + this.stringifyObjectKey(key) + ': ') + '\n' + this.convertToLogString(diff[key]));
                             break;
                     }
                 }
-                return '\n' + properties.join('\n') + this.addIndent(-1) + this.getIndent() + this.markSpace;
+                return properties.join('\n') + this.addIndent(-1) + this.getIndent() + this.markSpace;
             };
             DiffStylerFormat.prototype.stringifyObjectKey = function (key) {
                 return /^[a-z0-9_$]*$/i.test(key) ? key : JSON.stringify(key);
