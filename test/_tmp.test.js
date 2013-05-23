@@ -509,9 +509,9 @@ describe('objectDiff', function () {
         this.aa = 'hello';
         this.bb = 1;
         this.cc = [
-            1, 
+            3, 
             2, 
-            3
+            1
         ];
         this.dd = {
             a: 'yo',
@@ -520,7 +520,8 @@ describe('objectDiff', function () {
                 10, 
                 20, 
                 30
-            ]
+            ],
+            d: 10
         };
     };
     TypeA.prototype.protoProp = 'shared';
@@ -552,10 +553,21 @@ describe('objectDiff', function () {
     var objectDiff = require('../lib/objectDiff');
     describe.only('diff', function () {
         var objDiffA, objDiffB;
-        it('diffs equals diff', function () {
+        it('deepEqual A B', function () {
+            assert.deepEqual(new TypeA(), new TypeB());
+        });
+        it('deepEqual B A', function () {
+            assert.deepEqual(new TypeB(), new TypeA());
+        });
+        it('diffs deepEqual A B', function () {
             objDiffA = objectDiff.diff(new TypeA(), new TypeB());
             objDiffB = objectDiff.diff(new TypeB(), new TypeA());
             assert.deepEqual(objDiffA, objDiffB);
+        });
+        it('diffs deepEqual B A', function () {
+            objDiffA = objectDiff.diff(new TypeA(), new TypeB());
+            objDiffB = objectDiff.diff(new TypeB(), new TypeA());
+            assert.deepEqual(objDiffB, objDiffA);
         });
     });
 });
