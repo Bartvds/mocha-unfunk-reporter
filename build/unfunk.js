@@ -297,8 +297,9 @@ var unfunk;
                 this.prepend = prepend;
                 this.indents = 0;
                 var ret = '';
+                var objDiff;
                 if(typeof actual === 'object' && typeof expected === 'object') {
-                    var objDiff = objectDiff.diff(actual, expected);
+                    objDiff = objectDiff.diff(actual, expected);
                     ret = this.convertToLogString(objDiff);
                 }
                 return ret;
@@ -320,26 +321,21 @@ var unfunk;
                 this.addIndent(1);
                 var diff = changes.value;
                 if(changes.changed == 'equal') {
-                    return this.inspect(changes);
+                    return this.inspect(changes, changes.changed);
                 }
                 for(var key in diff) {
                     var changed = diff[key].changed;
                     switch(changed) {
                         case 'equal':
-                            properties.push(this.getIndent() + this.style.suite(this.markEqual + this.stringifyObjectKey(this.escapeString(key)) + ': ') + this.inspect(diff[key].value));
-                            break;
                         case 'removed':
-                            properties.push(this.getIndent() + this.style.error(this.markRemov + this.stringifyObjectKey(this.escapeString(key)) + ': ') + this.inspect(diff[key].value) + '');
-                            break;
                         case 'added':
-                            properties.push(this.getIndent() + this.style.success(this.markAdded + this.stringifyObjectKey(this.escapeString(key)) + ': ') + this.inspect(diff[key].value) + '');
+                            properties.push(this.getIndent() + this.getName(key, changed) + this.inspect(diff[key].value, changed));
                             break;
                         case 'primitive change':
-                            var prefix = this.stringifyObjectKey(this.escapeString(key));
-                            properties.push(this.getIndent() + this.style.success(this.markAdded + prefix + ': ') + this.inspect(diff[key].removed) + '\n' + this.getIndent() + this.style.error(this.markRemov + prefix + ': ') + this.inspect(diff[key].added) + '');
+                            properties.push(this.getIndent() + this.getName(key, 'added') + this.inspect(diff[key].removed, 'added') + '\n' + this.getIndent() + this.getName(key, 'removed') + this.inspect(diff[key].added, 'removed') + '');
                             break;
                         case 'object change':
-                            properties.push(this.getIndent() + this.style.warning(this.markChang + this.stringifyObjectKey(key) + ': ') + '\n' + this.convertToLogString(diff[key]));
+                            properties.push(this.getIndent() + this.getName(key, changed) + '\n' + this.convertToLogString(diff[key]));
                             break;
                     }
                 }
@@ -351,10 +347,20 @@ var unfunk;
             DiffStylerFormat.prototype.escapeString = function (string) {
                 return string.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
             };
-            DiffStylerFormat.prototype.inspect = function (obj) {
-                return this._inspect('', obj);
+            DiffStylerFormat.prototype.inspect = function (obj, change) {
+                return this._inspect('', obj, change);
             };
-            DiffStylerFormat.prototype._inspect = function (accumulator, obj) {
+            DiffStylerFormat.prototype.getName = function (key, change) {
+                if(change == 'added') {
+                    return this.style.success(this.markAdded + this.stringifyObjectKey(this.escapeString(key)) + ': ');
+                } else if(change == 'removed') {
+                    return this.style.error(this.markRemov + this.stringifyObjectKey(this.escapeString(key)) + ': ');
+                } else if(change == 'object change') {
+                    return this.style.warning(this.markChang + this.stringifyObjectKey(this.escapeString(key)) + ': ');
+                }
+                return this.style.suite(this.markEqual + this.stringifyObjectKey(this.escapeString(key)) + ': ');
+            };
+            DiffStylerFormat.prototype._inspect = function (accumulator, obj, change) {
                 switch(typeof obj) {
                     case 'object':
                         if(!obj) {
@@ -370,13 +376,20 @@ var unfunk;
                             for(var i = 0; i < length; i++) {
                                 var key = keys[i];
                                 this.addIndent(1);
-                                accumulator = this._inspect(accumulator + this.getIndent() + this.style.suite(this.markEqual + this.stringifyObjectKey(this.escapeString(key)) + ': '), obj[key]);
+                                accumulator = this._inspect(accumulator + this.getIndent() + this.getName(key, change), obj[key], change);
                                 if(i < length - 1) {
                                     accumulator += '\n';
                                 }
                                 this.addIndent(-1);
                             }
                         }
+                        break;
+                    case 'function':
+                        if(!obj) {
+                            accumulator += 'null';
+                            break;
+                        }
+                        accumulator += 'function()';
                         break;
                     case 'string':
                         accumulator += JSON.stringify(this.escapeString(obj));
@@ -525,15 +538,30 @@ var unfunk;
                 if(failures.length > 0) {
                     out.writeln(style.suite('->') + ' reporting ' + fail);
                     out.writeln();
-                    failures.forEach(function (test, i) {
-                        var title = test.fullTitle();
-                        var pre = title.lastIndexOf(test.title);
+                    failures.forEach(function (test, num) {
+                        var title;
+                        var titles = [
+                            test.title
+                        ];
+                        var tmp = test.parent;
+                        while(tmp && !tmp.root) {
+                            titles.unshift(tmp.title);
+                            tmp = tmp.parent;
+                        }
+                        for(var i = 0, ii = titles.length; i < ii; i++) {
+                            if(i % 2 === 0) {
+                                titles[i] = style.test(titles[i]);
+                            } else {
+                                titles[i] = style.suite(titles[i]);
+                            }
+                        }
+                        title = titles.join(' ');
                         var err = test.err;
                         var message = err.message || '';
                         var stack = err.stack || message;
                         var index = stack.indexOf(message) + message.length;
                         var msg = stack.slice(0, index);
-                        out.writeln(indent() + style.error((i + 1) + ': ') + style.test(title.substr(0, pre)) + style.suite(title.substr(pre)));
+                        out.writeln(indent() + style.error((num + 1) + ': ') + title);
                         out.writeln(indent(3) + style.warning(msg));
                         stack = stack.slice(index ? index + 1 : index);
                         if(stack) {

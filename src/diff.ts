@@ -51,9 +51,9 @@ module unfunk {
 				this.indents = 0;
 
 				var ret:string = '';
-
+				var objDiff;
 				if (typeof actual === 'object' && typeof expected === 'object') {
-					var objDiff = objectDiff.diff(actual, expected);
+					objDiff = objectDiff.diff(actual, expected);
 					ret = this.convertToLogString(objDiff);
 				}
 				return ret;
@@ -80,33 +80,25 @@ module unfunk {
 
 				var diff = changes.value;
 				if (changes.changed == 'equal') {
-					return this.inspect(changes);
+					return this.inspect(changes, changes.changed);
 				}
 				for (var key in diff) {
 					var changed = diff[key].changed;
 					switch (changed) {
 						case 'equal':
-							properties.push(this.getIndent() + this.style.suite(this.markEqual + this.stringifyObjectKey(this.escapeString(key)) + ': ') + this.inspect(diff[key].value));
-							break;
-
 						case 'removed':
-							properties.push(this.getIndent() +  this.style.error(this.markRemov + this.stringifyObjectKey(this.escapeString(key)) + ': ') + this.inspect(diff[key].value) + '');
-							break;
-
 						case 'added':
-							properties.push(this.getIndent() +  this.style.success(this.markAdded + this.stringifyObjectKey(this.escapeString(key)) + ': ') + this.inspect(diff[key].value) + '');
+							properties.push(this.getIndent() + this.getName(key, changed) + this.inspect(diff[key].value, changed));
 							break;
-
 						case 'primitive change':
-							var prefix = this.stringifyObjectKey(this.escapeString(key));
 							properties.push(
-								this.getIndent() +  this.style.success(this.markAdded + prefix + ': ') + this.inspect(diff[key].removed) + '\n' +
-								this.getIndent() +  this.style.error(this.markRemov + prefix + ': ') + this.inspect(diff[key].added) + ''
+								this.getIndent() +  this.getName(key, 'added') + this.inspect(diff[key].removed, 'added') + '\n' +
+								this.getIndent() +  this.getName(key, 'removed') + this.inspect(diff[key].added, 'removed') + ''
 							);
 							break;
 
 						case 'object change':
-							properties.push(this.getIndent() + this.style.warning(this.markChang + this.stringifyObjectKey(key) + ': ') + '\n' + this.convertToLogString(diff[key]));
+							properties.push(this.getIndent() +  this.getName(key, changed) + '\n' + this.convertToLogString(diff[key]));
 							break;
 					}
 				}
@@ -121,18 +113,31 @@ module unfunk {
 				return string.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 			}
 
-			private inspect(obj) {
+			private inspect(obj, change) {
 
-				return this._inspect('', obj);
+				return this._inspect('', obj, change);
 			}
 
+
+			private getName(key, change) {
+				if (change == 'added'){
+					return this.style.success(this.markAdded + this.stringifyObjectKey(this.escapeString(key)) + ': ')
+				}
+				else if (change == 'removed'){
+					return this.style.error(this.markRemov + this.stringifyObjectKey(this.escapeString(key)) + ': ')
+				}
+				else if (change == 'object change'){
+					return this.style.warning(this.markChang + this.stringifyObjectKey(this.escapeString(key)) + ': ')
+				}
+				return this.style.suite(this.markEqual + this.stringifyObjectKey(this.escapeString(key)) + ': ')
+			}
 			/**
 			 * @param {string} accumulator
 			 * @param {object} obj
 			 * @see http://jsperf.com/continuation-passing-style/3
 			 * @return {string}
 			 */
-			private _inspect(accumulator, obj) {
+			private _inspect(accumulator, obj, change) {
 				switch (typeof obj) {
 					case 'object':
 						if (!obj) {
@@ -148,7 +153,7 @@ module unfunk {
 							for (var i = 0; i < length; i++) {
 								var key = keys[i];
 								this.addIndent(1)
-								accumulator = this._inspect(accumulator + this.getIndent() + this.style.suite(this.markEqual + this.stringifyObjectKey(this.escapeString(key)) + ': '), obj[key]);
+								accumulator = this._inspect(accumulator + this.getIndent() + this.getName(key, change), obj[key], change);
 								if (i < length - 1) {
 									accumulator += '\n';
 								}
@@ -156,7 +161,13 @@ module unfunk {
 							}
 						}
 						break;
-
+					case 'function':
+						if (!obj) {
+							accumulator += 'null';
+							break;
+						}
+						accumulator += 'function()';
+						break;
 					case 'string':
 						accumulator += JSON.stringify(this.escapeString(obj));
 						break;

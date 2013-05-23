@@ -33,11 +33,18 @@ module.exports = function (grunt) {
 				},
 				src: ['test/*.test.ts'],
 				dest: 'test/_tmp.test.js'
+			},
+			test_objectDiff: {
+				options: {
+					base_path: 'test/'
+				},
+				src: ['test/*.test.ts'],
+				dest: 'test/_tmp.test.js'
 			}
 		},
 		//buh
 		mocha_spawn: {
-			unfunk: {
+			all: {
 				src:['test/*.test.js'],
 				options: {
 					reporter: __dirname //yess
@@ -46,6 +53,8 @@ module.exports = function (grunt) {
 		}
 	});
 	grunt.registerTask('build', ['clean', 'typescript:reporter']);
-	grunt.registerTask('test', ['build', 'typescript:test', 'mocha_spawn:unfunk']);
+	grunt.registerTask('test', ['build', 'typescript:test', 'mocha_spawn:all']);
 	grunt.registerTask('default', ['test']);
+
+	grunt.registerTask('edit_01', ['clean', 'typescript:test_objectDiff', 'mocha_spawn:all']);
 };

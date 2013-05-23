@@ -64,6 +64,125 @@ describe('async tests', function () {
         }, 10);
     });
 });
+describe('chai equality', function () {
+    describe('deepEqual', function () {
+        it('passes deep array', function () {
+            assert.deepEqual([
+                [
+                    1
+                ], 
+                [
+                    1, 
+                    2
+                ], 
+                [
+                    1, 
+                    2, 
+                    3
+                ]
+            ], [
+                [
+                    1
+                ], 
+                [
+                    1, 
+                    2
+                ], 
+                [
+                    1, 
+                    2, 
+                    3
+                ]
+            ]);
+        });
+        it('should fail this complex test', function () {
+            var now = new Date();
+            var original = {
+                aa: 'red',
+                bb: 1,
+                cc: [
+                    1, 
+                    2, 
+                    3
+                ],
+                now: now,
+                next: now,
+                dd: {
+                    a: 'yo',
+                    b: 1,
+                    c: [
+                        10, 
+                        20, 
+                        30
+                    ],
+                    d: {
+                        xx: 100,
+                        yy: 200,
+                        zz: 300,
+                        ww: [
+                            1, 
+                            2, 
+                            3
+                        ],
+                        vv: {
+                            x: 1,
+                            y: 2,
+                            z: 3
+                        }
+                    },
+                    e: {
+                    }
+                },
+                ee: {
+                    x: 1,
+                    y: 2
+                }
+            };
+            var different = {
+                aa: 'blue',
+                cc: [
+                    3, 
+                    2, 
+                    1
+                ],
+                bb: 1,
+                now: now,
+                next: new Date(new Date().getTime() + 123456),
+                dd: {
+                    a: 'yo',
+                    b: 1,
+                    c: [
+                        10, 
+                        20, 
+                        40
+                    ],
+                    d: {
+                        xx: 50,
+                        yy: 200,
+                        qq: 300,
+                        ww: [
+                            3, 
+                            2
+                        ],
+                        vv: {
+                            x: 1,
+                            y: 2,
+                            z: 3
+                        }
+                    },
+                    e: {
+                    }
+                },
+                ee: {
+                    x: 1,
+                    y: 2,
+                    z: 3
+                }
+            };
+            assert.deepEqual(original, different);
+        });
+    });
+});
 var ClassTS = (function () {
     function ClassTS() {
         this.aa = 'hello';
@@ -85,52 +204,16 @@ var ClassTS = (function () {
     }
     return ClassTS;
 })();
-var NamedJS = function NamedJS() {
-    this.aa = 'hello';
-    this.bb = 1;
-    this.cc = [
-        1, 
-        2, 
-        3
-    ];
-    this.dd = {
-        a: 'yo',
-        b: 1,
-        c: [
-            10, 
-            20, 
-            30
-        ]
-    };
-};
-var AnonJS = function AnonJS() {
-    this.aa = 'hello';
-    this.bb = 1;
-    this.cc = [
-        1, 
-        2, 
-        3
-    ];
-    this.dd = {
-        a: 'yo',
-        b: 1,
-        c: [
-            10, 
-            20, 
-            30
-        ]
-    };
-};
-var getLiteral = function () {
-    return {
-        aa: 'hello',
-        bb: 1,
-        cc: [
+var MethoTS = (function () {
+    function MethoTS() {
+        this.aa = 'hello';
+        this.bb = 1;
+        this.cc = [
             1, 
             2, 
             3
-        ],
-        dd: {
+        ];
+        this.dd = {
             a: 'yo',
             b: 1,
             c: [
@@ -138,94 +221,236 @@ var getLiteral = function () {
                 20, 
                 30
             ]
+        };
+    }
+    MethoTS.prototype.method = function () {
+        return 1;
+    };
+    return MethoTS;
+})();
+describe('chai equality', function () {
+    var NamedJS = function NamedJS() {
+        this.aa = 'hello';
+        this.bb = 1;
+        this.cc = [
+            1, 
+            2, 
+            3
+        ];
+        this.dd = {
+            a: 'yo',
+            b: 1,
+            c: [
+                10, 
+                20, 
+                30
+            ]
+        };
+    };
+    NamedJS.prototype.method = function () {
+        return 1;
+    };
+    var AnonJS = function AnonJS() {
+        this.aa = 'hello';
+        this.bb = 1;
+        this.cc = [
+            1, 
+            2, 
+            3
+        ];
+        this.dd = {
+            a: 'yo',
+            b: 1,
+            c: [
+                10, 
+                20, 
+                30
+            ]
+        };
+    };
+    var getLiteral = function () {
+        return {
+            aa: 'hello',
+            bb: 1,
+            cc: [
+                1, 
+                2, 
+                3
+            ],
+            dd: {
+                a: 'yo',
+                b: 1,
+                c: [
+                    10, 
+                    20, 
+                    30
+                ]
+            }
+        };
+    };
+    var modifyObj = function (obj, level, value) {
+        if(level === 1) {
+            obj.bb = value;
+        } else if(level === 2) {
+            obj.dd.id = value;
+        } else if(level === 3) {
+            obj.dd.c[2] = value;
+        }
+        return obj;
+    };
+    var count = 0;
+    var typeFactoryMap = {
+        literal: function (change) {
+            return modifyObj(getLiteral(), change, 'literal' + (count++));
+        },
+        created: function (change) {
+            return modifyObj(Object.create(getLiteral()), change, 'created' + (count++));
+        },
+        namedJS: function (change) {
+            return modifyObj(new NamedJS(), change, 'namedJS' + (count++));
+        },
+        anonnJS: function (change) {
+            return modifyObj(new AnonJS(), change, 'anonnJS' + (count++));
+        },
+        classTS: function (change) {
+            return modifyObj(new ClassTS(), change, 'classTS' + (count++));
+        },
+        methoTS: function (change) {
+            return modifyObj(new MethoTS(), change, 'methoTS' + (count++));
+        },
+        jsonObj: function (change) {
+            return modifyObj(helper.readJSON(__dirname, 'fixtures/chai/equal.object.json'), change, 'jsonObj' + (count++));
         }
     };
-};
-var modifyObj = function (obj, level, value) {
-    if(level === 1) {
-        obj.bb = value;
-    } else if(level === 2) {
-        obj.dd.id = value;
-    } else if(level === 3) {
-        obj.dd.c[2] = value;
-    }
-    return obj;
-};
-var typeFactoryMap = {
-    literal: function (change) {
-        return modifyObj(getLiteral(), change, 'literal');
-    },
-    created: function (change) {
-        return modifyObj(Object.create(getLiteral()), change, 'created');
-    },
-    namedJS: function (change) {
-        return modifyObj(new NamedJS(), change, 'namedJS');
-    },
-    anonnJS: function (change) {
-        return modifyObj(new AnonJS(), change, 'anonnJS');
-    },
-    classTS: function (change) {
-        return modifyObj(new ClassTS(), change, 'classTS');
-    },
-    jsonObj: function (change) {
-        return modifyObj(helper.readJSON(__dirname, 'fixtures/chai.equalObject.json'), change, 'jsonObj');
-    }
-};
-describe('chai equality', function () {
+    var make = function (type, change) {
+        if (typeof change === "undefined") { change = false; }
+        if(typeFactoryMap.hasOwnProperty(type)) {
+            return modifyObj(new (typeFactoryMap[type])(), change, 'methoTS');
+        }
+        throw ('bad type ' + type);
+        return null;
+    };
     before(function () {
+    });
+    describe('assert only', function () {
+        describe('literal', function () {
+            var obj = make('literal');
+            assert.isObject(obj);
+            it('equal', function () {
+                assert.equal(obj, make('methoTS'));
+            });
+            it('deepEqual', function () {
+                assert.deepEqual(obj, make('methoTS'));
+            });
+        });
+    });
+    describe('assert equal', function () {
+        _.each(typeFactoryMap, function (left, name, map) {
+            describe(name + ' vs', function () {
+                var obj = left();
+                assert.isObject(obj);
+                _.each(map, function (right, sub) {
+                    if(left !== right) {
+                        it(sub, function () {
+                            assert.deepEqual(obj, right());
+                        });
+                    }
+                });
+            });
+        });
     });
     describe('assert deepEqual', function () {
         _.each(typeFactoryMap, function (left, name, map) {
-            it(name, function () {
+            describe(name + ' vs', function () {
                 var obj = left();
                 assert.isObject(obj);
-                _.each(map, function (right, name) {
-                    assert.deepEqual(obj, right(), name);
+                _.each(map, function (right, sub) {
+                    if(left !== right) {
+                        it(sub, function () {
+                            assert.deepEqual(obj, right());
+                        });
+                    }
                 });
             });
         });
     });
     describe('assert notDeepEqual level 1', function () {
         _.each(typeFactoryMap, function (left, name, map) {
-            it(name, function () {
+            describe(name + ' vs', function () {
                 var obj = left(1);
                 assert.isObject(obj);
                 assert.propertyNotVal(obj, 'bb', 'hello');
-                _.each(map, function (right, name) {
-                    assert.notDeepEqual(obj, right(), name);
+                _.each(map, function (right, sub) {
+                    if(left !== right) {
+                        it(sub, function () {
+                            assert.notDeepEqual(obj, right());
+                        });
+                    }
                 });
             });
         });
     });
     describe('assert notDeepEqual level 2', function () {
         _.each(typeFactoryMap, function (left, name, map) {
-            it(name, function () {
+            describe(name + ' vs', function () {
                 var obj = left(2);
                 assert.isObject(obj);
                 assert.propertyNotVal(obj.dd, 'id', 'yo');
-                _.each(map, function (right, name) {
-                    assert.notDeepEqual(obj, right(), name);
+                _.each(map, function (right, sub) {
+                    if(left !== right) {
+                        it(sub, function () {
+                            assert.notDeepEqual(obj, right());
+                        });
+                    }
                 });
             });
         });
     });
     describe('assert notDeepEqual level 3', function () {
         _.each(typeFactoryMap, function (left, name, map) {
-            it(name, function () {
+            describe(name + ' vs', function () {
                 var obj = left(3);
                 assert.isObject(obj);
                 assert.propertyNotVal(obj.dd.c, '2', 30);
-                _.each(map, function (right, name) {
-                    assert.notDeepEqual(obj, right(), name);
+                _.each(map, function (right, sub) {
+                    if(left !== right) {
+                        it(sub, function () {
+                            assert.notDeepEqual(obj, right());
+                        });
+                    }
                 });
             });
         });
+    });
+});
+var deepSortX = function (data) {
+};
+var deepSort = function (data) {
+    return data.sort();
+};
+describe('deepsort', function () {
+    before(function () {
+    });
+    it('first pass', function () {
     });
 });
 describe('kitteh', function () {
     describe('can', function () {
         it('meow', function () {
             assert.equal('meow', 'meow');
+        });
+        describe('not', function () {
+            it('count', function () {
+                assert.deepEqual({
+                    one: 1,
+                    two: 2,
+                    three: 3
+                }, {
+                    one: 3,
+                    two: 2,
+                    four: 4
+                });
+            });
         });
         describe('has', function () {
             it('milk', function () {
@@ -243,9 +468,6 @@ describe('kitteh', function () {
                 });
             });
             describe('some', function () {
-                it('hats', function () {
-                    assert.equal('hat', 'silly');
-                });
                 it('fun', function () {
                     assert.deepEqual([
                         [
@@ -275,93 +497,65 @@ describe('kitteh', function () {
                         ]
                     ]);
                 });
-                it('yarn', function () {
-                    var now = new Date();
-                    var original = {
-                        aa: 'red',
-                        bb: 1,
-                        cc: [
-                            1, 
-                            2, 
-                            3
-                        ],
-                        now: now,
-                        next: now,
-                        dd: {
-                            a: 'yo',
-                            b: 1,
-                            c: [
-                                10, 
-                                20, 
-                                30
-                            ],
-                            d: {
-                                xx: 100,
-                                yy: 200,
-                                zz: 300,
-                                ww: [
-                                    1, 
-                                    2, 
-                                    3
-                                ],
-                                vv: {
-                                    x: 1,
-                                    y: 2,
-                                    z: 3
-                                }
-                            },
-                            e: {
-                            }
-                        },
-                        ee: {
-                            x: 1,
-                            y: 2
-                        }
-                    };
-                    var different = {
-                        aa: 'blue',
-                        cc: [
-                            3, 
-                            2, 
-                            1
-                        ],
-                        bb: 1,
-                        now: now,
-                        next: new Date(new Date().getTime() + 123456),
-                        dd: {
-                            a: 'yo',
-                            b: 1,
-                            c: [
-                                10, 
-                                20, 
-                                40
-                            ],
-                            d: {
-                                xx: 50,
-                                yy: 200,
-                                qq: 300,
-                                ww: [
-                                    3, 
-                                    2
-                                ],
-                                vv: {
-                                    x: 1,
-                                    y: 2,
-                                    z: 3
-                                }
-                            },
-                            e: {
-                            }
-                        },
-                        ee: {
-                            x: 1,
-                            y: 2,
-                            z: 3
-                        }
-                    };
-                    assert.deepEqual(original, different);
+                it('hats', function () {
+                    assert.equal('hat', 'silly');
                 });
             });
+        });
+    });
+});
+describe('objectDiff', function () {
+    var TypeA = function () {
+        this.aa = 'hello';
+        this.bb = 1;
+        this.cc = [
+            1, 
+            2, 
+            3
+        ];
+        this.dd = {
+            a: 'yo',
+            b: 1,
+            c: [
+                10, 
+                20, 
+                30
+            ]
+        };
+    };
+    TypeA.prototype.protoProp = 'shared';
+    TypeA.prototype.protoMethodA = function () {
+        return 1;
+    };
+    var TypeB = function () {
+        this.aa = 'hello';
+        this.bb = 1;
+        this.cc = [
+            1, 
+            2, 
+            3
+        ];
+        this.dd = {
+            a: 'yo',
+            b: 1,
+            c: [
+                10, 
+                20, 
+                30
+            ]
+        };
+    };
+    TypeB.prototype.protoProp = 'shared';
+    TypeB.prototype.protoMethodB = function () {
+        return 3;
+    };
+    var objectDiff = require('../lib/objectDiff');
+    describe.only('diff', function () {
+        var objDiffA, objDiffB;
+        it('diffs equals diff', function () {
+            objDiffA = objectDiff.diff(new TypeA(), new TypeB());
+            objDiffB = objectDiff.diff(new TypeB(), new TypeA());
+            assert.deepEqual(objDiffA, objDiffB);
         });
     });
 });

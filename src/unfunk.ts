@@ -217,10 +217,27 @@ module unfunk {
 					out.writeln(style.suite('->') + ' reporting ' + fail);
 					out.writeln();
 
-					failures.forEach((test:Test, i:number) => {
+					failures.forEach((test:Test, num:number) => {
 
-						var title = test.fullTitle()
-						var pre = title.lastIndexOf(test.title);
+						var title; // = test.fullTitle()
+						var titles = [test.title];
+						var tmp = test.parent;
+						while (tmp && !tmp.root)
+						{
+							titles.unshift(tmp.title);
+							tmp = tmp.parent;
+						}
+						for (var i = 0, ii = titles.length; i < ii; i++) {
+							if (i % 2 === 0) {
+								titles[i] = style.test(titles[i]);
+							} else {
+								titles[i] = style.suite(titles[i]);
+							}
+						}
+						title = titles.join(' ');
+
+						//var fullTitle = test.fullTitle();
+						//var pre = fullTitle.lastIndexOf(test.title);
 
 						var err = test.err;
 						var message = err.message || '';
@@ -228,7 +245,8 @@ module unfunk {
 						var index = stack.indexOf(message) + message.length;
 						var msg = stack.slice(0, index);
 
-						out.writeln(indent() + style.error((i + 1) + ': ') + style.test(title.substr(0, pre)) + style.suite(title.substr(pre)));
+						// out.writeln(indent() + style.error((num + 1) + ': ') + style.test(title.substr(0, pre)) + style.suite(title.substr(pre)));
+						out.writeln(indent() + style.error((num + 1) + ': ') + title);
 						out.writeln(indent(3) + style.warning(msg));
 
 						// indent stack trace without msg
