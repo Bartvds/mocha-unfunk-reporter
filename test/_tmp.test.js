@@ -30,8 +30,11 @@ var helper;
     }
     helper.dumpJSON = dumpJSON;
 })(helper || (helper = {}));
-var assert = require('chai').assert;
 var _ = require('underscore');
+var chaii = require('chai');
+var expect = chaii.expect;
+var assert = chaii.assert;
+chaii.use(require('chai-fuzzy'));
 process.env['mocha-unfunk-color'] = true;
 describe('async tests', function () {
     it('first passes', function (done) {
@@ -65,6 +68,41 @@ describe('async tests', function () {
     });
 });
 describe('chai equality', function () {
+    describe.only('fuzzy', function () {
+        it('expect like', function () {
+            expect({
+                x: 1,
+                y: 2,
+                z: 3
+            }).to.be.like({
+                x: 1,
+                y: 2,
+                z: 3
+            });
+        });
+    });
+    describe('fuzzy', function () {
+        it('assert ike', function () {
+            assert.like({
+                x: 1,
+                y: 2,
+                z: 3
+            }, {
+                x: 1,
+                y: 2,
+                z: 3
+            });
+            assert.notLike({
+                x: 1,
+                y: 2,
+                z: 3
+            }, {
+                x: 3,
+                y: 2,
+                z: 1
+            });
+        });
+    });
     describe('deepEqual', function () {
         it('passes deep array', function () {
             assert.deepEqual([
@@ -507,36 +545,24 @@ describe('kitteh', function () {
 describe('objectDiff', function () {
     var TypeA = function () {
         this.aa = 'hello';
-        this.bb = 1;
-        this.cc = [
-            3, 
-            2, 
-            1
-        ];
-        this.dd = {
+        this.bb = {
             a: 'yo',
             b: 1,
             c: [
                 10, 
                 20, 
                 30
-            ],
-            d: 10
+            ]
         };
     };
     TypeA.prototype.protoProp = 'shared';
+    TypeA.prototype.protoAA = 'myAA';
     TypeA.prototype.protoMethodA = function () {
         return 1;
     };
     var TypeB = function () {
         this.aa = 'hello';
-        this.bb = 1;
-        this.cc = [
-            1, 
-            2, 
-            3
-        ];
-        this.dd = {
+        this.bb = {
             a: 'yo',
             b: 1,
             c: [
@@ -547,27 +573,166 @@ describe('objectDiff', function () {
         };
     };
     TypeB.prototype.protoProp = 'shared';
+    TypeB.prototype.protoBB = 'myBB';
     TypeB.prototype.protoMethodB = function () {
         return 3;
     };
+    var getTypeC = function () {
+        return {
+            aa: 'hello',
+            bb: {
+                a: 'yo',
+                b: 1,
+                c: [
+                    10, 
+                    20, 
+                    30
+                ]
+            }
+        };
+    };
+    var getTypeD = function () {
+        return {
+            aa: 'hello',
+            bb: {
+                a: 'yo',
+                b: 1,
+                c: [
+                    10, 
+                    20, 
+                    30, 
+                    40
+                ]
+            }
+        };
+    };
     var objectDiff = require('../lib/objectDiff');
-    describe.only('diff', function () {
-        var objDiffA, objDiffB;
-        it('deepEqual A B', function () {
-            assert.deepEqual(new TypeA(), new TypeB());
+    describe('check', function () {
+        var one, two;
+        var instA, instB, instC, instD;
+        before(function () {
+            instA = new TypeA();
+            instB = new TypeB();
+            instC = getTypeC();
+            instD = getTypeC();
         });
-        it('deepEqual B A', function () {
-            assert.deepEqual(new TypeB(), new TypeA());
+        it('deepEqual pre test', function () {
+            assert.deepEqual(instA, instA);
         });
-        it('diffs deepEqual A B', function () {
-            objDiffA = objectDiff.diff(new TypeA(), new TypeB());
-            objDiffB = objectDiff.diff(new TypeB(), new TypeA());
-            assert.deepEqual(objDiffA, objDiffB);
+        it('notDeepEqual A B', function () {
+            assert.notDeepEqual(instA, instB);
         });
-        it('diffs deepEqual B A', function () {
-            objDiffA = objectDiff.diff(new TypeA(), new TypeB());
-            objDiffB = objectDiff.diff(new TypeB(), new TypeA());
-            assert.deepEqual(objDiffB, objDiffA);
+        it('notDeepEqual A C', function () {
+            assert.notDeepEqual(instA, instC);
+        });
+        it('notDeepEqual B C', function () {
+            assert.notDeepEqual(instB, instC);
+        });
+        describe('diff()', function () {
+            it('notDeepEqual diff A x B', function () {
+                one = objectDiff.diff(instA, instB);
+                two = objectDiff.diff(instB, instA);
+                assert.notDeepEqual(one, two, 'one, two');
+                assert.notDeepEqual(two, one, 'two, one');
+            });
+            it('notDeepEqual diff A x C', function () {
+                one = objectDiff.diff(instA, instC);
+                two = objectDiff.diff(instC, instA);
+                assert.notDeepEqual(one, two, 'one, two');
+                assert.notDeepEqual(two, one, 'two, one');
+            });
+            it('notDeepEqual diff B x C', function () {
+                one = objectDiff.diff(instB, instC);
+                two = objectDiff.diff(instC, instB);
+                assert.notDeepEqual(one, two, 'one, two');
+                assert.notDeepEqual(two, one, 'two, one');
+            });
+            it('notDeepEqual diff A x D', function () {
+                one = objectDiff.diff(instA, instD);
+                two = objectDiff.diff(instD, instA);
+                assert.notDeepEqual(one, two, 'one, two');
+                assert.notDeepEqual(two, one, 'two, one');
+            });
+            it('A A equal', function () {
+                assert.equal(objectDiff.diff(instA, instA).changed, 'equal');
+            });
+            it('B B equal', function () {
+                assert.equal(objectDiff.diff(instB, instB).changed, 'equal');
+            });
+            it('C C equal', function () {
+                assert.equal(objectDiff.diff(instC, instC).changed, 'equal');
+            });
+            it('A B object change', function () {
+                assert.equal(objectDiff.diff(instA, instB).changed, 'object change');
+            });
+            it('A C object change', function () {
+                assert.equal(objectDiff.diff(instA, instC).changed, 'object change');
+            });
+            it('B A object change', function () {
+                assert.equal(objectDiff.diff(instB, instA).changed, 'object change');
+            });
+            it('B C object change', function () {
+                assert.equal(objectDiff.diff(instB, instC).changed, 'object change');
+            });
+            it('C A object change', function () {
+                assert.equal(objectDiff.diff(instC, instA).changed, 'object change');
+            });
+            it('C B object change', function () {
+                assert.equal(objectDiff.diff(instC, instB).changed, 'object change');
+            });
+        });
+        describe('diffOwnProperties()', function () {
+            it('deepEqual diff A x B', function () {
+                one = objectDiff.diffOwnProperties(instA, instB);
+                two = objectDiff.diffOwnProperties(instB, instA);
+                assert.deepEqual(one, two, 'one, two');
+                assert.deepEqual(two, one, 'two, one');
+            });
+            it('deepEqual diff A x C', function () {
+                one = objectDiff.diffOwnProperties(instA, instC);
+                two = objectDiff.diffOwnProperties(instC, instA);
+                assert.deepEqual(one, two, 'one, two');
+                assert.deepEqual(two, one, 'two, one');
+            });
+            it('deepEqual diff B x C', function () {
+                one = objectDiff.diffOwnProperties(instB, instC);
+                two = objectDiff.diffOwnProperties(instC, instB);
+                assert.deepEqual(one, two, 'one, two');
+                assert.deepEqual(two, one, 'two, one');
+            });
+            it('notDeepEqual diff A x D', function () {
+                one = objectDiff.diffOwnProperties(instA, instD);
+                two = objectDiff.diffOwnProperties(instD, instA);
+                assert.deepEqual(one, two, 'one, two');
+                assert.deepEqual(two, one, 'two, one');
+            });
+            it('A A equal', function () {
+                assert.equal(objectDiff.diffOwnProperties(instA, instA).changed, 'equal');
+            });
+            it('B B equal', function () {
+                assert.equal(objectDiff.diffOwnProperties(instB, instB).changed, 'equal');
+            });
+            it('C C equal', function () {
+                assert.equal(objectDiff.diffOwnProperties(instC, instC).changed, 'equal');
+            });
+            it('A B object change', function () {
+                assert.equal(objectDiff.diffOwnProperties(instA, instB).changed, 'object change');
+            });
+            it('A C object change', function () {
+                assert.equal(objectDiff.diffOwnProperties(instA, instC).changed, 'object change');
+            });
+            it('B A object change', function () {
+                assert.equal(objectDiff.diffOwnProperties(instB, instA).changed, 'object change');
+            });
+            it('B C object change', function () {
+                assert.equal(objectDiff.diffOwnProperties(instB, instC).changed, 'object change');
+            });
+            it('C A object change', function () {
+                assert.equal(objectDiff.diffOwnProperties(instC, instA).changed, 'object change');
+            });
+            it('C B object change', function () {
+                assert.equal(objectDiff.diffOwnProperties(instC, instB).changed, 'object change');
+            });
         });
     });
 });

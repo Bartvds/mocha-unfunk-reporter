@@ -6,7 +6,22 @@ declare var _:UnderscoreStatic;
 
 describe('chai equality', () => {
 
+	describe.only('fuzzy', () => {
+		it('expect like', () => {
+			expect({x: 1, y: 2, z: 3}).to.be.like({x: 1, y: 2, z: 3});
+		});
+	});
+	describe('fuzzy', () => {
+		it('assert ike', () => {
+			assert.like({x: 1, y: 2, z: 3},
+			{x: 1, y: 2, z: 3});
+			assert.notLike({x: 1, y: 2, z: 3},
+			{x: 3, y: 2, z: 1});
+		});
+	});
+
 	describe('deepEqual', () => {
+
 		it('passes deep array', () => {
 			assert.deepEqual([
 				[1],
@@ -18,6 +33,7 @@ describe('chai equality', () => {
 				[1, 2, 3]
 			]);
 		});
+
 
 		it('should fail this complex test', () => {
 			var now = new Date();

@@ -108,8 +108,6 @@ describe('chai equality', () => {
 			});
 		});
 	});
-
-
 	describe('assert equal', () => {
 		_.each(typeFactoryMap, (left, name, map?) => {
 			describe(name + ' vs', () => {
@@ -125,7 +123,6 @@ describe('chai equality', () => {
 			});
 		});
 	});
-
 	describe('assert deepEqual', () => {
 		_.each(typeFactoryMap, (left, name, map?) => {
 			describe(name + ' vs', () => {
