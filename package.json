@@ -40,6 +40,6 @@
     "grunt-mocha-spawn": "~0.1.0",
     "chai": "~1.6.0",
     "underscore": "~1.4.4",
-    "chai-fuzzy": "~1.2.0"
+    "chai-fuzzy": "git://github.com/Bartvds/chai-fuzzy.git"
   }
 }

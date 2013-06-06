@@ -121,15 +121,15 @@ module unfunk {
 
 			private getName(key, change) {
 				if (change == 'added'){
-					return this.style.success(this.markAdded + this.stringifyObjectKey(this.escapeString(key)) + ': ')
+					return this.style.success(this.markAdded + this.stringifyObjectKey(this.escapeString(key)) + ': ');
 				}
 				else if (change == 'removed'){
-					return this.style.error(this.markRemov + this.stringifyObjectKey(this.escapeString(key)) + ': ')
+					return this.style.error(this.markRemov + this.stringifyObjectKey(this.escapeString(key)) + ': ');
 				}
 				else if (change == 'object change'){
-					return this.style.warning(this.markChang + this.stringifyObjectKey(this.escapeString(key)) + ': ')
+					return this.style.warning(this.markChang + this.stringifyObjectKey(this.escapeString(key)) + ': ');
 				}
-				return this.style.suite(this.markEqual + this.stringifyObjectKey(this.escapeString(key)) + ': ')
+				return this.style.suite(this.markEqual + this.stringifyObjectKey(this.escapeString(key)) + ': ');
 			}
 			/**
 			 * @param {string} accumulator
