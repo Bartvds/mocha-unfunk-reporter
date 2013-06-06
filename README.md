@@ -6,7 +6,7 @@
 
 Unfunk-reporter is a minimal `spec`-style console reporter for [mocha](http://visionmedia.github.io/mocha/) that doesn't confuse lesser console environments with funky display modes, line overwrites, cursor tricks, escape codes or weird encodings.
 
-Main use-case is running mocha's node module embedded in external tools though IDE's like WebStorm or other basic consoles and low-tech buffered output. It works in all mocha node.js module flavors if you pass it to mocha as `reporter`. It could easily be adapted to alternate unfunky displays.
+Main use-case is running mocha's node module embedded in external tools though IDE's like WebStorm, basic consoles and buffered output. It could easily be adapted to alternate unfunky displays. Tested in `grunt-mocha-test` (and similar) but works in all mocha node.js module flavors if you pass it to mocha as `reporter`.
 
 The reporter does *not* extend mocha's default Base reporter prototype, because that is a main source of funkyness, so not all of mocha's reporter related options are supported.
 
@@ -14,9 +14,8 @@ It defaults to colorless display but there is a option to enable ANSI colors. It
 
 ## Notes
 
-* There's a *major* bug in most `grunt` + `mocha` plugins regarding async errors, which prevents the combination to be as successful as it should. Temporary use wrapper like my `child_process.fork()` based [grunt-mocha-spawn](https://github.com/Bartvds/grunt-mocha-spawn) until somebody fixes it properly.
-
-* I would like to add diff support but that will be tricky to do without depending on colors.
+* There's a object compare diff output (tested with chai equal/deepEqual/jsonOf etc)
+* I would like to add string diff support but it will be tricky to do without depending on colors.
 
 ## Usage
 
