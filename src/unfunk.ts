@@ -164,12 +164,13 @@ module unfunk {
 
 				out.write(style.success('pass'));
 
-				if (test.speed == 'slow') {
-					out.writeln(' ' + style.error('pass') + ' (' + test.duration + 'ms)');
+				if (test.speed === 'slow') {
+					out.writeln(' '+ style.error(test.speed + ' (' + test.duration + 'ms)'));
 				}
-				else if (test.speed == 'medium') {
-					out.writeln(' ' + style.warning('(' + test.duration + 'ms)'));
-				} else {
+				else if (test.speed === 'medium') {
+					out.writeln(' '+ style.warning(test.speed + '(' + test.duration + 'ms)'));
+				}
+				else {
 					out.writeln();
 				}
 			});

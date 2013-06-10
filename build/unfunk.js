@@ -494,10 +494,10 @@ var unfunk;
                 var medium = test.slow() / 2;
                 test.speed = test.duration > test.slow() ? 'slow' : (test.duration > medium ? 'medium' : 'fast');
                 out.write(style.success('pass'));
-                if(test.speed == 'slow') {
-                    out.writeln(' ' + style.error('pass') + ' (' + test.duration + 'ms)');
-                } else if(test.speed == 'medium') {
-                    out.writeln(' ' + style.warning('(' + test.duration + 'ms)'));
+                if(test.speed === 'slow') {
+                    out.writeln(' ' + style.error(test.speed + ' (' + test.duration + 'ms)'));
+                } else if(test.speed === 'medium') {
+                    out.writeln(' ' + style.warning(test.speed + '(' + test.duration + 'ms)'));
                 } else {
                     out.writeln();
                 }
