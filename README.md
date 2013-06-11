@@ -32,6 +32,7 @@ process.env['mocha-unfunk-color'] = true;
 
 ## Versions
 
+* 0.1.6 - tight .npmignore
 * 0.1.5 - basic object diff
 * 0.1.4 - expose color option using process.env
 * 0.1.3 - cleaned test and dev dependencies

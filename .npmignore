@@ -1,0 +1,14 @@
+.npmignore
+.gitignore
+node_modules
+npm-debug.log
+test
+tmp
+src
+.jshintrc
+Gruntfile.js
+typings
+tsd-config.json
+/*.tgz
+/.idea
+/test/_tmp.test.js
