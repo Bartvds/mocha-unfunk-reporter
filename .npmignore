@@ -1,10 +1,7 @@
 .npmignore
 .gitignore
-node_modules
-npm-debug.log
-test
-tmp
 src
+test
 .jshintrc
 Gruntfile.js
 typings

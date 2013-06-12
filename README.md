@@ -32,6 +32,7 @@ process.env['mocha-unfunk-color'] = true;
 
 ## Versions
 
+* 0.1.7 - package.json repos url fix
 * 0.1.6 - tight .npmignore
 * 0.1.5 - basic object diff
 * 0.1.4 - expose color option using process.env
@@ -44,6 +45,6 @@ Unfunk-reporter is written in TypeScript and built using `grunt`: so run `grunt`
 
 ## Credit
 
-* Object diff from [objectDiff]https://github.com/NV/objectDiff.js) by Nikita Vasilyev
+* Object diff from [objectDiff](https://github.com/NV/objectDiff.js) by Nikita Vasilyev
 * Color codes from [colors.js](https://github.com/marak/colors.js/) by Marak Squires & Alexis Sellier (cloudhead)
 * Has some bits and bobs from default reporters

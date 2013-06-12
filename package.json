@@ -1,6 +1,6 @@
 {
   "name": "mocha-unfunk-reporter",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "mocha console reporter without funkyness",
   "author": {
     "name": "Bart van der Schoor",
@@ -9,7 +9,7 @@
   "homepage": "https://github.com/Bartvds/mocha-unfunk-reporter",
   "repository": {
     "type": "git",
-    "url": "grit://github.com/Bartvds/mocha-unfunk-reporter.git"
+    "url": "https://github.com/Bartvds/mocha-unfunk-reporter.git"
   },
   "bugs": {
     "url": "https://github.com/Bartvds/mocha-unfunk-reporter/issues"
