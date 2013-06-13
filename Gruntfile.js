@@ -12,8 +12,10 @@ module.exports = function (grunt) {
 
 	grunt.loadNpmTasks('grunt-typescript');
 	grunt.loadNpmTasks('grunt-contrib-clean');
-	grunt.loadNpmTasks('grunt-mocha-spawn');
 	grunt.loadNpmTasks('grunt-mocha');
+	grunt.loadNpmTasks('grunt-mocha-spawn');
+	grunt.loadNpmTasks('grunt-mocha-test');
+	grunt.loadNpmTasks('grunt-simple-mocha');
 
 	grunt.initConfig({
 		clean: {
@@ -45,22 +47,37 @@ module.exports = function (grunt) {
 		},
 		//buh
 		mocha_spawn: {
+			options: {
+				reporter: __dirname //yes!
+			},
 			any: {
-				src:['test/*.test.js'],
-				options: {
-					reporter: __dirname //yess
-				}
+				src:['test/*.test.js']
+			}
+		},
+		mochaTest: {
+			options: {
+				reporter: __dirname //yes!
+			},
+			any: {
+				src:['test/*.test.js']
+			}
+		},
+		simplemocha: {
+			options: {
+				reporter: __dirname //yes!
+			},
+			any: {
+				src:['test/*.test.js']
 			}
 		},
 		mocha: {
 			options: {
-				bail: true,
 				log: true,
 				mocha: {
 					ignoreLeaks: false
 				},
 				run: true,
-				reporter: __dirname //yess
+				reporter: __dirname //yes!
 			},
 			any: {
 				src: ['test/*.html']
@@ -69,11 +86,16 @@ module.exports = function (grunt) {
 	});
 	grunt.registerTask('default', ['test']);
 	grunt.registerTask('build', ['clean', 'typescript:reporter', 'typescript:test']);
-	grunt.registerTask('test', ['grunt_mocha_spawn']);
+	grunt.registerTask('test', ['test_mocha_spawn']);
 
-	grunt.registerTask('grunt_mocha_spawn', ['build', 'mocha_spawn:any']);
-	grunt.registerTask('grunt_mocha', ['build', 'mocha:any']);
+	grunt.registerTask('test_mocha_spawn', ['build', 'mocha_spawn:any']);
+	grunt.registerTask('test_mochaTest', ['build', 'mochaTest:any']);
+	grunt.registerTask('test_simple_mocha', ['build', 'simplemocha:any']);
+	grunt.registerTask('test_mocha', ['build', 'mocha:any']);
 
-	grunt.registerTask('edit_01', ['grunt_mocha_spawn']);
-	grunt.registerTask('edit_02', ['grunt_mocha']);
+	//editor ui shortcuts/buttons
+	grunt.registerTask('edit_01', ['test_mocha']);
+	grunt.registerTask('edit_02', ['test_mocha_spawn']);
+	grunt.registerTask('edit_03', ['test_mochaTest']);
+	grunt.registerTask('edit_04', ['test_simple_mocha']);
 };

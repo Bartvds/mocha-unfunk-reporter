@@ -12,9 +12,9 @@ The reporter does *not* extend mocha's default Base reporter prototype, because 
 
 ## Notes
 
-* There's an object-compare diff output powered by [objectDiff](https://github.com/NV/objectDiff.js), wirks nicely with [chai](http://chaijs.com/)'s equal/deepEqual/jsonOf etc.
-* I would like to add string diff support but it will be tricky to do without depending on colors.
-* The reporter should easily be adapted to alternate unfunky display modes, I might even support browser consoles or remote logging.
+* There's an object-compare diff output powered by [objectDiff](https://github.com/NV/objectDiff.js), usefull with [chai](http://chaijs.com/) and deepEqual().
+* There should be string diff support but it will be tricky to do without depending on colors.
+* The reporter could easily be adapted to alternate unfunky display modes, I might even support browser consoles or remote logging.
 
 ## Usage
 
@@ -22,7 +22,7 @@ Install in your project using `npm install mocha-unfunk-reporter`. Then use `moc
 
 ## Options
 
-Pass extra options using process.env. It's a global option since we don't extend mocha's Base reporter so can't access the useColor parameter
+Pass extra options using process.env. It's a global option since we don't extend mocha's Base reporter so cannot access the useColor parameter.
 
 ````
 // enable colors using ANSI codes (nothing against some optional functional funk :)
@@ -32,7 +32,7 @@ process.env['mocha-unfunk-color'] = true;
 
 ## Versions
 
-* 0.1.8 - works with grunt-mocha
+* 0.1.8 - made compatible with grunt-mocha (PhantomJS)
 * 0.1.7 - package.json repos url fix
 * 0.1.6 - tight .npmignore
 * 0.1.5 - basic object diff
@@ -40,14 +40,20 @@ process.env['mocha-unfunk-color'] = true;
 * 0.1.3 - cleaned test and dev dependencies
 * 0.1.2 - basic version, colors disabled
 
-## Known to work on
+## Compatibility
 
-* mocha (vanilla node module)
+Testing on:
+* mocha (node module)
 * grunt-mocha (grunt + phantomJS)
 * grunt-mocha-test (grunt + node)
-* grunt-simple-mocha (grunt + node)
 * grunt-mocha-spawn (grunt + node)
+* grunt-simple-mocha (grunt + node)
+
+Known to work:
+
 * grunt-cafe-mocha (grunt + node)
+
+Send an issue for tips on other 
 
 ## Editing
 
