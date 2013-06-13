@@ -105,8 +105,16 @@ declare module chai
 
 		ifError(val:any, msg?:string);
 	}
+	interface AssertionConstr {
+		includeStack:bool;
+	}
+
 	//node module
 	declare var assert:Assert;
+	declare var Assertion:AssertionConstr;
+	declare function use(...paras:any[]);
+	declare function expect(...paras:any[]):any;
+	declare function should():any;
 }
 //browser global
 declare var assert:chai.Assert;

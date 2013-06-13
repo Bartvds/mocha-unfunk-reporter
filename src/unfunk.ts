@@ -81,6 +81,8 @@ module unfunk {
 		//TODO fix/auto switch colors
 
 		options:any = {};
+		stats:Stats;
+		failures:Test[];
 
 		constructor(runner) {
 			this.init(runner);
@@ -104,14 +106,17 @@ module unfunk {
 		init(runner) {
 			this.importOptions();
 
-			var stats = new Stats();
+			var stats = this.stats = new Stats();
 			var out = this.getWriter();
 			var style = this.getStyler();
 			var diff = this.getDiffFormat(style);
 
+			//ugly feature copied from mocha's Base
+			runner.stats = stats;
+
 			var indents = 0;
 			var indenter:string = '  ';
-			var failures = [];
+			var failures = this.failures = [];
 
 			var indent = (add?:number = 0):string => {
 				return Array(indents + add).join(indenter);
@@ -122,14 +127,19 @@ module unfunk {
 			var start;
 
 			runner.on('start', () => {
-				start = Date.now();
+				start = (new Date().getTime());
 				out.start();
 				out.writeln();
 			});
 
 			runner.on('suite', (suite:TestSuite) => {
 				if (indents === 0) {
-					out.writeln(style.suite('->') + ' running ' + style.suite(pluralize('suite', suite.suites.length)));
+					//mocha-test doens't send suites?
+					if (suite.suites) {
+						out.writeln(style.suite('->') + ' running ' + style.suite(pluralize('suite', suite.suites.length)));
+					} else {
+						out.writeln(style.suite('->') + ' running suite');
+					}
 					out.writeln();
 				}
 				stats.suites++;
@@ -165,10 +175,10 @@ module unfunk {
 				out.write(style.success('pass'));
 
 				if (test.speed === 'slow') {
-					out.writeln(' '+ style.error(test.speed + ' (' + test.duration + 'ms)'));
+					out.writeln(' ' + style.error(test.speed + ' (' + test.duration + 'ms)'));
 				}
 				else if (test.speed === 'medium') {
-					out.writeln(' '+ style.warning(test.speed + '(' + test.duration + 'ms)'));
+					out.writeln(' ' + style.warning(test.speed + '(' + test.duration + 'ms)'));
 				}
 				else {
 					out.writeln();
@@ -223,8 +233,7 @@ module unfunk {
 						var title; // = test.fullTitle()
 						var titles = [test.title];
 						var tmp = test.parent;
-						while (tmp && !tmp.root)
-						{
+						while (tmp && !tmp.root) {
 							titles.unshift(tmp.title);
 							tmp = tmp.parent;
 						}
@@ -236,9 +245,6 @@ module unfunk {
 							}
 						}
 						title = titles.join(' ');
-
-						//var fullTitle = test.fullTitle();
-						//var pre = fullTitle.lastIndexOf(test.title);
 
 						var err = test.err;
 						var message = err.message || '';
@@ -261,9 +267,14 @@ module unfunk {
 						out.writeln();
 					});
 				}
-				out.writeln(style.suite('->') + ' executed ' + test + ' with ' + passes + (stats.pending > 0 ? ', ' : ' and ') + fail + pending + ' (' + (Date.now() - start) + 'ms)');
+				out.writeln(style.suite('->') + ' executed ' + test + ' with ' + passes + (stats.pending > 0 ? ', ' : ' and left ') + fail + pending + ' (' + ((new Date().getTime()) - start) + 'ms)');
 				out.writeln();
-
+				if (failures.length > 0) {
+					out.writeln(style.suite('->') + style.error(' fail!'));
+				}
+				else {
+					out.writeln(style.suite('->') + style.success(' pass!'));
+				}
 				out.finish();
 			});
 		}

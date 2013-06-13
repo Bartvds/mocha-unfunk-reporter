@@ -13,6 +13,7 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-typescript');
 	grunt.loadNpmTasks('grunt-contrib-clean');
 	grunt.loadNpmTasks('grunt-mocha-spawn');
+	grunt.loadNpmTasks('grunt-mocha');
 
 	grunt.initConfig({
 		clean: {
@@ -44,17 +45,35 @@ module.exports = function (grunt) {
 		},
 		//buh
 		mocha_spawn: {
-			all: {
+			any: {
 				src:['test/*.test.js'],
 				options: {
 					reporter: __dirname //yess
 				}
 			}
+		},
+		mocha: {
+			options: {
+				bail: true,
+				log: true,
+				mocha: {
+					ignoreLeaks: false
+				},
+				run: true,
+				reporter: __dirname //yess
+			},
+			any: {
+				src: ['test/*.html']
+			}
 		}
 	});
-	grunt.registerTask('build', ['clean', 'typescript:reporter']);
-	grunt.registerTask('test', ['build', 'typescript:test', 'mocha_spawn:all']);
 	grunt.registerTask('default', ['test']);
+	grunt.registerTask('build', ['clean', 'typescript:reporter', 'typescript:test']);
+	grunt.registerTask('test', ['grunt_mocha_spawn']);
 
-	grunt.registerTask('edit_01', ['clean', 'typescript:test_objectDiff', 'mocha_spawn:all']);
+	grunt.registerTask('grunt_mocha_spawn', ['build', 'mocha_spawn:any']);
+	grunt.registerTask('grunt_mocha', ['build', 'mocha:any']);
+
+	grunt.registerTask('edit_01', ['grunt_mocha_spawn']);
+	grunt.registerTask('edit_02', ['grunt_mocha']);
 };

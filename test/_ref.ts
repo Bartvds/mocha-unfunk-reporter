@@ -12,42 +12,34 @@ if (require.resolve('source-map-support')) {
 	require('source-map-support').install();
 }*/
 
-process.env['mocha-unfunk-color'] = true;
+if (typeof process !== 'undefined' && typeof process.env === 'object') {
+	process.env['mocha-unfunk-color'] = true;
+}
 
-var _ = require('underscore');
+declare interface Window {
+	chai:chai;
+	objectDiff;any;
+}
+declare var window:any;
+var _;
+declare var chai:any;
+declare var objectDiff;
+if (typeof require === "function" && typeof exports === "object" && typeof module === "object") {
+	// NodeJS
+	var chai = require('chai');
+	chai.Assertion.includeStack = true;
+	_ = require('underscore')
+	chai.use(require('chai-fuzzy'));
+	var objectDiff = require('../lib/objectDiff');
+}
+else {
+	// Other environment (usually <script> tag): plug in to global chai instance directly.
+	var chai = window.chai;
+	var objectDiff = window.objectDiff;
+}
 
-var chaii = require('chai');
-var expect = chaii.expect;
-var assert = chaii.assert;
-chaii.use(require('chai-fuzzy'));
+var expect = chai.expect;
+var assert = chai.assert;
 
-/*
-declare module chai {
-	interface Assert {
-		like(act:any, exp:any, msg?:string);
-		notLike(act:any, exp:any, msg?:string);
-		containOneLike(act:any, exp:any, msg?:string);
-		notContainOneLike(act:any, exp:any, msg?:string);
-		jsonOf(act:any, exp:any, msg?:string);
-		notJsonOf(act:any, exp:any, msg?:string);
-	}
-}*/
+console.log('yo from _Ref!');
 
-assert.like = function (val, exp:any, msg?:string) {
-	new chaii.Assertion(val, msg).to.be.like(exp);
-};
-assert.notLike = function (val, exp:any, msg?:string) {
-	new chaii.Assertion(val, msg).to.not.be.like(exp);
-};
-assert.containOneLike = function (val, exp:any, msg?:string) {
-	new chaii.Assertion(val, msg).to.containOneLike(exp);
-};
-assert.notContainOneLike = function (val, exp:any, msg?:string) {
-	new chaii.Assertion(val, msg).to.not.containOneLike.like(exp);
-};
-assert.jsonOf = function (val, exp:any, msg?:string) {
-	new chaii.Assertion(val, msg).to.be.jsonOf(exp);
-};
-assert.notJsonOf = function (val, exp:any, msg?:string) {
-	new chaii.Assertion(val, msg).to.not.be.jsonOf(exp);
-};

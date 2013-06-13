@@ -443,13 +443,14 @@ var unfunk;
         };
         Unfunk.prototype.init = function (runner) {
             this.importOptions();
-            var stats = new Stats();
+            var stats = this.stats = new Stats();
             var out = this.getWriter();
             var style = this.getStyler();
             var diff = this.getDiffFormat(style);
+            runner.stats = stats;
             var indents = 0;
             var indenter = '  ';
-            var failures = [];
+            var failures = this.failures = [];
             var indent = function (add) {
                 if (typeof add === "undefined") { add = 0; }
                 return Array(indents + add).join(indenter);
@@ -460,13 +461,17 @@ var unfunk;
             };
             var start;
             runner.on('start', function () {
-                start = Date.now();
+                start = (new Date().getTime());
                 out.start();
                 out.writeln();
             });
             runner.on('suite', function (suite) {
                 if(indents === 0) {
-                    out.writeln(style.suite('->') + ' running ' + style.suite(pluralize('suite', suite.suites.length)));
+                    if(suite.suites) {
+                        out.writeln(style.suite('->') + ' running ' + style.suite(pluralize('suite', suite.suites.length)));
+                    } else {
+                        out.writeln(style.suite('->') + ' running suite');
+                    }
                     out.writeln();
                 }
                 stats.suites++;
@@ -571,8 +576,13 @@ var unfunk;
                         out.writeln();
                     });
                 }
-                out.writeln(style.suite('->') + ' executed ' + test + ' with ' + passes + (stats.pending > 0 ? ', ' : ' and ') + fail + pending + ' (' + (Date.now() - start) + 'ms)');
+                out.writeln(style.suite('->') + ' executed ' + test + ' with ' + passes + (stats.pending > 0 ? ', ' : ' and left ') + fail + pending + ' (' + ((new Date().getTime()) - start) + 'ms)');
                 out.writeln();
+                if(failures.length > 0) {
+                    out.writeln(style.suite('->') + style.error(' fail!'));
+                } else {
+                    out.writeln(style.suite('->') + style.success(' pass!'));
+                }
                 out.finish();
             });
         };

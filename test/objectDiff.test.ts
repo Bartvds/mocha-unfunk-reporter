@@ -4,6 +4,7 @@ declare var assert:chai.Assert;
 declare var helper:helper;
 declare var _:UnderscoreStatic;
 
+
 describe('objectDiff', () => {
 
 	var TypeA = function () {
@@ -37,8 +38,6 @@ describe('objectDiff', () => {
 		};
 	};
 
-	var objectDiff = require('../lib/objectDiff');
-
 	describe('check', () => {
 		var one, two;
 		var instA, instB, instC, instD;
@@ -47,6 +46,7 @@ describe('objectDiff', () => {
 			instB = new TypeB();
 			instC = getTypeC();
 			instD = getTypeC();
+			assert.ok(objectDiff, 'objectDiff');
 		});
 		it('deepEqual pre test', () => {
 			assert.deepEqual(instA, instA);
