@@ -19,15 +19,7 @@ describe('slow test', () => {
 		setTimeout(()=> {
 			assert.ok(1);
 			console.log('go!');
-			setTimeout(()=> {
-				assert.ok(1);
-				console.log('go!');
-				setTimeout(()=> {
-					assert.ok(1);
-					console.log('go!');
-					done();
-				}, 500);
-			}, 500);
+			done();
 		}, 500);
 	});
 });

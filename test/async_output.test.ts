@@ -14,9 +14,9 @@ describe('slow reporting', () => {
 					assert.ok(1);
 					console.log('done!');
 					done();
-				}, 500);
-			}, 500);
-		}, 500);
+				}, 100);
+			}, 100);
+		}, 100);
 	});
 	it('wait for it some..', (done:() => void) => {
 		setTimeout(()=> {
@@ -29,23 +29,8 @@ describe('slow reporting', () => {
 					assert.ok(1);
 					console.log('done!');
 					done();
-				}, 500);
-			}, 500);
-		}, 500);
-	});
-	it('wait for it some..', (done:() => void) => {
-		setTimeout(()=> {
-			assert.ok(1);
-			console.log('more..');
-			setTimeout(()=> {
-				assert.ok(1);
-				console.log('more..');
-				setTimeout(()=> {
-					assert.ok(1);
-					console.log('done!');
-					done();
-				}, 500);
-			}, 500);
-		}, 500);
+				}, 100);
+			}, 100);
+		},100);
 	});
 });
