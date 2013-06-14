@@ -32,6 +32,7 @@ process.env['mocha-unfunk-color'] = true;
 
 ## Versions
 
+* 0.1.9 - tighter text
 * 0.1.8 - made compatible with grunt-mocha (PhantomJS)
 * 0.1.7 - package.json repos url fix
 * 0.1.6 - tight .npmignore

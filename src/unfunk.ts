@@ -277,6 +277,7 @@ module unfunk {
 					});
 				}
 				out.writeln(style.test('-> ') + sum + ' (' + ((new Date().getTime()) - start) + 'ms)');
+				out.writeln();
 				out.finish();
 			});
 		}
