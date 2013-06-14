@@ -46,7 +46,7 @@ module unfunk {
 
 			}
 
-			styleObjectDiff(actual:any, expected:any, prepend?:string = ''):string {
+			public styleObjectDiff(actual:any, expected:any, prepend?:string = ''):string {
 				this.prepend = prepend;
 				this.indents = 0;
 
@@ -64,15 +64,6 @@ module unfunk {
 				return '';
 			}
 
-			private getIndent(id:string = '') {
-				var ret = [];
-				for (var i = 0; i < this.indents; i++) {
-					ret.push(this.indentert)
-				}
-				return id + this.prepend + ret.join('');
-			}
-
-			//
 			private convertToLogString(changes) {
 				var properties = [];
 
@@ -105,19 +96,13 @@ module unfunk {
 				return properties.join('\n')  + this.addIndent(-1) + this.getIndent() + this.markSpace;
 			}
 
-			stringifyObjectKey(key) {
-				return /^[a-z0-9_$]*$/i.test(key) ? key : JSON.stringify(key);
+			private getIndent(id:string = '') {
+				var ret = [];
+				for (var i = 0; i < this.indents; i++) {
+					ret.push(this.indentert)
+				}
+				return id + this.prepend + ret.join('');
 			}
-
-			escapeString(string) {
-				return string.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-			}
-
-			private inspect(obj, change) {
-
-				return this._inspect('', obj, change);
-			}
-
 
 			private getName(key, change) {
 				if (change == 'added'){
@@ -131,12 +116,19 @@ module unfunk {
 				}
 				return this.style.suite(this.markEqual + this.stringifyObjectKey(this.escapeString(key)) + ': ');
 			}
-			/**
-			 * @param {string} accumulator
-			 * @param {object} obj
-			 * @see http://jsperf.com/continuation-passing-style/3
-			 * @return {string}
-			 */
+
+			private stringifyObjectKey(key) {
+				return /^[a-z0-9_$]*$/i.test(key) ? key : JSON.stringify(key);
+			}
+
+			private escapeString(string) {
+				return string.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+			}
+
+			private inspect(obj, change) {
+				return this._inspect('', obj, change);
+			}
+
 			private _inspect(accumulator, obj, change) {
 				switch (typeof obj) {
 					case 'object':
