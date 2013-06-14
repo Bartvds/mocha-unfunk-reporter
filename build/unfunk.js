@@ -308,14 +308,6 @@ var unfunk;
                 this.indents += amount;
                 return '';
             };
-            DiffStylerFormat.prototype.getIndent = function (id) {
-                if (typeof id === "undefined") { id = ''; }
-                var ret = [];
-                for(var i = 0; i < this.indents; i++) {
-                    ret.push(this.indentert);
-                }
-                return id + this.prepend + ret.join('');
-            };
             DiffStylerFormat.prototype.convertToLogString = function (changes) {
                 var properties = [];
                 this.addIndent(1);
@@ -341,14 +333,13 @@ var unfunk;
                 }
                 return properties.join('\n') + this.addIndent(-1) + this.getIndent() + this.markSpace;
             };
-            DiffStylerFormat.prototype.stringifyObjectKey = function (key) {
-                return /^[a-z0-9_$]*$/i.test(key) ? key : JSON.stringify(key);
-            };
-            DiffStylerFormat.prototype.escapeString = function (string) {
-                return string.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-            };
-            DiffStylerFormat.prototype.inspect = function (obj, change) {
-                return this._inspect('', obj, change);
+            DiffStylerFormat.prototype.getIndent = function (id) {
+                if (typeof id === "undefined") { id = ''; }
+                var ret = [];
+                for(var i = 0; i < this.indents; i++) {
+                    ret.push(this.indentert);
+                }
+                return id + this.prepend + ret.join('');
             };
             DiffStylerFormat.prototype.getName = function (key, change) {
                 if(change == 'added') {
@@ -359,6 +350,15 @@ var unfunk;
                     return this.style.warning(this.markChang + this.stringifyObjectKey(this.escapeString(key)) + ': ');
                 }
                 return this.style.suite(this.markEqual + this.stringifyObjectKey(this.escapeString(key)) + ': ');
+            };
+            DiffStylerFormat.prototype.stringifyObjectKey = function (key) {
+                return /^[a-z0-9_$]*$/i.test(key) ? key : JSON.stringify(key);
+            };
+            DiffStylerFormat.prototype.escapeString = function (string) {
+                return string.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            };
+            DiffStylerFormat.prototype.inspect = function (obj, change) {
+                return this._inspect('', obj, change);
             };
             DiffStylerFormat.prototype._inspect = function (accumulator, obj, change) {
                 switch(typeof obj) {
@@ -518,26 +518,29 @@ var unfunk;
             });
             runner.on('end', function () {
                 var test;
-                if(stats.tests > 0) {
-                    test = style.suite(pluralize('test', stats.tests));
-                } else {
-                    test = style.warning(pluralize('test', stats.tests));
-                }
-                var passes;
-                if(stats.tests > 0) {
-                    passes = style.success(pluralize('pass', stats.passes, 'es'));
-                } else {
-                    passes = style.success(pluralize('pass', stats.passes, 'es'));
-                }
+                var sum = '';
                 var fail;
-                if(stats.failures > 0) {
-                    fail = style.error(pluralize('failure', stats.failures));
+                if(stats.tests > 0) {
+                    if(stats.failures > 0) {
+                        fail = style.error(pluralize('failure', stats.failures));
+                    } else {
+                        fail = style.success(pluralize('failure', stats.failures));
+                    }
+                    sum += fail + ' and ';
+                    if(stats.passes == stats.tests) {
+                        sum += style.success(pluralize('pass', stats.passes, 'es'));
+                    } else if(stats.passes === 0) {
+                        sum += style.error(pluralize('pass', stats.passes, 'es'));
+                    } else {
+                        sum += style.warning(pluralize('pass', stats.passes, 'es'));
+                    }
+                    sum += ' in ';
+                    sum += style.suite(pluralize('test', stats.tests));
                 } else {
-                    fail = style.success(pluralize('failure', stats.failures));
+                    sum += style.warning(pluralize('test', stats.tests));
                 }
-                var pending = '';
                 if(stats.pending > 0) {
-                    pending = ' and ' + style.warning(stats.pending + ' pending');
+                    sum += ', left ' + style.warning(stats.pending + ' pending');
                 }
                 indents += 1;
                 if(failures.length > 0) {
@@ -572,17 +575,14 @@ var unfunk;
                         if(stack) {
                             out.writeln(stack.replace(/^[ \t]*/gm, indent(4)));
                         }
-                        out.writeln(diff.styleObjectDiff(err.actual, err.expected, indent(3)));
+                        if(err.showDiff) {
+                            out.writeln('');
+                            out.writeln(diff.styleObjectDiff(err.actual, err.expected, indent(3)));
+                        }
                         out.writeln();
                     });
                 }
-                out.writeln(style.suite('->') + ' executed ' + test + ' with ' + passes + (stats.pending > 0 ? ', ' : ' and left ') + fail + pending + ' (' + ((new Date().getTime()) - start) + 'ms)');
-                out.writeln();
-                if(failures.length > 0) {
-                    out.writeln(style.suite('->') + style.error(' fail!'));
-                } else {
-                    out.writeln(style.suite('->') + style.success(' pass!'));
-                }
+                out.writeln(style.test('-> ') + sum + ' (' + ((new Date().getTime()) - start) + 'ms)');
                 out.finish();
             });
         };

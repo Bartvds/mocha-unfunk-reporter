@@ -10,6 +10,7 @@ interface TestError {
 	stack:any;
 	actual:any;
 	expected:any;
+	showDiff:bool;
 }
 interface TestSuite {
 	title:string;
@@ -198,27 +199,33 @@ module unfunk {
 			runner.on('end', () => {
 
 				var test;
+				var sum = '';
+
+				var fail; //reused
 				if (stats.tests > 0) {
-					test = style.suite(pluralize('test', stats.tests))
+
+					if (stats.failures > 0) {
+						fail = style.error(pluralize('failure', stats.failures))
+					} else {
+						fail = style.success(pluralize('failure', stats.failures));
+					}
+					sum += fail + ' and ';
+
+					if (stats.passes == stats.tests) {
+						sum += style.success(pluralize('pass', stats.passes, 'es'))
+					} else if (stats.passes === 0) {
+						sum += style.error(pluralize('pass', stats.passes, 'es'))
+					} else {
+						sum += style.warning(pluralize('pass', stats.passes, 'es'))
+					}
+					sum += ' in ';
+					sum += style.suite(pluralize('test', stats.tests));
 				} else {
-					test = style.warning(pluralize('test', stats.tests))
-				}
-				var passes;
-				if (stats.tests > 0) {
-					passes = style.success(pluralize('pass', stats.passes, 'es'))
-				} else {
-					passes = style.success(pluralize('pass', stats.passes, 'es'))
+					sum += style.warning(pluralize('test', stats.tests));
 				}
 
-				var fail;
-				if (stats.failures > 0) {
-					fail = style.error(pluralize('failure', stats.failures))
-				} else {
-					fail = style.success(pluralize('failure', stats.failures))
-				}
-				var pending = '';
 				if (stats.pending > 0) {
-					pending = ' and ' + style.warning(stats.pending + ' pending');
+					sum += ', left ' + style.warning(stats.pending + ' pending');
 				}
 
 				indents += 1;
@@ -262,19 +269,14 @@ module unfunk {
 							out.writeln(stack.replace(/^[ \t]*/gm, indent(4)));
 						}
 
-						out.writeln(diff.styleObjectDiff(err.actual, err.expected, indent(3)));
-
+						if (err.showDiff) {
+							out.writeln('');
+							out.writeln(diff.styleObjectDiff(err.actual, err.expected, indent(3)));
+						}
 						out.writeln();
 					});
 				}
-				out.writeln(style.suite('->') + ' executed ' + test + ' with ' + passes + (stats.pending > 0 ? ', ' : ' and left ') + fail + pending + ' (' + ((new Date().getTime()) - start) + 'ms)');
-				out.writeln();
-				if (failures.length > 0) {
-					out.writeln(style.suite('->') + style.error(' fail!'));
-				}
-				else {
-					out.writeln(style.suite('->') + style.success(' pass!'));
-				}
+				out.writeln(style.test('-> ') + sum + ' (' + ((new Date().getTime()) - start) + 'ms)');
 				out.finish();
 			});
 		}
