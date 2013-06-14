@@ -4,7 +4,7 @@
 /// <reference path="../typings/DefinitelyTyped/chai/chai-fuzzy-assert.d.ts" />
 /// <reference path="../typings/DefinitelyTyped/underscore/underscore.d.ts" />
 
-/// <reference path="helper.ts" />
+/// <reference path="_helper.ts" />
 
 /* due bugs in TypeScript compiler's sourcemap generator this is disabled for now
 if (require.resolve('source-map-support')) {
@@ -16,14 +16,17 @@ if (typeof process !== 'undefined' && typeof process.env === 'object') {
 	process.env['mocha-unfunk-color'] = true;
 }
 
+declare var window:Window;
 declare interface Window {
 	chai:chai;
 	objectDiff;any;
 }
-declare var window:any;
+
+//ugly TypeScript hacks
 var _;
 declare var chai:any;
 declare var objectDiff;
+
 if (typeof require === "function" && typeof exports === "object" && typeof module === "object") {
 	// NodeJS
 	var chai = require('chai');
@@ -40,6 +43,3 @@ else {
 
 var expect = chai.expect;
 var assert = chai.assert;
-
-console.log('yo from _Ref!');
-
