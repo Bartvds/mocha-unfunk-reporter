@@ -73,15 +73,14 @@ module unfunk {
 		failures = 0;
 	}
 
-	var util = require('util');
-
+	var options:any = {};
+	var unfunkRef;
 
 	export class Unfunk {
 
 		//TODO expose alternate writer/styler choices?
 		//TODO fix/auto switch colors
 
-		options:any = {};
 		stats:Stats;
 		failures:Test[];
 
@@ -90,7 +89,7 @@ module unfunk {
 		}
 
 		getStyler():Styler {
-			if (this.stringTrueish(this.options.color)) {
+			if (this.stringTrueish(options.color)) {
 				return new styler.AnsiStyler();
 			}
 			return new styler.NullStyler();
@@ -139,13 +138,13 @@ module unfunk {
 					if (suite.suites) {
 						out.writeln(style.suite('->') + ' running ' + style.suite(pluralize('suite', suite.suites.length)));
 					} else {
-						out.writeln(style.suite('->') + ' running suite');
+						out.writeln(style.suite('->') + ' running suites');
 					}
 					out.writeln();
 				}
 				stats.suites++;
 				indents++;
-				if (!suite.root) {
+				if (!suite.root && suite.title) {
 					out.writeln(indent() + style.suite(suite.title));
 				}
 			});
@@ -220,6 +219,7 @@ module unfunk {
 					}
 					sum += ' in ';
 					sum += style.suite(pluralize('test', stats.tests));
+
 				} else {
 					sum += style.warning(pluralize('test', stats.tests));
 				}
@@ -287,15 +287,30 @@ module unfunk {
 			return str != '' && str != 'false' && str != '0' && str != 'null' && str != 'undefined';
 		}
 
+		static option(name:string, value?:any) {
+			if (typeof value !== 'undefined') {
+				options[name] = value;
+			}
+			return unfunkRef;
+		}
+
+		static importOptions(values:any) {
+			for (var name in values) {
+				if (values.hasOwnProperty(name)){
+					options[name] = values[name];
+				}
+			}
+			return unfunkRef;
+		}
+
 		importOptions() {
 			//import from env/document
 			var pattern = /^mocha-unfunk-([\w][\w_-]*[\w])/g;
 			var obj;
-			/*if (typeof document !== 'undefined' && document.env){
+			if (typeof document !== 'undefined' && document.env) {
 				obj = document.env;
 			}
-			else*/
-			if (typeof process !== 'undefined' && process.env) {
+			else if (typeof process !== 'undefined' && process.env) {
 				obj = process.env;
 			}
 			if (obj) {
@@ -303,13 +318,13 @@ module unfunk {
 					if (Object.prototype.hasOwnProperty.call(obj, name)) {
 						var match = pattern.exec(name);
 						if (match && match.length > 1) {
-							this.options[match[1]] = obj[name];
+							options[match[1]] = obj[name];
 						}
 					}
 				}
 			}
-
 		}
 	}
+	unfunkRef = Unfunk;
 }
 exports = (module).exports = unfunk.Unfunk;

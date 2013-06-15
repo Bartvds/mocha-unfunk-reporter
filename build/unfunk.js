@@ -422,15 +422,15 @@ var unfunk;
         return Stats;
     })();
     unfunk.Stats = Stats;    
-    var util = require('util');
+    var options = {
+    };
+    var unfunkRef;
     var Unfunk = (function () {
         function Unfunk(runner) {
-            this.options = {
-            };
             this.init(runner);
         }
         Unfunk.prototype.getStyler = function () {
-            if(this.stringTrueish(this.options.color)) {
+            if(this.stringTrueish(options.color)) {
                 return new unfunk.styler.AnsiStyler();
             }
             return new unfunk.styler.NullStyler();
@@ -470,13 +470,13 @@ var unfunk;
                     if(suite.suites) {
                         out.writeln(style.suite('->') + ' running ' + style.suite(pluralize('suite', suite.suites.length)));
                     } else {
-                        out.writeln(style.suite('->') + ' running suite');
+                        out.writeln(style.suite('->') + ' running suites');
                     }
                     out.writeln();
                 }
                 stats.suites++;
                 indents++;
-                if(!suite.root) {
+                if(!suite.root && suite.title) {
                     out.writeln(indent() + style.suite(suite.title));
                 }
             });
@@ -591,10 +591,26 @@ var unfunk;
             str = ('' + str).toLowerCase();
             return str != '' && str != 'false' && str != '0' && str != 'null' && str != 'undefined';
         };
+        Unfunk.option = function option(name, value) {
+            if(typeof value !== 'undefined') {
+                options[name] = value;
+            }
+            return unfunkRef;
+        };
+        Unfunk.importOptions = function importOptions(values) {
+            for(var name in values) {
+                if(values.hasOwnProperty(name)) {
+                    options[name] = values[name];
+                }
+            }
+            return unfunkRef;
+        };
         Unfunk.prototype.importOptions = function () {
             var pattern = /^mocha-unfunk-([\w][\w_-]*[\w])/g;
             var obj;
-            if(typeof process !== 'undefined' && process.env) {
+            if(typeof document !== 'undefined' && document.env) {
+                obj = document.env;
+            } else if(typeof process !== 'undefined' && process.env) {
                 obj = process.env;
             }
             if(obj) {
@@ -602,7 +618,7 @@ var unfunk;
                     if(Object.prototype.hasOwnProperty.call(obj, name)) {
                         var match = pattern.exec(name);
                         if(match && match.length > 1) {
-                            this.options[match[1]] = obj[name];
+                            options[match[1]] = obj[name];
                         }
                     }
                 }
@@ -611,5 +627,6 @@ var unfunk;
         return Unfunk;
     })();
     unfunk.Unfunk = Unfunk;    
+    unfunkRef = Unfunk;
 })(unfunk || (unfunk = {}));
 exports = (module).exports = unfunk.Unfunk;

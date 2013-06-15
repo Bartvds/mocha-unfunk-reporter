@@ -1,5 +1,7 @@
 # mocha-unfunk-reporter
 
+[![Dependency Status](https://gemnasium.com/Bartvds/mocha-unfunk-reporter.png)](https://gemnasium.com/Bartvds/mocha-unfunk-reporter) [![NPM version](https://badge.fury.io/js/mocha-unfunk-reporter.png)](http://badge.fury.io/js/mocha-unfunk-reporter)
+
 > mocha console reporter without funkyness
 
 ## What?
@@ -17,7 +19,6 @@ The reporter does *not* extend mocha's default Base reporter prototype, because 
 * The reporter could easily be adapted to alternate unfunky display modes, I might even support browser consoles or remote logging.
 
 ## Usage
-
 Install in your project using `npm install mocha-unfunk-reporter`. Then use `mocha-unfunk-reporter` as mocha's `reporter` parameter.
 
 ## Options
@@ -25,9 +26,9 @@ Install in your project using `npm install mocha-unfunk-reporter`. Then use `moc
 Pass extra options using process.env. It's a global option since we don't extend mocha's Base reporter so cannot access the useColor parameter.
 
 ````
-// enable colors using ANSI codes (nothing against some optional functional funk :)
+// global enable colors using ANSI codes (nothing against some optional functional funk :)
 
-process.env['mocha-unfunk-color'] = true;
+require('mocha-unfunk-color').option('color', true);
 ````
 
 ## Versions
@@ -44,6 +45,7 @@ process.env['mocha-unfunk-color'] = true;
 ## Compatibility
 
 Testing on:
+
 * mocha (node module)
 * grunt-mocha (grunt + phantomJS)
 * grunt-mocha-test (grunt + node)

@@ -3,5 +3,6 @@ npm-debug.log
 test/tmp
 tmp
 
+/*.tgz
 /.idea
 /test/_tmp.test.js

@@ -12,9 +12,7 @@ if (require.resolve('source-map-support')) {
 	require('source-map-support').install();
 }*/
 
-if (typeof process !== 'undefined' && typeof process.env === 'object') {
-	process.env['mocha-unfunk-color'] = true;
-}
+require('../').option('color', false).option('color', true);
 
 declare var window:Window;
 declare interface Window {
