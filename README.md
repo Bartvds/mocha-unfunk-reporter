@@ -2,7 +2,7 @@
 
 [![Dependency Status](https://gemnasium.com/Bartvds/mocha-unfunk-reporter.png)](https://gemnasium.com/Bartvds/mocha-unfunk-reporter) [![NPM version](https://badge.fury.io/js/mocha-unfunk-reporter.png)](http://badge.fury.io/js/mocha-unfunk-reporter)
 
-> mocha console reporter without funkyness
+> Mocha console reporter without funkyness
 
 ## What?
 
@@ -33,6 +33,7 @@ require('mocha-unfunk-color').option('color', true);
 
 ## Versions
 
+* 0.1.10 - objectDiff fix, added option methode
 * 0.1.9 - tighter text
 * 0.1.8 - made compatible with grunt-mocha (PhantomJS)
 * 0.1.7 - package.json repos url fix
