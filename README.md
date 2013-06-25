@@ -10,7 +10,7 @@ This is a minimal `Spec`-style console reporter for [mocha](http://visionmedia.g
 
 Main use-case is running mocha's node module, embedded in external tools in IDE's like WebStorm or in other setups with only basic consoles or buffered output. 
 
-The reporter does *not* extend mocha's default Base reporter prototype, because that is a main source of funkyness, so not all of mocha's reporter related features are supported.
+The reporter does *not* extend mocha's default Base reporter prototype, because that is a main source of funkyness. So not all of mocha's reporter related features are supported.
 
 ## Notes
 
@@ -23,8 +23,6 @@ Install in your project using `npm install mocha-unfunk-reporter`. Then use `moc
 
 ## Options
 
-Pass extra options using process.env. It's a global option since we don't extend mocha's Base reporter so cannot access the useColor parameter.
-
 ````
 // global enable colors using ANSI codes (nothing against some optional functional funk :)
 
@@ -33,7 +31,7 @@ require('mocha-unfunk-color').option('color', true);
 
 ## Versions
 
-* 0.1.10 - objectDiff fix, added option methode
+* 0.1.10 - object diff fix, added option() method
 * 0.1.9 - tighter text
 * 0.1.8 - made compatible with grunt-mocha (PhantomJS)
 * 0.1.7 - package.json repos url fix
