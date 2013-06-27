@@ -12,8 +12,6 @@ if (require.resolve('source-map-support')) {
 	require('source-map-support').install();
 }*/
 
-require('../').option('color', false).option('color', true);
-
 declare var window:Window;
 declare interface Window {
 	chai:chai;

@@ -99,7 +99,7 @@ module unfunk {
 		}
 
 		//not used yet
-		export class HtmlStyler extends WrapStyler {
+		/*export class HtmlStyler extends WrapStyler {
 			constructor() {
 				super();
 				this.styles = {
@@ -121,6 +121,6 @@ module unfunk {
 					'yellow': ['<span style="color:yellow;">', '</span>']
 				};
 			}
-		}
+		}*/
 	}
 }

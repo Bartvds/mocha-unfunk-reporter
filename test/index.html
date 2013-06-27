@@ -10,13 +10,9 @@
     <script src="../lib/objectDiff.js"></script>
     <script>
         mocha.setup('bdd');
-        console.log('yo!');
         window.onload = function () {
             if (navigator.userAgent.indexOf('PhantomJS') < 0) {
-                console.log('not phantom');
                 mocha.run();
-            } else {
-                console.log('phantom');
             }
         };
     </script>
