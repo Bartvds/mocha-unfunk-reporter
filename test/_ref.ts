@@ -30,6 +30,8 @@ if (typeof require === "function" && typeof exports === "object" && typeof modul
 	_ = require('underscore')
 	chai.use(require('chai-fuzzy'));
 	var objectDiff = require('../lib/objectDiff');
+
+	process.env['mocha-unfunk-color'] = true;
 }
 else {
 	// Other environment (usually <script> tag): plug in to global chai instance directly.

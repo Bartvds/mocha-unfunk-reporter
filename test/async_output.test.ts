@@ -15,16 +15,4 @@ describe('slow reporting', () => {
 			}, 100);
 		}, 100);
 	});
-	it('wait for it to', (done:() => void) => {
-		setTimeout(()=> {
-			assert.ok(1);
-			setTimeout(()=> {
-				assert.ok(1);
-				setTimeout(()=> {
-					assert.ok(1);
-					done();
-				}, 100);
-			}, 100);
-		},100);
-	});
 });

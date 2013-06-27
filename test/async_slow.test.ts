@@ -14,6 +14,6 @@ describe('slow test', () => {
 		setTimeout(()=> {
 			assert.ok(1);
 			done();
-		}, 600);
+		}, 500);
 	});
 });

@@ -202,68 +202,6 @@ var unfunk;
             return AnsiStyler;
         })(WrapStyler);
         styler.AnsiStyler = AnsiStyler;        
-        var HtmlStyler = (function (_super) {
-            __extends(HtmlStyler, _super);
-            function HtmlStyler() {
-                        _super.call(this);
-                this.styles = {
-                    'bold': [
-                        '<b>', 
-                        '</b>'
-                    ],
-                    'italic': [
-                        '<i>', 
-                        '</i>'
-                    ],
-                    'underline': [
-                        '<u>', 
-                        '</u>'
-                    ],
-                    'inverse': [
-                        '<span style="background-color:black;color:white;">', 
-                        '</span>'
-                    ],
-                    'white': [
-                        '<span style="color:white;">', 
-                        '</span>'
-                    ],
-                    'grey': [
-                        '<span style="color:grey;">', 
-                        '</span>'
-                    ],
-                    'black': [
-                        '<span style="color:black;">', 
-                        '</span>'
-                    ],
-                    'blue': [
-                        '<span style="color:blue;">', 
-                        '</span>'
-                    ],
-                    'cyan': [
-                        '<span style="color:cyan;">', 
-                        '</span>'
-                    ],
-                    'green': [
-                        '<span style="color:green;">', 
-                        '</span>'
-                    ],
-                    'magenta': [
-                        '<span style="color:magenta;">', 
-                        '</span>'
-                    ],
-                    'red': [
-                        '<span style="color:red;">', 
-                        '</span>'
-                    ],
-                    'yellow': [
-                        '<span style="color:yellow;">', 
-                        '</span>'
-                    ]
-                };
-            }
-            return HtmlStyler;
-        })(WrapStyler);
-        styler.HtmlStyler = HtmlStyler;        
     })(unfunk.styler || (unfunk.styler = {}));
     var styler = unfunk.styler;
 })(unfunk || (unfunk = {}));
