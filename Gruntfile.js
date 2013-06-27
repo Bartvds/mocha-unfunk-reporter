@@ -105,7 +105,7 @@ module.exports = function (grunt) {
 					stderr: true
 				},
 				//use local mocha
-				command: '_mocha.cmd --reporter ' + path.resolve('build/unfunk.js') + ' ' + path.resolve('test/_tmp.test')
+				command: 'mocha.cmd --reporter ' + path.resolve('build/unfunk.js') + ' ' + path.resolve('test/_tmp.test')
 			}
 		}
 	});
