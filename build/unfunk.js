@@ -546,9 +546,7 @@ var unfunk;
         Unfunk.prototype.importOptions = function () {
             var pattern = /^mocha-unfunk-([\w][\w_-]*[\w])/g;
             var obj;
-            if(typeof document !== 'undefined' && document.env) {
-                obj = document.env;
-            } else if(typeof process !== 'undefined' && process.env) {
+            if(typeof process !== 'undefined' && process.env) {
                 obj = process.env;
             }
             if(obj) {

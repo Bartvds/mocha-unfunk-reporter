@@ -35,11 +35,6 @@ interface Test {
 	fullTitle():string;
 }
 
-//global hack
-declare interface Document {
-	env:any;
-}
-declare var document:Document;
 
 module unfunk {
 
@@ -307,10 +302,7 @@ module unfunk {
 			//import from env/document
 			var pattern = /^mocha-unfunk-([\w][\w_-]*[\w])/g;
 			var obj;
-			if (typeof document !== 'undefined' && document.env) {
-				obj = document.env;
-			}
-			else if (typeof process !== 'undefined' && process.env) {
+			if (typeof process !== 'undefined' && process.env) {
 				obj = process.env;
 			}
 			if (obj) {
