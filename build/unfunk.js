@@ -95,10 +95,10 @@ var unfunk;
             NullStyler.prototype.success = function (str) {
                 return str;
             };
-            NullStyler.prototype.suite = function (str) {
+            NullStyler.prototype.accent = function (str) {
                 return str;
             };
-            NullStyler.prototype.test = function (str) {
+            NullStyler.prototype.main = function (str) {
                 return str;
             };
             NullStyler.prototype.pass = function (str) {
@@ -121,10 +121,10 @@ var unfunk;
             WrapStyler.prototype.success = function (str) {
                 return this.wrap(str, 'green');
             };
-            WrapStyler.prototype.suite = function (str) {
+            WrapStyler.prototype.accent = function (str) {
                 return this.wrap(str, 'cyan');
             };
-            WrapStyler.prototype.test = function (str) {
+            WrapStyler.prototype.main = function (str) {
                 return str;
             };
             WrapStyler.prototype.wrap = function (str, style) {
@@ -287,7 +287,7 @@ var unfunk;
                 } else if(change == 'object change') {
                     return this.style.warning(this.markChang + this.stringifyObjectKey(this.escapeString(key)) + ': ');
                 }
-                return this.style.suite(this.markEqual + this.stringifyObjectKey(this.escapeString(key)) + ': ');
+                return this.style.accent(this.markEqual + this.stringifyObjectKey(this.escapeString(key)) + ': ');
             };
             DiffStylerFormat.prototype.stringifyObjectKey = function (key) {
                 return /^[a-z0-9_$]*$/i.test(key) ? key : JSON.stringify(key);
@@ -406,16 +406,16 @@ var unfunk;
             runner.on('suite', function (suite) {
                 if(indents === 0) {
                     if(suite.suites) {
-                        out.writeln(style.suite('->') + ' running ' + style.suite(pluralize('suite', suite.suites.length)));
+                        out.writeln(style.accent('->') + ' running ' + style.accent(pluralize('suite', suite.suites.length)));
                     } else {
-                        out.writeln(style.suite('->') + ' running suites');
+                        out.writeln(style.accent('->') + ' running suites');
                     }
                     out.writeln();
                 }
                 stats.suites++;
                 indents++;
                 if(!suite.root && suite.title) {
-                    out.writeln(indent() + style.suite(suite.title));
+                    out.writeln(indent() + style.accent(suite.title));
                 }
             });
             runner.on('suite end', function (suite) {
@@ -426,7 +426,7 @@ var unfunk;
             });
             runner.on('test', function (test) {
                 stats.tests++;
-                out.write(indent(1) + style.test(test.title + '.. '));
+                out.write(indent(1) + style.main(test.title + '.. '));
             });
             runner.on('pending', function (test) {
                 stats.pending++;
@@ -473,7 +473,7 @@ var unfunk;
                         sum += style.warning(pluralize('pass', stats.passes, 'es'));
                     }
                     sum += ' in ';
-                    sum += style.suite(pluralize('test', stats.tests));
+                    sum += style.accent(pluralize('test', stats.tests));
                 } else {
                     sum += style.warning(pluralize('test', stats.tests));
                 }
@@ -482,7 +482,7 @@ var unfunk;
                 }
                 indents += 1;
                 if(failures.length > 0) {
-                    out.writeln(style.suite('->') + ' reporting ' + fail);
+                    out.writeln(style.accent('->') + ' reporting ' + fail);
                     out.writeln();
                     failures.forEach(function (test, num) {
                         var title;
@@ -496,9 +496,9 @@ var unfunk;
                         }
                         for(var i = 0, ii = titles.length; i < ii; i++) {
                             if(i % 2 === 0) {
-                                titles[i] = style.test(titles[i]);
+                                titles[i] = style.main(titles[i]);
                             } else {
-                                titles[i] = style.suite(titles[i]);
+                                titles[i] = style.accent(titles[i]);
                             }
                         }
                         title = titles.join(' ');
@@ -520,7 +520,7 @@ var unfunk;
                         out.writeln();
                     });
                 }
-                out.writeln(style.test('-> ') + sum + ' (' + ((new Date().getTime()) - start) + 'ms)');
+                out.writeln(style.main('-> ') + sum + ' (' + ((new Date().getTime()) - start) + 'ms)');
                 out.writeln();
                 out.finish();
             });

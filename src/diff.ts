@@ -114,7 +114,7 @@ module unfunk {
 				else if (change == 'object change'){
 					return this.style.warning(this.markChang + this.stringifyObjectKey(this.escapeString(key)) + ': ');
 				}
-				return this.style.suite(this.markEqual + this.stringifyObjectKey(this.escapeString(key)) + ': ');
+				return this.style.accent(this.markEqual + this.stringifyObjectKey(this.escapeString(key)) + ': ');
 			}
 
 			private stringifyObjectKey(key) {

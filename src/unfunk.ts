@@ -56,8 +56,8 @@ module unfunk {
 		error(str:string):string;
 		warning(str:string):string;
 		success(str:string):string;
-		suite(str:string):string;
-		test(str:string):string;
+		accent(str:string):string;
+		main(str:string):string;
 		pass(str:string):string;
 	}
 
@@ -136,16 +136,16 @@ module unfunk {
 				if (indents === 0) {
 					//mocha-test doens't send suites?
 					if (suite.suites) {
-						out.writeln(style.suite('->') + ' running ' + style.suite(pluralize('suite', suite.suites.length)));
+						out.writeln(style.accent('->') + ' running ' + style.accent(pluralize('suite', suite.suites.length)));
 					} else {
-						out.writeln(style.suite('->') + ' running suites');
+						out.writeln(style.accent('->') + ' running suites');
 					}
 					out.writeln();
 				}
 				stats.suites++;
 				indents++;
 				if (!suite.root && suite.title) {
-					out.writeln(indent() + style.suite(suite.title));
+					out.writeln(indent() + style.accent(suite.title));
 				}
 			});
 
@@ -158,7 +158,7 @@ module unfunk {
 
 			runner.on('test', (test:Test) => {
 				stats.tests++;
-				out.write(indent(1) + style.test(test.title + '.. '));
+				out.write(indent(1) + style.main(test.title + '.. '));
 			});
 
 			runner.on('pending', (test:Test) => {
@@ -218,7 +218,7 @@ module unfunk {
 						sum += style.warning(pluralize('pass', stats.passes, 'es'))
 					}
 					sum += ' in ';
-					sum += style.suite(pluralize('test', stats.tests));
+					sum += style.accent(pluralize('test', stats.tests));
 
 				} else {
 					sum += style.warning(pluralize('test', stats.tests));
@@ -232,7 +232,7 @@ module unfunk {
 
 				if (failures.length > 0) {
 
-					out.writeln(style.suite('->') + ' reporting ' + fail);
+					out.writeln(style.accent('->') + ' reporting ' + fail);
 					out.writeln();
 
 					failures.forEach((test:Test, num:number) => {
@@ -246,9 +246,9 @@ module unfunk {
 						}
 						for (var i = 0, ii = titles.length; i < ii; i++) {
 							if (i % 2 === 0) {
-								titles[i] = style.test(titles[i]);
+								titles[i] = style.main(titles[i]);
 							} else {
-								titles[i] = style.suite(titles[i]);
+								titles[i] = style.accent(titles[i]);
 							}
 						}
 						title = titles.join(' ');
@@ -259,7 +259,7 @@ module unfunk {
 						var index = stack.indexOf(message) + message.length;
 						var msg = stack.slice(0, index);
 
-						// out.writeln(indent() + style.error((num + 1) + ': ') + style.test(title.substr(0, pre)) + style.suite(title.substr(pre)));
+						// out.writeln(indent() + style.error((num + 1) + ': ') + style.main(title.substr(0, pre)) + style.accent(title.substr(pre)));
 						out.writeln(indent() + style.error((num + 1) + ': ') + title);
 						out.writeln(indent(3) + style.warning(msg));
 
@@ -276,7 +276,7 @@ module unfunk {
 						out.writeln();
 					});
 				}
-				out.writeln(style.test('-> ') + sum + ' (' + ((new Date().getTime()) - start) + 'ms)');
+				out.writeln(style.main('-> ') + sum + ' (' + ((new Date().getTime()) - start) + 'ms)');
 				out.writeln();
 				out.finish();
 			});

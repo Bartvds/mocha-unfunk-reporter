@@ -25,11 +25,11 @@ module unfunk {
 				return str;
 			}
 
-			suite(str:string):string {
+			accent(str:string):string {
 				return str;
 			}
 
-			test(str:string):string {
+			main(str:string):string {
 				return str;
 			}
 			pass(str:string):string {
@@ -53,11 +53,11 @@ module unfunk {
 				return this.wrap(str, 'green');
 			}
 
-			suite(str:string):string {
+			accent(str:string):string {
 				return this.wrap(str, 'cyan');
 			}
 
-			test(str:string):string {
+			main(str:string):string {
 				return str;
 			}
 
