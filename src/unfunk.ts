@@ -227,18 +227,18 @@ module unfunk {
 				if (stats.tests > 0) {
 
 					if (stats.failures > 0) {
-						fail = style.error(pluralize('failure', stats.failures))
+						fail = style.error('failed ' +  stats.failures)
+						sum += fail + ' and ';
 					} else {
-						fail = style.success(pluralize('failure', stats.failures));
+						fail = style.success('failed ' +  stats.failures);
 					}
-					sum += fail + ' and ';
 
 					if (stats.passes == stats.tests) {
-						sum += style.success(pluralize('pass', stats.passes, 'es'))
+						sum += style.success('passed ' +  stats.passes);
 					} else if (stats.passes === 0) {
-						sum += style.error(pluralize('pass', stats.passes, 'es'))
+						sum += style.error('passed ' +  stats.passes);
 					} else {
-						sum += style.warning(pluralize('pass', stats.passes, 'es'))
+						sum += style.warning('passed ' +  stats.passes)
 					}
 					sum += ' in ';
 					sum += style.accent(pluralize('test', stats.tests));
@@ -259,14 +259,15 @@ module unfunk {
 					out.writeln();
 
 					failures.forEach((test:Test, num:number) => {
-
-						var title; // = test.fullTitle()
+						//deep get title chain
+						var title;
 						var titles = [test.title];
 						var tmp = test.parent;
 						while (tmp && !tmp.root) {
 							titles.unshift(tmp.title);
 							tmp = tmp.parent;
 						}
+						//zebra
 						for (var i = 0, ii = titles.length; i < ii; i++) {
 							if (i % 2 === 0) {
 								titles[i] = style.main(titles[i]);
@@ -276,6 +277,7 @@ module unfunk {
 						}
 						title = titles.join(' ');
 
+						//TODO clean this up
 						var err = test.err;
 						var message = err.message || '';
 						var stack = err.stack || message;

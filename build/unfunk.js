@@ -208,16 +208,6 @@ var unfunk;
 var unfunk;
 (function (unfunk) {
     (function (diff) {
-        var DiffChange = (function () {
-            function DiffChange() { }
-            DiffChange.PRIMITIVE = 'primitive change';
-            DiffChange.OBJECT = 'object change';
-            DiffChange.ADDED = 'added';
-            DiffChange.REMOVED = 'removed';
-            DiffChange.EQUAL = 'equal';
-            return DiffChange;
-        })();
-        diff.DiffChange = DiffChange;        
         var DiffStylerFormat = (function () {
             function DiffStylerFormat(style) {
                 this.style = style;
@@ -360,9 +350,32 @@ var unfunk;
         return Stats;
     })();
     unfunk.Stats = Stats;    
+    var expose;
     var options = {
     };
-    var unfunkRef;
+    var option = function (name, value) {
+        if(typeof value !== 'undefined') {
+            options[name] = value;
+        }
+        return expose;
+    };
+    var importEnv = function () {
+        var pattern = /^mocha-unfunk-([\w][\w_-]*[\w])/g;
+        var obj;
+        if(typeof process !== 'undefined' && process.env) {
+            obj = process.env;
+        }
+        if(obj) {
+            for(var name in obj) {
+                if(Object.prototype.hasOwnProperty.call(obj, name)) {
+                    var match = pattern.exec(name);
+                    if(match && match.length > 1) {
+                        options[match[1]] = obj[name];
+                    }
+                }
+            }
+        }
+    };
     var Unfunk = (function () {
         function Unfunk(runner) {
             this.init(runner);
@@ -380,7 +393,7 @@ var unfunk;
             return new unfunk.diff.DiffStylerFormat(styler);
         };
         Unfunk.prototype.init = function (runner) {
-            this.importOptions();
+            importEnv();
             var stats = this.stats = new Stats();
             var out = this.getWriter();
             var style = this.getStyler();
@@ -460,17 +473,17 @@ var unfunk;
                 var fail;
                 if(stats.tests > 0) {
                     if(stats.failures > 0) {
-                        fail = style.error(pluralize('failure', stats.failures));
+                        fail = style.error('failed ' + stats.failures);
+                        sum += fail + ' and ';
                     } else {
-                        fail = style.success(pluralize('failure', stats.failures));
+                        fail = style.success('failed ' + stats.failures);
                     }
-                    sum += fail + ' and ';
                     if(stats.passes == stats.tests) {
-                        sum += style.success(pluralize('pass', stats.passes, 'es'));
+                        sum += style.success('passed ' + stats.passes);
                     } else if(stats.passes === 0) {
-                        sum += style.error(pluralize('pass', stats.passes, 'es'));
+                        sum += style.error('passed ' + stats.passes);
                     } else {
-                        sum += style.warning(pluralize('pass', stats.passes, 'es'));
+                        sum += style.warning('passed ' + stats.passes);
                     }
                     sum += ' in ';
                     sum += style.accent(pluralize('test', stats.tests));
@@ -529,40 +542,10 @@ var unfunk;
             str = ('' + str).toLowerCase();
             return str != '' && str != 'false' && str != '0' && str != 'null' && str != 'undefined';
         };
-        Unfunk.option = function option(name, value) {
-            if(typeof value !== 'undefined') {
-                options[name] = value;
-            }
-            return unfunkRef;
-        };
-        Unfunk.importOptions = function importOptions(values) {
-            for(var name in values) {
-                if(values.hasOwnProperty(name)) {
-                    options[name] = values[name];
-                }
-            }
-            return unfunkRef;
-        };
-        Unfunk.prototype.importOptions = function () {
-            var pattern = /^mocha-unfunk-([\w][\w_-]*[\w])/g;
-            var obj;
-            if(typeof process !== 'undefined' && process.env) {
-                obj = process.env;
-            }
-            if(obj) {
-                for(var name in obj) {
-                    if(Object.prototype.hasOwnProperty.call(obj, name)) {
-                        var match = pattern.exec(name);
-                        if(match && match.length > 1) {
-                            options[match[1]] = obj[name];
-                        }
-                    }
-                }
-            }
-        };
         return Unfunk;
     })();
     unfunk.Unfunk = Unfunk;    
-    unfunkRef = Unfunk;
+    expose = Unfunk;
+    expose.option = option;
+    exports = (module).exports = expose;
 })(unfunk || (unfunk = {}));
-exports = (module).exports = unfunk.Unfunk;
