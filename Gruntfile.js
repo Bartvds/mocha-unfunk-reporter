@@ -51,6 +51,13 @@ module.exports = function (grunt) {
 				src: ['test/*.test.ts'],
 				dest: 'test/_tmp.test.js'
 			},
+			test_pass: {
+				options: {
+					base_path: 'test/'
+				},
+				src: ['test/async_slow.test.ts', 'test/objectDiff.test.ts'],
+				dest: 'test/_tmp.test.js'
+			},
 			test_objectDiff: {
 				options: {
 					base_path: 'test/'
@@ -105,7 +112,7 @@ module.exports = function (grunt) {
 					stderr: true
 				},
 				//use local mocha
-				command: 'mocha.cmd --reporter ' + path.resolve('build/unfunk.js') + ' ' + path.resolve('test/_tmp.test')
+				command: 'mocha --reporter ' + path.resolve('build/unfunk.js') + ' ' + path.resolve('test/_tmp.test')
 			}
 		}
 	});
@@ -119,7 +126,7 @@ module.exports = function (grunt) {
 	grunt.registerTask('run_all', ['mochaTest', 'mocha', 'mocha_spawn', 'simplemocha', 'shell']);
 
 	grunt.registerTask('build', ['clean', 'typescript:reporter']);
-	grunt.registerTask('build_pass', ['build', 'jshint', 'typescript:test_objectDiff']);
+	grunt.registerTask('build_pass', ['build', 'jshint', 'typescript:test_objectDiff', 'typescript:test_pass']);
 	grunt.registerTask('build_fail', ['build', 'jshint', 'typescript:test_fail']);
 
 	//editor ui shortcuts/buttons

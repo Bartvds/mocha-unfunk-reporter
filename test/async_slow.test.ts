@@ -8,12 +8,12 @@ describe('slow test', () => {
 		setTimeout(()=> {
 			assert.ok(1);
 			done();
-		}, 100);
+		}, 50);
 	});
 	it('very slow', (done:() => void) => {
 		setTimeout(()=> {
 			assert.ok(1);
 			done();
-		}, 500);
+		}, 250);
 	});
 });
