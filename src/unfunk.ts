@@ -3,6 +3,7 @@
 ///<reference path="styler.ts" />
 ///<reference path="diff.ts" />
 
+//declare mocha reporter data typings
 interface TestError {
 	message:string;
 	type:string;
@@ -34,7 +35,6 @@ interface Test {
 	slow():number;
 	fullTitle():string;
 }
-
 
 module unfunk {
 
@@ -68,9 +68,37 @@ module unfunk {
 		failures = 0;
 	}
 
+	//global options
+	var expose:any;
 	var options:any = {};
-	var unfunkRef;
 
+	var option = function (name:string, value?:any):any {
+		if (typeof value !== 'undefined') {
+			options[name] = value;
+		}
+		return expose;
+	};
+
+	var importEnv = function ():any {
+		//import from env/document
+		var pattern = /^mocha-unfunk-([\w][\w_-]*[\w])/g;
+		var obj;
+		if (typeof process !== 'undefined' && process.env) {
+			obj = process.env;
+		}
+		if (obj) {
+			for (var name in obj) {
+				if (Object.prototype.hasOwnProperty.call(obj, name)) {
+					var match = pattern.exec(name);
+					if (match && match.length > 1) {
+						options[match[1]] = obj[name];
+					}
+				}
+			}
+		}
+	};
+
+	//the reporter
 	export class Unfunk {
 
 		//TODO expose alternate writer/styler choices?
@@ -99,7 +127,7 @@ module unfunk {
 		}
 
 		init(runner) {
-			this.importOptions();
+			importEnv();
 
 			var stats = this.stats = new Stats();
 			var out = this.getWriter();
@@ -281,42 +309,10 @@ module unfunk {
 			str = ('' + str).toLowerCase();
 			return str != '' && str != 'false' && str != '0' && str != 'null' && str != 'undefined';
 		}
-
-		static option(name:string, value?:any) {
-			if (typeof value !== 'undefined') {
-				options[name] = value;
-			}
-			return unfunkRef;
-		}
-
-		static importOptions(values:any) {
-			for (var name in values) {
-				if (values.hasOwnProperty(name)){
-					options[name] = values[name];
-				}
-			}
-			return unfunkRef;
-		}
-
-		importOptions() {
-			//import from env/document
-			var pattern = /^mocha-unfunk-([\w][\w_-]*[\w])/g;
-			var obj;
-			if (typeof process !== 'undefined' && process.env) {
-				obj = process.env;
-			}
-			if (obj) {
-				for (var name in obj) {
-					if (Object.prototype.hasOwnProperty.call(obj, name)) {
-						var match = pattern.exec(name);
-						if (match && match.length > 1) {
-							options[match[1]] = obj[name];
-						}
-					}
-				}
-			}
-		}
 	}
-	unfunkRef = Unfunk;
+
+	//combine
+	expose = Unfunk;
+	expose.option = option;
+	exports = (module).exports = expose;
 }
-exports = (module).exports = unfunk.Unfunk;

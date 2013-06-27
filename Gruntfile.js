@@ -85,7 +85,7 @@ module.exports = function (grunt) {
 		}
 	});
 
-	require('./').option('color', true);
+	process.env['mocha-unfunk-color'] = true;
 
 	grunt.registerTask('default', ['test']);
 	grunt.registerTask('build', ['clean', 'typescript:reporter']);
