@@ -5,30 +5,30 @@
 
 ## What?
 
-This is a minimal `Spec`-style console reporter for [mocha](http://visionmedia.github.io/mocha/) that doesn't confuse lesser console environments with funky display modes, line overwrites, cursor tricks, escape codes or weird encodings.
+This is a minimal `Spec`-style console reporter for [mocha](http://visionmedia.github.io/mocha/) that doesn't confuse lesser console environments with funky display modes, cursor tricks or weird control characters.
 
-Main use-case is running mocha's node module, embedded in external tools in IDE's like WebStorm or in other setups with only basic consoles or buffered output. 
+Main use-case is running mocha's in basic console views embedded in some IDE's or setups with text buffered output. In the default mode the report doesn't use ANSI control codes like the standard reporters do (there is an option for color though).
 
-The reporter does *not* extend mocha's default Base reporter prototype, because that is a main source of funkyness. So not all of mocha's reporter related features are supported.
+The reporter does *not* extend mocha's default Base reporter because that is a main source of funkyness. This means not all of mocha's reporter features are supported.
 
-## Notes
+### Notes
 
 * There's an object-compare diff output powered by [objectDiff](https://github.com/NV/objectDiff.js), usefull with [chai](http://chaijs.com/) and deepEqual().
-* There should be string diff support but it will be tricky to do without depending on colors.
-* The reporter could easily be adapted to alternate unfunky display modes, I might even support browser consoles or remote logging.
+* There should/must be string diff support but it is tricky to do without depending on colors.
+* The reporter could easily be adapted to alternate unfunky display modes.
 
 ## Usage
 Install from npm:
 
 ````
-npm install mocha-unfunk-reporter
+npm install mocha-unfunk-reporter --save-dev
 ```` 
 
-Then use `'mocha-unfunk-reporter'` as `reporter` parameter in your favorite mocha runner.
+Then use `'mocha-unfunk-reporter'` as `reporter` parameter in your favorite mocha runner. For example in `grunt-mocha-test`:
 
 ````
 grunt.initConfig({
-	//node
+	// ...
 	mochaTest: {
 		options: {
 			reporter: 'mocha-unfunk-reporter'
@@ -36,27 +36,15 @@ grunt.initConfig({
 		any: {
 			src: ['test/_tmp.test.js']
 		}
-	},
-	//phantomjs
-	mocha: {
-		options: {
-			log: true,
-			run: true,
-			reporter: 'mocha-unfunk-reporter'
-		},
-		any: {
-			src: ['test/*.html']
-		}
 	}
 });
 ````
 
+### Options
 
-## Options
+Global enable colors using ANSI codes (optional funk :)
 
 ````
-// global enable colors using ANSI codes (nothing against some optional functional funk :)
-
 //on module
 require('mocha-unfunk-reporter').option('color', true);
 
@@ -64,41 +52,42 @@ require('mocha-unfunk-reporter').option('color', true);
 process.env['mocha-unfunk-color'] = true;
 ````
 
-## Versions
-
-* 0.1.11 - test mocha bin command, stopped testing grunt-simple-mocha, tuned text
-* 0.1.10 - object diff fix, added option() method
-* 0.1.9 - tighter text
-* 0.1.8 - made compatible with grunt-mocha (PhantomJS)
-* 0.1.7 - package.json repos url fix
-* 0.1.6 - tight .npmignore
-* 0.1.5 - basic object diff
-* 0.1.4 - expose color option using process.env
-* 0.1.3 - cleaned test and dev dependencies
-* 0.1.2 - basic version, colors disabled
-
 ## Compatibility
 
 Testing on:
 
-* mocha (command + node)
-* grunt-mocha (grunt + phantomJS) (use this [fork](https://github.com/Bartvds/grunt-mocha) this tiny [pull request](https://github.com/kmiyashiro/grunt-mocha/pull/74) lands) 
+* mocha (bin cli)
 * grunt-mocha-test (grunt + node)
 * grunt-mocha-spawn (grunt + node)
+* grunt-simple-mocha (grunt + node)
+* grunt-mocha (grunt + phantomJS) (use my [fork](https://github.com/Bartvds/grunt-mocha) until this [pull request](https://github.com/kmiyashiro/grunt-mocha/pull/74) lands)
 
 Known to work:
 
-* grunt-simple-mocha (grunt + node)
 * grunt-cafe-mocha (grunt + node)
 
-Send an issue with tips on other runners. 
+Create an issue if you got a tip on other suitable runners. 
+
+## Versions
+
+* 0.1.11 - added mocha bin command test, improved reporting
+* 0.1.10 - objectDiff fix, added option() methods
+* 0.1.8 - compatible with grunt-mocha (PhantomJS)
 
 ## Editing
 
-Unfunk-reporter is written in TypeScript and built using `grunt`: so run `grunt` to rebuild and display visual tests, and `grunt build` for a clean rebuild.
+Unfunk-reporter is written in TypeScript and built using `grunt`.
+
+Use `grunt test` to rebuild and run tests, `grunt dev` to rebuild and show display failing tests, or check the `Gruntfile.js` for more.
 
 ## Credit
 
 * Object diff from [objectDiff](https://github.com/NV/objectDiff.js) by Nikita Vasilyev
 * Color codes from [colors.js](https://github.com/marak/colors.js/) by Marak Squires & Alexis Sellier (cloudhead)
 * Has some bits and bobs from default reporters
+
+## License
+
+Copyright (c) 2013 Bart van der Schoor
+
+Licensed under the MIT license.
