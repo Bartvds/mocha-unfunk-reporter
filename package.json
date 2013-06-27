@@ -44,6 +44,10 @@
     "grunt-mocha": "git://github.com/Bartvds/grunt-mocha.git",
     "mocha": "~1.11.0",
     "grunt-mocha-test": "~0.4.0",
-    "grunt-exec": "~0.4.2"
+    "grunt-exec": "~0.4.2",
+    "grunt-spawn": "0.0.6",
+    "grunt-shell": "~0.3.0",
+    "grunt-contrib-jshint": "~0.6.0",
+    "jshint-path-reporter": "~0.1.0"
   }
 }
