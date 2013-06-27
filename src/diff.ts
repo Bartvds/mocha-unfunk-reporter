@@ -3,24 +3,6 @@
 module unfunk {
 
 	export module diff {
-
-
-		export class DiffChange {
-			static PRIMITIVE:string = 'primitive change';;
-			static OBJECT:string = 'object change';;
-			static ADDED:string = 'added';
-			static REMOVED:string = 'removed';
-			static EQUAL:string = 'equal';
-		}
-
-		export interface DiffRes {
-			changed:string;
-			removed:any;
-			added:any;
-			value:any;
-		}
-
-
 		/*
 			uses objectDiff by 'NV'
 			https://github.com/NV/objectDiff.js
