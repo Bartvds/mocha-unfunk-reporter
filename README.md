@@ -18,18 +18,55 @@ The reporter does *not* extend mocha's default Base reporter prototype, because 
 * The reporter could easily be adapted to alternate unfunky display modes, I might even support browser consoles or remote logging.
 
 ## Usage
-Install in your project using `npm install mocha-unfunk-reporter`. Then use `mocha-unfunk-reporter` as mocha's `reporter` parameter.
+Install from npm:
+
+````
+npm install mocha-unfunk-reporter
+```` 
+
+Then use `'mocha-unfunk-reporter'` as `reporter` parameter in your favorite mocha runner.
+
+````
+grunt.initConfig({
+	//node
+	mochaTest: {
+		options: {
+			reporter: 'mocha-unfunk-reporter'
+		},
+		any: {
+			src: ['test/_tmp.test.js']
+		}
+	},
+	//phantomjs
+	mocha: {
+		options: {
+			log: true,
+			run: true,
+			reporter: 'mocha-unfunk-reporter'
+		},
+		any: {
+			src: ['test/*.html']
+		}
+	}
+});
+````
+
 
 ## Options
 
 ````
 // global enable colors using ANSI codes (nothing against some optional functional funk :)
 
-require('mocha-unfunk-color').option('color', true);
+//on module
+require('mocha-unfunk-reporter').option('color', true);
+
+//on env
+process.env['mocha-unfunk-color'] = true;
 ````
 
 ## Versions
 
+* 0.1.11 - test mocha bin command, stopped testing grunt-simple-mocha, tuned text
 * 0.1.10 - object diff fix, added option() method
 * 0.1.9 - tighter text
 * 0.1.8 - made compatible with grunt-mocha (PhantomJS)
@@ -44,17 +81,17 @@ require('mocha-unfunk-color').option('color', true);
 
 Testing on:
 
-* mocha (node module)
-* grunt-mocha (grunt + phantomJS)
+* mocha (command + node)
+* grunt-mocha (grunt + phantomJS) (use this [fork](https://github.com/Bartvds/grunt-mocha) this tiny [pull request](https://github.com/kmiyashiro/grunt-mocha/pull/74) lands) 
 * grunt-mocha-test (grunt + node)
 * grunt-mocha-spawn (grunt + node)
-* grunt-simple-mocha (grunt + node)
 
 Known to work:
 
+* grunt-simple-mocha (grunt + node)
 * grunt-cafe-mocha (grunt + node)
 
-Send an issue for tips on other 
+Send an issue with tips on other runners. 
 
 ## Editing
 
