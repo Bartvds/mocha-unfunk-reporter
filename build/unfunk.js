@@ -7,48 +7,66 @@ var __extends = this.__extends || function (d, b) {
 var unfunk;
 (function (unfunk) {
     (function (writer) {
-        var BaseWriter = (function () {
-            function BaseWriter() {
-                this.lineBuffer = '';
-            }
-            BaseWriter.prototype.start = function () {
-                this.lineBuffer = '';
+        var lineBreak = /\r?\n/g;
+        var LineWriter = (function () {
+            function LineWriter() { }
+            LineWriter.prototype.start = function () {
+                this.textBuffer = '';
             };
-            BaseWriter.prototype.write = function () {
-                var args = [];
-                for (var _i = 0; _i < (arguments.length - 0); _i++) {
-                    args[_i] = arguments[_i + 0];
-                }
-                if(args.length > 0) {
-                    this.lineBuffer += args.join('');
-                }
-            };
-            BaseWriter.prototype.writeln = function () {
-                var args = [];
-                for (var _i = 0; _i < (arguments.length - 0); _i++) {
-                    args[_i] = arguments[_i + 0];
-                }
-                if(args.length > 0) {
-                    this.flushLine(this.lineBuffer + args.join(''));
-                } else {
-                    this.flushLine(this.lineBuffer);
-                }
-                this.lineBuffer = '';
-            };
-            BaseWriter.prototype.flushLine = function (str) {
-            };
-            BaseWriter.prototype.flushLineBuffer = function () {
-                if(this.lineBuffer.length > 0) {
-                    this.writeln(this.lineBuffer);
-                    this.lineBuffer = '';
-                }
-            };
-            BaseWriter.prototype.finish = function () {
+            LineWriter.prototype.finish = function () {
                 this.flushLineBuffer();
             };
-            return BaseWriter;
+            LineWriter.prototype.write = function () {
+                var args = [];
+                for (var _i = 0; _i < (arguments.length - 0); _i++) {
+                    args[_i] = arguments[_i + 0];
+                }
+                if(args.length > 0) {
+                    this.textBuffer += args.join('');
+                }
+                if(lineBreak.test(this.textBuffer)) {
+                    var arr = this.textBuffer.split(lineBreak);
+                    var len = arr.length;
+                    if(len > 0) {
+                        for(var i = 0; i < len - 1; i++) {
+                            this.flushLine(arr[i]);
+                        }
+                        this.textBuffer = arr[len - 1];
+                    }
+                }
+            };
+            LineWriter.prototype.writeln = function () {
+                var _this = this;
+                var args = [];
+                for (var _i = 0; _i < (arguments.length - 0); _i++) {
+                    args[_i] = arguments[_i + 0];
+                }
+                if(args.length > 0) {
+                    this.textBuffer += args.join('\n');
+                }
+                if(this.textBuffer.length === 0) {
+                    this.flushLine('');
+                } else {
+                    this.textBuffer.split(lineBreak).forEach(function (line) {
+                        _this.flushLine(line);
+                    });
+                    this.textBuffer = '';
+                }
+            };
+            LineWriter.prototype.flushLine = function (str) {
+            };
+            LineWriter.prototype.flushLineBuffer = function () {
+                var _this = this;
+                if(this.textBuffer.length > 0) {
+                    this.textBuffer.split(lineBreak).forEach(function (line) {
+                        _this.flushLine(line);
+                    });
+                    this.textBuffer = '';
+                }
+            };
+            return LineWriter;
         })();
-        writer.BaseWriter = BaseWriter;        
+        writer.LineWriter = LineWriter;        
         var ConsoleLineWriter = (function (_super) {
             __extends(ConsoleLineWriter, _super);
             function ConsoleLineWriter() {
@@ -59,25 +77,92 @@ var unfunk;
                 console.log(str);
             };
             return ConsoleLineWriter;
-        })(BaseWriter);
+        })(LineWriter);
         writer.ConsoleLineWriter = ConsoleLineWriter;        
-        var ConsoleBulkWriter = (function (_super) {
-            __extends(ConsoleBulkWriter, _super);
-            function ConsoleBulkWriter() {
-                _super.apply(this, arguments);
-
-                this.buffer = [];
-            }
-            ConsoleBulkWriter.prototype.flushLine = function (str) {
-                this.buffer.push(str);
+        var ConsoleBulkWriter = (function () {
+            function ConsoleBulkWriter() { }
+            ConsoleBulkWriter.prototype.start = function () {
+                this.buffer = '';
+            };
+            ConsoleBulkWriter.prototype.write = function () {
+                var args = [];
+                for (var _i = 0; _i < (arguments.length - 0); _i++) {
+                    args[_i] = arguments[_i + 0];
+                }
+                if(args.length > 0) {
+                    this.buffer += args.join('');
+                }
+            };
+            ConsoleBulkWriter.prototype.writeln = function () {
+                var args = [];
+                for (var _i = 0; _i < (arguments.length - 0); _i++) {
+                    args[_i] = arguments[_i + 0];
+                }
+                if(args.length > 0) {
+                    this.buffer += args.join('\n') + '\n';
+                } else {
+                    this.buffer += '\n';
+                }
             };
             ConsoleBulkWriter.prototype.finish = function () {
-                console.log(this.buffer.join('\n'));
-                this.buffer = [];
+                if(this.buffer.length > 0) {
+                    console.log(this.buffer);
+                }
+                this.buffer = '';
             };
             return ConsoleBulkWriter;
-        })(BaseWriter);
+        })();
         writer.ConsoleBulkWriter = ConsoleBulkWriter;        
+        var StdOutStreamWriter = (function () {
+            function StdOutStreamWriter() { }
+            StdOutStreamWriter.prototype.start = function () {
+            };
+            StdOutStreamWriter.prototype.finish = function () {
+            };
+            StdOutStreamWriter.prototype.write = function () {
+                var args = [];
+                for (var _i = 0; _i < (arguments.length - 0); _i++) {
+                    args[_i] = arguments[_i + 0];
+                }
+                if(args.length > 0) {
+                    process.stdout.write(args.join(''), 'utf8');
+                }
+            };
+            StdOutStreamWriter.prototype.writeln = function () {
+                var args = [];
+                for (var _i = 0; _i < (arguments.length - 0); _i++) {
+                    args[_i] = arguments[_i + 0];
+                }
+                if(args.length > 0) {
+                    process.stdout.write(args.join('\n') + '\n', 'utf8');
+                } else {
+                    process.stdout.write('\n', 'utf8');
+                }
+            };
+            return StdOutStreamWriter;
+        })();
+        writer.StdOutStreamWriter = StdOutStreamWriter;        
+        var NullWriter = (function () {
+            function NullWriter() { }
+            NullWriter.prototype.start = function () {
+            };
+            NullWriter.prototype.finish = function () {
+            };
+            NullWriter.prototype.write = function () {
+                var args = [];
+                for (var _i = 0; _i < (arguments.length - 0); _i++) {
+                    args[_i] = arguments[_i + 0];
+                }
+            };
+            NullWriter.prototype.writeln = function () {
+                var args = [];
+                for (var _i = 0; _i < (arguments.length - 0); _i++) {
+                    args[_i] = arguments[_i + 0];
+                }
+            };
+            return NullWriter;
+        })();
+        writer.NullWriter = NullWriter;        
     })(unfunk.writer || (unfunk.writer = {}));
     var writer = unfunk.writer;
 })(unfunk || (unfunk = {}));
@@ -86,6 +171,15 @@ var unfunk;
     (function (styler) {
         var NullStyler = (function () {
             function NullStyler() { }
+            NullStyler.prototype.ok = function (str) {
+                return str;
+            };
+            NullStyler.prototype.fail = function (str) {
+                return str;
+            };
+            NullStyler.prototype.warn = function (str) {
+                return str;
+            };
             NullStyler.prototype.error = function (str) {
                 return str;
             };
@@ -101,17 +195,41 @@ var unfunk;
             NullStyler.prototype.main = function (str) {
                 return str;
             };
-            NullStyler.prototype.pass = function (str) {
-                return str;
-            };
             return NullStyler;
         })();
         styler.NullStyler = NullStyler;        
+        var PlainStyler = (function (_super) {
+            __extends(PlainStyler, _super);
+            function PlainStyler() {
+                _super.apply(this, arguments);
+
+            }
+            PlainStyler.prototype.ok = function (str) {
+                return str.toLocaleUpperCase();
+            };
+            PlainStyler.prototype.warn = function (str) {
+                return str.toLocaleUpperCase();
+            };
+            PlainStyler.prototype.fail = function (str) {
+                return str.toLocaleUpperCase();
+            };
+            return PlainStyler;
+        })(NullStyler);
+        styler.PlainStyler = PlainStyler;        
         var WrapStyler = (function () {
             function WrapStyler() {
                 this.styles = {
                 };
             }
+            WrapStyler.prototype.ok = function (str) {
+                return this.success(str);
+            };
+            WrapStyler.prototype.warn = function (str) {
+                return this.warning(str);
+            };
+            WrapStyler.prototype.fail = function (str) {
+                return this.error(str);
+            };
             WrapStyler.prototype.error = function (str) {
                 return this.wrap(str, 'red');
             };
@@ -133,9 +251,6 @@ var unfunk;
                 }
                 var tmp = this.styles[style];
                 return tmp[0] + str + tmp[1];
-            };
-            WrapStyler.prototype.pass = function (str) {
-                return str;
             };
             return WrapStyler;
         })();
@@ -202,6 +317,104 @@ var unfunk;
             return AnsiStyler;
         })(WrapStyler);
         styler.AnsiStyler = AnsiStyler;        
+        var HtmlStyler = (function (_super) {
+            __extends(HtmlStyler, _super);
+            function HtmlStyler() {
+                        _super.call(this);
+                this.styles = {
+                    'bold': [
+                        '<b>', 
+                        '</b>'
+                    ],
+                    'italic': [
+                        '<i>', 
+                        '</i>'
+                    ],
+                    'underline': [
+                        '<u>', 
+                        '</u>'
+                    ],
+                    'inverse': [
+                        '<span style="background-color:black;color:white;">', 
+                        '</span>'
+                    ],
+                    'white': [
+                        '<span style="color:white;">', 
+                        '</span>'
+                    ],
+                    'grey': [
+                        '<span style="color:grey;">', 
+                        '</span>'
+                    ],
+                    'black': [
+                        '<span style="color:black;">', 
+                        '</span>'
+                    ],
+                    'blue': [
+                        '<span style="color:blue;">', 
+                        '</span>'
+                    ],
+                    'cyan': [
+                        '<span style="color:cyan;">', 
+                        '</span>'
+                    ],
+                    'green': [
+                        '<span style="color:green;">', 
+                        '</span>'
+                    ],
+                    'magenta': [
+                        '<span style="color:magenta;">', 
+                        '</span>'
+                    ],
+                    'red': [
+                        '<span style="color:red;">', 
+                        '</span>'
+                    ],
+                    'yellow': [
+                        '<span style="color:yellow;">', 
+                        '</span>'
+                    ]
+                };
+            }
+            return HtmlStyler;
+        })(WrapStyler);
+        styler.HtmlStyler = HtmlStyler;        
+        var CssStyler = (function (_super) {
+            __extends(CssStyler, _super);
+            function CssStyler() {
+                _super.apply(this, arguments);
+
+            }
+            CssStyler.prototype.ok = function (str) {
+                return this.wrap(str, 'ok');
+            };
+            CssStyler.prototype.warn = function (str) {
+                return this.wrap(str, 'warn');
+            };
+            CssStyler.prototype.fail = function (str) {
+                return this.wrap(str, 'fail');
+            };
+            CssStyler.prototype.error = function (str) {
+                return this.wrap(str, 'error');
+            };
+            CssStyler.prototype.warning = function (str) {
+                return this.wrap(str, 'warning');
+            };
+            CssStyler.prototype.success = function (str) {
+                return this.wrap(str, 'success');
+            };
+            CssStyler.prototype.accent = function (str) {
+                return this.wrap(str, 'accent');
+            };
+            CssStyler.prototype.main = function (str) {
+                return this.wrap(str, 'main');
+            };
+            CssStyler.prototype.wrap = function (str, style) {
+                return '<span class="unfunk-' + style + '">' + str + '</span>';
+            };
+            return CssStyler;
+        })(WrapStyler);
+        styler.CssStyler = CssStyler;        
     })(unfunk.styler || (unfunk.styler = {}));
     var styler = unfunk.styler;
 })(unfunk || (unfunk = {}));
@@ -352,6 +565,8 @@ var unfunk;
     unfunk.Stats = Stats;    
     var expose;
     var options = {
+        writer: 'stdout',
+        style: 'plain'
     };
     var option = function (name, value) {
         if(typeof value !== 'undefined') {
@@ -360,7 +575,7 @@ var unfunk;
         return expose;
     };
     var importEnv = function () {
-        var pattern = /^mocha-unfunk-([\w][\w_-]*[\w])/g;
+        var pattern = /^mocha-unfunk-([\w]+(?:[\w_-][\w]+)*)$/;
         var obj;
         if(typeof process !== 'undefined' && process.env) {
             obj = process.env;
@@ -368,25 +583,50 @@ var unfunk;
         if(obj) {
             for(var name in obj) {
                 if(Object.prototype.hasOwnProperty.call(obj, name)) {
+                    pattern.lastIndex = 0;
                     var match = pattern.exec(name);
                     if(match && match.length > 1) {
-                        options[match[1]] = obj[name];
+                        option(match[1], obj[name]);
                     }
                 }
             }
         }
+    };
+    var stringTrueish = function (str) {
+        str = ('' + str).toLowerCase();
+        return str != '' && str != 'false' && str != '0' && str != 'null' && str != 'undefined';
     };
     var Unfunk = (function () {
         function Unfunk(runner) {
             this.init(runner);
         }
         Unfunk.prototype.getStyler = function () {
-            if(this.stringTrueish(options.color)) {
-                return new unfunk.styler.AnsiStyler();
+            if(typeof options.style !== 'undefined') {
+                if(options.style === 'plain') {
+                    return new unfunk.styler.PlainStyler();
+                }
+                if(options.style === 'ansi') {
+                    return new unfunk.styler.AnsiStyler();
+                }
+                if(options.style === 'html') {
+                    return new unfunk.styler.HtmlStyler();
+                }
+                if(options.style === 'css') {
+                    return new unfunk.styler.CssStyler();
+                }
             }
-            return new unfunk.styler.NullStyler();
+            return new unfunk.styler.PlainStyler();
         };
         Unfunk.prototype.getWriter = function () {
+            if(options.writer === 'stdout') {
+                return new unfunk.writer.StdOutStreamWriter();
+            } else if(options.writer === 'bulk') {
+                return new unfunk.writer.ConsoleBulkWriter();
+            } else if(options.writer === 'null') {
+                return new unfunk.writer.NullWriter();
+            } else if(options.writer === 'log') {
+                return new unfunk.writer.ConsoleLineWriter();
+            }
             return new unfunk.writer.ConsoleLineWriter();
         };
         Unfunk.prototype.getDiffFormat = function (styler) {
@@ -443,24 +683,23 @@ var unfunk;
             });
             runner.on('pending', function (test) {
                 stats.pending++;
-                out.writeln(indent(1) + test.title + '.. ' + style.warning('pending'));
+                out.writeln(indent(1) + test.title + '.. ' + style.warn('pending'));
             });
             runner.on('pass', function (test) {
                 stats.passes++;
                 var medium = test.slow() / 2;
                 test.speed = test.duration > test.slow() ? 'slow' : (test.duration > medium ? 'medium' : 'fast');
-                out.write(style.success('pass'));
                 if(test.speed === 'slow') {
-                    out.writeln(' ' + style.error(test.speed + ' (' + test.duration + 'ms)'));
+                    out.writeln(style.fail(test.speed) + style.error(' (' + test.duration + 'ms)'));
                 } else if(test.speed === 'medium') {
-                    out.writeln(' ' + style.warning(test.speed + '(' + test.duration + 'ms)'));
+                    out.writeln(style.warn(test.speed) + style.warning(' (' + test.duration + 'ms)'));
                 } else {
-                    out.writeln();
+                    out.writeln(style.ok('ok'));
                 }
             });
             runner.on('fail', function (test, err) {
                 stats.failures++;
-                out.writeln(style.error('fail'));
+                out.writeln(style.fail('fail'));
                 if(err.message) {
                     out.writeln(style.error(stats.failures + ': ') + indent(1) + '' + style.warning(err.message));
                 }
@@ -475,8 +714,6 @@ var unfunk;
                     if(stats.failures > 0) {
                         fail = style.error('failed ' + stats.failures);
                         sum += fail + ' and ';
-                    } else {
-                        fail = style.success('failed ' + stats.failures);
                     }
                     if(stats.passes == stats.tests) {
                         sum += style.success('passed ' + stats.passes);
@@ -485,7 +722,7 @@ var unfunk;
                     } else {
                         sum += style.warning('passed ' + stats.passes);
                     }
-                    sum += ' in ';
+                    sum += ' of ';
                     sum += style.accent(pluralize('test', stats.tests));
                 } else {
                     sum += style.warning(pluralize('test', stats.tests));
@@ -495,7 +732,7 @@ var unfunk;
                 }
                 indents += 1;
                 if(failures.length > 0) {
-                    out.writeln(style.accent('->') + ' reporting ' + fail);
+                    out.writeln(style.accent('->') + ' reporting ' + pluralize('failure', failures.length));
                     out.writeln();
                     failures.forEach(function (test, num) {
                         var title;
@@ -537,10 +774,6 @@ var unfunk;
                 out.writeln();
                 out.finish();
             });
-        };
-        Unfunk.prototype.stringTrueish = function (str) {
-            str = ('' + str).toLowerCase();
-            return str != '' && str != 'false' && str != '0' && str != 'null' && str != 'undefined';
         };
         return Unfunk;
     })();

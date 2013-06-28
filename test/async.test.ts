@@ -32,4 +32,16 @@ describe('async tests', () => {
 			done();
 		}, 10);
 	});
+	it('medium slow', (done:() => void) => {
+		setTimeout(()=> {
+			assert.ok(1);
+			done();
+		}, 5000);
+	});
+	it('very slow', (done:() => void) => {
+		setTimeout(()=> {
+			assert.ok(1);
+			done();
+		}, 250);
+	});
 });

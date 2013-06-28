@@ -21,7 +21,8 @@ if (typeof require === "function" && typeof exports === "object" && typeof modul
 	chai.Assertion.includeStack = true;
 	var objectDiff = require('../lib/objectDiff');
 
-	process.env['mocha-unfunk-color'] = true;
+	process.env['mocha-unfunk-style'] = 'ansi';
+	process.env['mocha-unfunk-writer'] = 'stdout';
 }
 else {
 	// Other environment (usually <script> tag): plug in to global chai instance directly.

@@ -38,22 +38,24 @@ interface Test {
 
 module unfunk {
 
-	export interface LineWriter {
+	export interface TextWriter {
 		start();
 		write(...args:any[]);
 		writeln(...args:any[]);
-		flushLine(str:string);
-		flushLineBuffer();
 		finish();
 	}
 
 	export interface Styler {
+		ok(str:string):string;
+		fail(str:string):string;
+		warn(str:string):string;
+
 		error(str:string):string;
 		warning(str:string):string;
 		success(str:string):string;
+
 		accent(str:string):string;
 		main(str:string):string;
-		pass(str:string):string;
 	}
 
 	export interface DiffFormat {
@@ -70,10 +72,14 @@ module unfunk {
 
 	//global options
 	var expose:any;
-	var options:any = {};
+	var options:any = {
+		writer: 'stdout',
+		style: 'plain'
+	};
 
 	var option = function (name:string, value?:any):any {
 		if (typeof value !== 'undefined') {
+			//console.log(name + ': ' + value);
 			options[name] = value;
 		}
 		return expose;
@@ -81,7 +87,7 @@ module unfunk {
 
 	var importEnv = function ():any {
 		//import from env/document
-		var pattern = /^mocha-unfunk-([\w][\w_-]*[\w])/g;
+		var pattern = /^mocha-unfunk-([\w]+(?:[\w_-][\w]+)*)$/;
 		var obj;
 		if (typeof process !== 'undefined' && process.env) {
 			obj = process.env;
@@ -89,13 +95,19 @@ module unfunk {
 		if (obj) {
 			for (var name in obj) {
 				if (Object.prototype.hasOwnProperty.call(obj, name)) {
+					pattern.lastIndex = 0;
 					var match = pattern.exec(name);
 					if (match && match.length > 1) {
-						options[match[1]] = obj[name];
+						option(match[1], obj[name]);
 					}
 				}
 			}
 		}
+	};
+
+	var stringTrueish = function (str:string) {
+		str = ('' + str).toLowerCase();
+		return str != '' && str != 'false' && str != '0' && str != 'null' && str != 'undefined';
 	};
 
 	//the reporter
@@ -112,13 +124,36 @@ module unfunk {
 		}
 
 		getStyler():Styler {
-			if (this.stringTrueish(options.color)) {
-				return new styler.AnsiStyler();
+			if (typeof options.style !== 'undefined') {
+				if (options.style === 'plain') {
+					return new styler.PlainStyler();
+				}
+				if (options.style === 'ansi') {
+					return new styler.AnsiStyler();
+				}
+				if (options.style === 'html') {
+					return new styler.HtmlStyler();
+				}
+				if (options.style === 'css') {
+					return new styler.CssStyler();
+				}
 			}
-			return new styler.NullStyler();
+			return new styler.PlainStyler();
 		}
 
-		getWriter():LineWriter {
+		getWriter():TextWriter {
+			if (options.writer === 'stdout') {
+				return new writer.StdOutStreamWriter();
+			}
+			else if (options.writer === 'bulk') {
+				return new writer.ConsoleBulkWriter();
+			}
+			else if (options.writer === 'null') {
+				return new writer.NullWriter();
+			}
+			else if (options.writer === 'log') {
+				return new writer.ConsoleLineWriter();
+			}
 			return new writer.ConsoleLineWriter();
 		}
 
@@ -133,6 +168,11 @@ module unfunk {
 			var out = this.getWriter();
 			var style = this.getStyler();
 			var diff = this.getDiffFormat(style);
+
+			/*
+			 console.log(out['constructor']);
+			 console.log(style['constructor']);
+			 console.log(diff['constructor']);*/
 
 			//ugly feature copied from mocha's Base
 			runner.stats = stats;
@@ -186,7 +226,7 @@ module unfunk {
 
 			runner.on('pending', (test:Test) => {
 				stats.pending++;
-				out.writeln(indent(1) + test.title + '.. ' + style.warning('pending'));
+				out.writeln(indent(1) + test.title + '.. ' + style.warn('pending'));
 			});
 
 			runner.on('pass', (test:Test) => {
@@ -195,22 +235,20 @@ module unfunk {
 				var medium = test.slow() / 2;
 				test.speed = test.duration > test.slow() ? 'slow' : (test.duration > medium ? 'medium' : 'fast');
 
-				out.write(style.success('pass'));
-
 				if (test.speed === 'slow') {
-					out.writeln(' ' + style.error(test.speed + ' (' + test.duration + 'ms)'));
+					out.writeln(style.fail(test.speed) + style.error(' (' + test.duration + 'ms)'));
 				}
 				else if (test.speed === 'medium') {
-					out.writeln(' ' + style.warning(test.speed + '(' + test.duration + 'ms)'));
+					out.writeln(style.warn(test.speed) + style.warning(' (' + test.duration + 'ms)'));
 				}
 				else {
-					out.writeln();
+					out.writeln(style.ok('ok'));
 				}
 			});
 
 			runner.on('fail', (test:Test, err:TestError) => {
 				stats.failures++;
-				out.writeln(style.error('fail'));
+				out.writeln(style.fail('fail'));
 				if (err.message) {
 					out.writeln(style.error(stats.failures + ': ') + indent(1) + '' + style.warning(err.message));
 				}
@@ -227,20 +265,18 @@ module unfunk {
 				if (stats.tests > 0) {
 
 					if (stats.failures > 0) {
-						fail = style.error('failed ' +  stats.failures)
+						fail = style.error('failed ' + stats.failures)
 						sum += fail + ' and ';
-					} else {
-						fail = style.success('failed ' +  stats.failures);
 					}
 
 					if (stats.passes == stats.tests) {
-						sum += style.success('passed ' +  stats.passes);
+						sum += style.success('passed ' + stats.passes);
 					} else if (stats.passes === 0) {
-						sum += style.error('passed ' +  stats.passes);
+						sum += style.error('passed ' + stats.passes);
 					} else {
-						sum += style.warning('passed ' +  stats.passes)
+						sum += style.warning('passed ' + stats.passes)
 					}
-					sum += ' in ';
+					sum += ' of ';
 					sum += style.accent(pluralize('test', stats.tests));
 
 				} else {
@@ -255,7 +291,7 @@ module unfunk {
 
 				if (failures.length > 0) {
 
-					out.writeln(style.accent('->') + ' reporting ' + fail);
+					out.writeln(style.accent('->') + ' reporting ' + pluralize('failure', failures.length));
 					out.writeln();
 
 					failures.forEach((test:Test, num:number) => {
@@ -305,11 +341,6 @@ module unfunk {
 				out.writeln();
 				out.finish();
 			});
-		}
-
-		stringTrueish(str:string) {
-			str = ('' + str).toLowerCase();
-			return str != '' && str != 'false' && str != '0' && str != 'null' && str != 'undefined';
 		}
 	}
 

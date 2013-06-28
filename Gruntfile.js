@@ -64,6 +64,13 @@ module.exports = function (grunt) {
 				},
 				src: ['test/objectDiff.test.ts'],
 				dest: 'test/_tmp.test.js'
+			},
+			test_single: {
+				options: {
+					base_path: 'test/'
+				},
+				src: ['test/async.test.ts'],
+				dest: 'test/_tmp.test.js'
 			}
 		},
 		//buh
@@ -102,7 +109,7 @@ module.exports = function (grunt) {
 			}
 		},
 		shell: {
-			any: {
+			mocha: {
 				options: {
 					execOptions: {
 						cwd: 'node_modules/.bin'
@@ -112,18 +119,19 @@ module.exports = function (grunt) {
 					stderr: true
 				},
 				//use local mocha
-				command: 'mocha --reporter ' + path.resolve('build/unfunk.js') + ' ' + path.resolve('test/_tmp.test')
+				command: 'mocha --reporter ' + path.resolve(__dirname) + ' ' + path.resolve('test/_tmp.test')
 			}
 		}
 	});
-	console.log('mocha.cmd --reporter ' + path.resolve('build/unfunk.js') + ' ' + path.resolve('test/_tmp.test'));
 
-	process.env['mocha-unfunk-color'] = true;
+	//see also ./test/_ref.ts
+	process.env['mocha-unfunk-style'] = 'ansi';
+	process.env['mocha-unfunk-writer'] = 'stdout';
 
 	grunt.registerTask('default', ['test']);
 
 	grunt.registerTask('test', ['build_pass', 'run_all']);
-	grunt.registerTask('run_all', ['mochaTest', 'mocha', 'mocha_spawn', 'simplemocha', 'shell']);
+	grunt.registerTask('run_all', ['simplemocha', 'mochaTest', 'mocha',  'shell', 'mocha_spawn']);
 
 	grunt.registerTask('build', ['clean', 'typescript:reporter']);
 	grunt.registerTask('build_pass', ['build', 'jshint', 'typescript:test_objectDiff', 'typescript:test_pass']);
@@ -136,5 +144,6 @@ module.exports = function (grunt) {
 	grunt.registerTask('edit_04', ['build_fail', 'simplemocha']);
 	grunt.registerTask('edit_05', ['build_fail', 'shell']);
 
-	grunt.registerTask('dev', ['build_fail', 'run_all']);
+	grunt.registerTask('dev', ['build', 'build_pass', 'mochaTest']);
+	grunt.registerTask('run', ['build', 'typescript:test_single', 'mochaTest']);
 };

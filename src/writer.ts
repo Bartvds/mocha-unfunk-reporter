@@ -3,51 +3,68 @@
 module unfunk {
 
 	export module writer {
-		export class BaseWriter implements unfunk.LineWriter {
 
-			lineBuffer:string = '';
+		var lineBreak = /\r?\n/g;
 
-			constructor() {
-			}
+		export class LineWriter implements unfunk.TextWriter {
+
+			textBuffer:string;
 
 			start() {
-				this.lineBuffer = '';
-			}
-
-			write(...args:any[]) {
-				if (args.length > 0) {
-					this.lineBuffer += args.join('');
-				}
-			}
-
-			writeln(...args:any[]) {
-				if (args.length > 0) {
-					this.flushLine(this.lineBuffer + args.join(''));
-				}
-				else {
-					this.flushLine(this.lineBuffer);
-				}
-				this.lineBuffer = '';
-			}
-
-			flushLine(str:string) {
-				//null
-			}
-
-			flushLineBuffer() {
-				if (this.lineBuffer.length > 0) {
-					this.writeln(this.lineBuffer);
-					this.lineBuffer = '';
-				}
+				this.textBuffer = '';
 			}
 
 			finish() {
 				this.flushLineBuffer();
 			}
+
+			write(...args:any[]) {
+				if (args.length > 0) {
+					this.textBuffer += args.join('');
+				}
+				if (lineBreak.test(this.textBuffer)) {
+					var arr = this.textBuffer.split(lineBreak);
+					var len = arr.length;
+					if (len > 0) {
+						for (var i = 0; i < len - 1; i++) {
+							this.flushLine(arr[i]);
+						}
+						this.textBuffer = arr[len - 1]
+					}
+				}
+			}
+
+			writeln(...args:any[]) {
+				if (args.length > 0) {
+					this.textBuffer += args.join('\n');
+				}
+				if (this.textBuffer.length === 0) {
+					this.flushLine('');
+				}
+				else {
+					this.textBuffer.split(lineBreak).forEach((line) => {
+						this.flushLine(line);
+					});
+					this.textBuffer = '';
+				}
+			}
+
+			flushLine(str:string) {
+				//abstract noop
+			}
+
+			flushLineBuffer() {
+				if (this.textBuffer.length > 0) {
+					this.textBuffer.split(lineBreak).forEach((line) => {
+						this.flushLine(line);
+					});
+					this.textBuffer = '';
+				}
+			}
 		}
 
 		//flush each line as seperate log()
-		export class ConsoleLineWriter extends BaseWriter {
+		export class ConsoleLineWriter extends LineWriter {
 
 			flushLine(str:string) {
 				console.log(str);
@@ -55,17 +72,73 @@ module unfunk {
 		}
 
 		//flush everything as one single chunky log();
-		export class ConsoleBulkWriter extends BaseWriter {
+		export class ConsoleBulkWriter implements unfunk.TextWriter {
 
-			buffer:string[] = [];
+			buffer:string;
 
-			flushLine(str:string) {
-				this.buffer.push(str);
+			start() {
+				this.buffer = '';
+			}
+
+			write(...args:any[]) {
+				if (args.length > 0) {
+					this.buffer += args.join('');
+				}
+			}
+
+			writeln(...args:any[]) {
+				if (args.length > 0) {
+					this.buffer += args.join('\n') + '\n';
+				}
+				else {
+					this.buffer += '\n';
+				}
 			}
 
 			finish() {
-				console.log(this.buffer.join('\n'));
-				this.buffer = [];
+				if (this.buffer.length > 0) {
+					console.log(this.buffer);
+				}
+				this.buffer = '';
+			}
+		}
+
+		export class StdOutStreamWriter implements unfunk.TextWriter {
+
+			start() {
+			}
+
+			finish() {
+			}
+
+			write(...args:any[]) {
+				if (args.length > 0) {
+					process.stdout.write(args.join(''), 'utf8');
+				}
+			}
+
+			writeln(...args:any[]) {
+				if (args.length > 0) {
+					process.stdout.write(args.join('\n') + '\n', 'utf8');
+				}
+				else {
+					process.stdout.write('\n', 'utf8');
+				}
+			}
+		}
+
+		export class NullWriter implements unfunk.TextWriter {
+
+			start() {
+			}
+
+			finish() {
+			}
+
+			write(...args:any[]) {
+			}
+
+			writeln(...args:any[]) {
 			}
 		}
 	}

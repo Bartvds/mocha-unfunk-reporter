@@ -1,18 +1,31 @@
 ///<reference path="unfunk.ts" />
 
 /*
-	color codes taken from:
-		colors.js
-		Copyright (c) 2010
-		Marak Squires & Alexis Sellier (cloudhead)
-		https://github.com/marak/colors.js/
-		MIT
-*/
+ color codes taken from:
+ colors.js
+ Copyright (c) 2010
+ Marak Squires & Alexis Sellier (cloudhead)
+ https://github.com/marak/colors.js/
+ MIT
+ */
 
 module unfunk {
 
 	export module styler {
 		export class NullStyler implements Styler {
+
+			ok(str:string):string {
+				return str;
+			}
+
+			fail(str:string):string {
+				return str;
+			}
+
+			warn(str:string):string {
+				return str;
+			}
+
 			error(str:string):string {
 				return str;
 			}
@@ -32,14 +45,37 @@ module unfunk {
 			main(str:string):string {
 				return str;
 			}
-			pass(str:string):string {
-				return str;
+		}
+
+		export class PlainStyler extends NullStyler {
+			ok(str:string):string {
+				return str.toLocaleUpperCase();
+			}
+
+			warn(str:string):string {
+				return str.toLocaleUpperCase();
+			}
+
+			fail(str:string):string {
+				return str.toLocaleUpperCase();
 			}
 		}
 
 		export class WrapStyler implements Styler {
 
 			styles:any = {};
+
+			ok(str:string):string {
+				return this.success(str);
+			}
+
+			warn(str:string):string {
+				return this.warning(str);
+			}
+
+			fail(str:string):string {
+				return this.error(str);
+			}
 
 			error(str:string):string {
 				return this.wrap(str, 'red');
@@ -68,10 +104,6 @@ module unfunk {
 				var tmp = this.styles[style];
 				return tmp[0] + str + tmp[1];
 			}
-
-			pass(str:string):string {
-				return str;
-			}
 		}
 
 		export class AnsiStyler extends WrapStyler {
@@ -98,8 +130,7 @@ module unfunk {
 			}
 		}
 
-		//not used yet
-		/*export class HtmlStyler extends WrapStyler {
+		export class HtmlStyler extends WrapStyler {
 			constructor() {
 				super();
 				this.styles = {
@@ -121,6 +152,45 @@ module unfunk {
 					'yellow': ['<span style="color:yellow;">', '</span>']
 				};
 			}
-		}*/
+		}
+
+		export class CssStyler extends WrapStyler {
+
+			ok(str:string):string {
+				return this.wrap(str, 'ok');
+			}
+
+			warn(str:string):string {
+				return this.wrap(str, 'warn');
+			}
+
+			fail(str:string):string {
+				return this.wrap(str, 'fail');
+			}
+
+			error(str:string):string {
+				return this.wrap(str, 'error');
+			}
+
+			warning(str:string):string {
+				return this.wrap(str, 'warning');
+			}
+
+			success(str:string):string {
+				return this.wrap(str, 'success');
+			}
+
+			accent(str:string):string {
+				return this.wrap(str, 'accent');
+			}
+
+			main(str:string):string {
+				return this.wrap(str, 'main');
+			}
+
+			wrap(str:string, style:string):string {
+				return '<span class="unfunk-' + style + '">' + str + '</span>';
+			}
+		}
 	}
 }
