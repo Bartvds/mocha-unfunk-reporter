@@ -68,6 +68,9 @@ module unfunk {
 		passes = 0;
 		pending = 0;
 		failures = 0;
+		duration = 0;
+		start = 0;
+		end = 0;
 	}
 
 	//global options
@@ -190,7 +193,7 @@ module unfunk {
 			var start;
 
 			runner.on('start', () => {
-				start = (new Date().getTime());
+				stats.start = new Date().getTime();
 				out.start();
 				out.writeln();
 			});
@@ -257,11 +260,13 @@ module unfunk {
 			});
 
 			runner.on('end', () => {
-
 				var test;
 				var sum = '';
-
 				var fail; //reused
+
+				stats.end = new Date().getTime();
+				stats.duration = stats.end - stats.start;
+
 				if (stats.tests > 0) {
 
 					if (stats.failures > 0) {
@@ -337,7 +342,7 @@ module unfunk {
 						out.writeln();
 					});
 				}
-				out.writeln(style.main('-> ') + sum + ' (' + ((new Date().getTime()) - start) + 'ms)');
+				out.writeln(style.main('-> ') + sum + ' (' + (stats.duration) + 'ms)');
 				out.writeln();
 				out.finish();
 			});

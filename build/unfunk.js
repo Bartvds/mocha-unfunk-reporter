@@ -559,6 +559,9 @@ var unfunk;
             this.passes = 0;
             this.pending = 0;
             this.failures = 0;
+            this.duration = 0;
+            this.start = 0;
+            this.end = 0;
         }
         return Stats;
     })();
@@ -652,7 +655,7 @@ var unfunk;
             };
             var start;
             runner.on('start', function () {
-                start = (new Date().getTime());
+                stats.start = new Date().getTime();
                 out.start();
                 out.writeln();
             });
@@ -710,6 +713,8 @@ var unfunk;
                 var test;
                 var sum = '';
                 var fail;
+                stats.end = new Date().getTime();
+                stats.duration = stats.end - stats.start;
                 if(stats.tests > 0) {
                     if(stats.failures > 0) {
                         fail = style.error('failed ' + stats.failures);
@@ -770,7 +775,7 @@ var unfunk;
                         out.writeln();
                     });
                 }
-                out.writeln(style.main('-> ') + sum + ' (' + ((new Date().getTime()) - start) + 'ms)');
+                out.writeln(style.main('-> ') + sum + ' (' + (stats.duration) + 'ms)');
                 out.writeln();
                 out.finish();
             });
