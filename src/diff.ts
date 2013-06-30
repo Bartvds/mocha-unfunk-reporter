@@ -4,15 +4,24 @@ module unfunk {
 
 	export module diff {
 		/*
-			uses objectDiff by 'NV'
-			https://github.com/NV/objectDiff.js
+		 uses objectDiff by 'NV'
+		 https://github.com/NV/objectDiff.js
 
-			MIT license
+		 MIT license
 
-			diff output algorithm based on objectDiff HTML printer
+		 diff output algorithm based on objectDiff HTML printer
 
-		*/
-		export class DiffStylerFormat implements DiffFormat {
+		 */
+
+		var repeatStr = function (str, amount) {
+			var ret = '';
+			for (var i = 0; i < amount; i++) {
+				ret += str;
+			}
+			return ret;
+		};
+
+		export class DiffFormatter {
 
 			prepend = '';
 			indents:number = 0;
@@ -28,15 +37,32 @@ module unfunk {
 
 			}
 
+			public forcedDiff(actual:any, expected:any):bool {
+				if (typeof actual === 'string' && typeof expected === 'string') {
+					return true;
+				}
+				else if (typeof actual === 'object' && typeof expected === 'object') {
+					return true;
+				}
+				return false;
+			}
+
 			public styleObjectDiff(actual:any, expected:any, prepend?:string = ''):string {
+				if (typeof actual === 'undefined' || typeof expected === 'undefined') {
+					return '';
+				}
 				this.prepend = prepend;
 				this.indents = 0;
 
 				var ret:string = '';
-				var objDiff;
+				var diff;
 				if (typeof actual === 'object' && typeof expected === 'object') {
-					objDiff = objectDiff.diff(actual, expected);
-					ret = this.convertToLogString(objDiff);
+					diff = objectDiff.diff(actual, expected);
+					ret = this.objectDiffToLogString(diff);
+				}
+				else if (typeof actual === 'string' && typeof expected === 'string') {
+					diff = jsDiff.diffChars(actual, expected);
+					ret = this.stringDiffToLogString(diff, prepend);
 				}
 				return ret;
 			}
@@ -46,10 +72,47 @@ module unfunk {
 				return '';
 			}
 
-			private convertToLogString(changes) {
+			private stringDiffToLogString(diff, prefix?:string = '', join?:any = '\n'):any {
+
+				var top = '';
+				var middle = '';
+				var bottom = '';
+
+				for (var i = 0, ii = diff.length; i < ii; i++) {
+					var change = diff[i];
+					var value = JSON.stringify(change.value).replace(/(^")|("$)/g, '');
+					var len = value.length;
+
+					if (!change.added && !change.removed) {
+						top += value;
+						middle += this.style.warning(repeatStr('|', len));
+						bottom += value;
+					}
+					else if (change.removed) {
+						top += repeatStr(' ', len);
+						middle += this.style.success(repeatStr('+', len));
+						bottom += value;
+					}
+					else if (change.added) {
+						top += value;
+						middle += this.style.error(repeatStr('-', len));
+						bottom += repeatStr(' ', len);
+					}
+				}
+				/*top += '';
+				middle += '';
+				bottom += '';*/
+				var ret:any = [prefix + top, prefix + middle, prefix + bottom];
+				if (join !== false) {
+					return ret.join(join);
+				}
+				return ret;
+			}
+
+			private objectDiffToLogString(changes) {
 				var properties = [];
 
-				this.addIndent(1);
+				//this.addIndent(1);
 
 				var diff = changes.value;
 				if (changes.changed == 'equal') {
@@ -64,18 +127,30 @@ module unfunk {
 							properties.push(this.getIndent() + this.getName(key, changed) + this.inspect(diff[key].value, changed));
 							break;
 						case 'primitive change':
-							properties.push(
-								this.getIndent() +  this.getName(key, 'added') + this.inspect(diff[key].removed, 'added') + '\n' +
-								this.getIndent() +  this.getName(key, 'removed') + this.inspect(diff[key].added, 'removed') + ''
-							);
+							if (typeof diff[key].added === 'string' && typeof diff[key].removed === 'string') {
+
+								var lines = this.stringDiffToLogString(jsDiff.diffChars(diff[key].removed, diff[key].added), '', false);
+								var str = this.getName(key, 'plain');
+								properties.push(
+									this.getIndent() +  this.getName(key, 'removed') + lines[0] + '\n' +
+									this.getIndent() +  '| ' + repeatStr(' ', str.length - 2) + lines[1] + '\n' +
+									this.getIndent() +  this.getName(key, 'added') + lines[2]
+								);
+							}
+							else {
+								properties.push(
+									this.getIndent() + this.getName(key, 'added') + this.inspect(diff[key].removed, 'added') + '\n' +
+									this.getIndent() + this.getName(key, 'removed') + this.inspect(diff[key].added, 'removed') + ''
+								);
+							}
 							break;
 
 						case 'object change':
-							properties.push(this.getIndent() +  this.getName(key, changed) + '\n' + this.convertToLogString(diff[key]));
+							properties.push(this.getIndent() + this.getName(key, changed) + '\n' + this.addIndent(1) + this.objectDiffToLogString(diff[key]));
 							break;
 					}
 				}
-				return properties.join('\n')  + this.addIndent(-1) + this.getIndent() + this.markSpace;
+				return properties.join('\n') + this.addIndent(-1) + this.getIndent() + this.markSpace;
 			}
 
 			private getIndent(id:string = '') {
@@ -87,24 +162,23 @@ module unfunk {
 			}
 
 			private getName(key, change) {
-				if (change == 'added'){
-					return this.style.success(this.markAdded + this.stringifyObjectKey(this.escapeString(key)) + ': ');
+				if (change == 'added') {
+					return this.style.success(this.markAdded + this.stringifyObjectKey(key) + ': ');
 				}
-				else if (change == 'removed'){
-					return this.style.error(this.markRemov + this.stringifyObjectKey(this.escapeString(key)) + ': ');
+				else if (change == 'removed') {
+					return this.style.error(this.markRemov + this.stringifyObjectKey(key) + ': ');
 				}
-				else if (change == 'object change'){
-					return this.style.warning(this.markChang + this.stringifyObjectKey(this.escapeString(key)) + ': ');
+				else if (change == 'object change') {
+					return this.style.warning(this.markChang + this.stringifyObjectKey(key) + ': ');
 				}
-				return this.style.accent(this.markEqual + this.stringifyObjectKey(this.escapeString(key)) + ': ');
+				else if (change == 'plain') {
+					return this.markChang + this.stringifyObjectKey(key) + ': ';
+				}
+				return this.style.main(this.markEqual + this.stringifyObjectKey(key) + ': ');
 			}
 
 			private stringifyObjectKey(key) {
 				return /^[a-z0-9_$]*$/i.test(key) ? key : JSON.stringify(key);
-			}
-
-			private escapeString(string) {
-				return string.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 			}
 
 			private inspect(obj, change) {
@@ -143,7 +217,7 @@ module unfunk {
 						accumulator += 'function()';
 						break;
 					case 'string':
-						accumulator += JSON.stringify(this.escapeString(obj));
+						accumulator += JSON.stringify(obj);
 						break;
 
 					case 'undefined':
@@ -151,7 +225,7 @@ module unfunk {
 						break;
 
 					default:
-						accumulator += this.escapeString(String(obj));
+						accumulator += String(obj);
 						break;
 				}
 				return accumulator;

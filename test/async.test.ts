@@ -36,7 +36,7 @@ describe('async tests', () => {
 		setTimeout(()=> {
 			assert.ok(1);
 			done();
-		}, 5000);
+		}, 50);
 	});
 	it('very slow', (done:() => void) => {
 		setTimeout(()=> {

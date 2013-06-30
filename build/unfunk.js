@@ -1,4 +1,5 @@
 var objectDiff = require('../lib/objectDiff');
+var jsDiff = require('../lib/jsDiff');
 var __extends = this.__extends || function (d, b) {
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
@@ -113,35 +114,37 @@ var unfunk;
             return ConsoleBulkWriter;
         })();
         writer.ConsoleBulkWriter = ConsoleBulkWriter;        
-        var StdOutStreamWriter = (function () {
-            function StdOutStreamWriter() { }
-            StdOutStreamWriter.prototype.start = function () {
+        var StdStreamWriter = (function () {
+            function StdStreamWriter(stream) {
+                this.stream = stream;
+            }
+            StdStreamWriter.prototype.start = function () {
             };
-            StdOutStreamWriter.prototype.finish = function () {
+            StdStreamWriter.prototype.finish = function () {
             };
-            StdOutStreamWriter.prototype.write = function () {
+            StdStreamWriter.prototype.write = function () {
                 var args = [];
                 for (var _i = 0; _i < (arguments.length - 0); _i++) {
                     args[_i] = arguments[_i + 0];
                 }
                 if(args.length > 0) {
-                    process.stdout.write(args.join(''), 'utf8');
+                    this.stream.write(args.join(''), 'utf8');
                 }
             };
-            StdOutStreamWriter.prototype.writeln = function () {
+            StdStreamWriter.prototype.writeln = function () {
                 var args = [];
                 for (var _i = 0; _i < (arguments.length - 0); _i++) {
                     args[_i] = arguments[_i + 0];
                 }
                 if(args.length > 0) {
-                    process.stdout.write(args.join('\n') + '\n', 'utf8');
+                    this.stream.write(args.join('\n') + '\n', 'utf8');
                 } else {
-                    process.stdout.write('\n', 'utf8');
+                    this.stream.write('\n', 'utf8');
                 }
             };
-            return StdOutStreamWriter;
+            return StdStreamWriter;
         })();
-        writer.StdOutStreamWriter = StdOutStreamWriter;        
+        writer.StdStreamWriter = StdStreamWriter;        
         var NullWriter = (function () {
             function NullWriter() { }
             NullWriter.prototype.start = function () {
@@ -421,8 +424,15 @@ var unfunk;
 var unfunk;
 (function (unfunk) {
     (function (diff) {
-        var DiffStylerFormat = (function () {
-            function DiffStylerFormat(style) {
+        var repeatStr = function (str, amount) {
+            var ret = '';
+            for(var i = 0; i < amount; i++) {
+                ret += str;
+            }
+            return ret;
+        };
+        var DiffFormatter = (function () {
+            function DiffFormatter(style) {
                 this.style = style;
                 this.prepend = '';
                 this.indents = 0;
@@ -433,25 +443,72 @@ var unfunk;
                 this.markEqual = '.  ';
                 this.markSpace = '';
             }
-            DiffStylerFormat.prototype.styleObjectDiff = function (actual, expected, prepend) {
+            DiffFormatter.prototype.forcedDiff = function (actual, expected) {
+                if(typeof actual === 'string' && typeof expected === 'string') {
+                    return true;
+                } else if(typeof actual === 'object' && typeof expected === 'object') {
+                    return true;
+                }
+                return false;
+            };
+            DiffFormatter.prototype.styleObjectDiff = function (actual, expected, prepend) {
                 if (typeof prepend === "undefined") { prepend = ''; }
+                if(typeof actual === 'undefined' || typeof expected === 'undefined') {
+                    return '';
+                }
                 this.prepend = prepend;
                 this.indents = 0;
                 var ret = '';
-                var objDiff;
+                var diff;
                 if(typeof actual === 'object' && typeof expected === 'object') {
-                    objDiff = objectDiff.diff(actual, expected);
-                    ret = this.convertToLogString(objDiff);
+                    diff = objectDiff.diff(actual, expected);
+                    ret = this.objectDiffToLogString(diff);
+                } else if(typeof actual === 'string' && typeof expected === 'string') {
+                    diff = jsDiff.diffChars(actual, expected);
+                    ret = this.stringDiffToLogString(diff, prepend);
                 }
                 return ret;
             };
-            DiffStylerFormat.prototype.addIndent = function (amount) {
+            DiffFormatter.prototype.addIndent = function (amount) {
                 this.indents += amount;
                 return '';
             };
-            DiffStylerFormat.prototype.convertToLogString = function (changes) {
+            DiffFormatter.prototype.stringDiffToLogString = function (diff, prefix, join) {
+                if (typeof prefix === "undefined") { prefix = ''; }
+                if (typeof join === "undefined") { join = '\n'; }
+                var top = '';
+                var middle = '';
+                var bottom = '';
+                for(var i = 0, ii = diff.length; i < ii; i++) {
+                    var change = diff[i];
+                    var value = JSON.stringify(change.value).replace(/(^")|("$)/g, '');
+                    var len = value.length;
+                    if(!change.added && !change.removed) {
+                        top += value;
+                        middle += this.style.warning(repeatStr('|', len));
+                        bottom += value;
+                    } else if(change.removed) {
+                        top += repeatStr(' ', len);
+                        middle += this.style.success(repeatStr('+', len));
+                        bottom += value;
+                    } else if(change.added) {
+                        top += value;
+                        middle += this.style.error(repeatStr('-', len));
+                        bottom += repeatStr(' ', len);
+                    }
+                }
+                var ret = [
+                    prefix + top, 
+                    prefix + middle, 
+                    prefix + bottom
+                ];
+                if(join !== false) {
+                    return ret.join(join);
+                }
+                return ret;
+            };
+            DiffFormatter.prototype.objectDiffToLogString = function (changes) {
                 var properties = [];
-                this.addIndent(1);
                 var diff = changes.value;
                 if(changes.changed == 'equal') {
                     return this.inspect(changes, changes.changed);
@@ -465,16 +522,22 @@ var unfunk;
                             properties.push(this.getIndent() + this.getName(key, changed) + this.inspect(diff[key].value, changed));
                             break;
                         case 'primitive change':
-                            properties.push(this.getIndent() + this.getName(key, 'added') + this.inspect(diff[key].removed, 'added') + '\n' + this.getIndent() + this.getName(key, 'removed') + this.inspect(diff[key].added, 'removed') + '');
+                            if(typeof diff[key].added === 'string' && typeof diff[key].removed === 'string') {
+                                var lines = this.stringDiffToLogString(jsDiff.diffChars(diff[key].removed, diff[key].added), '', false);
+                                var str = this.getName(key, 'plain');
+                                properties.push(this.getIndent() + this.getName(key, 'removed') + lines[0] + '\n' + this.getIndent() + '| ' + repeatStr(' ', str.length - 2) + lines[1] + '\n' + this.getIndent() + this.getName(key, 'added') + lines[2]);
+                            } else {
+                                properties.push(this.getIndent() + this.getName(key, 'added') + this.inspect(diff[key].removed, 'added') + '\n' + this.getIndent() + this.getName(key, 'removed') + this.inspect(diff[key].added, 'removed') + '');
+                            }
                             break;
                         case 'object change':
-                            properties.push(this.getIndent() + this.getName(key, changed) + '\n' + this.convertToLogString(diff[key]));
+                            properties.push(this.getIndent() + this.getName(key, changed) + '\n' + this.addIndent(1) + this.objectDiffToLogString(diff[key]));
                             break;
                     }
                 }
                 return properties.join('\n') + this.addIndent(-1) + this.getIndent() + this.markSpace;
             };
-            DiffStylerFormat.prototype.getIndent = function (id) {
+            DiffFormatter.prototype.getIndent = function (id) {
                 if (typeof id === "undefined") { id = ''; }
                 var ret = [];
                 for(var i = 0; i < this.indents; i++) {
@@ -482,26 +545,25 @@ var unfunk;
                 }
                 return id + this.prepend + ret.join('');
             };
-            DiffStylerFormat.prototype.getName = function (key, change) {
+            DiffFormatter.prototype.getName = function (key, change) {
                 if(change == 'added') {
-                    return this.style.success(this.markAdded + this.stringifyObjectKey(this.escapeString(key)) + ': ');
+                    return this.style.success(this.markAdded + this.stringifyObjectKey(key) + ': ');
                 } else if(change == 'removed') {
-                    return this.style.error(this.markRemov + this.stringifyObjectKey(this.escapeString(key)) + ': ');
+                    return this.style.error(this.markRemov + this.stringifyObjectKey(key) + ': ');
                 } else if(change == 'object change') {
-                    return this.style.warning(this.markChang + this.stringifyObjectKey(this.escapeString(key)) + ': ');
+                    return this.style.warning(this.markChang + this.stringifyObjectKey(key) + ': ');
+                } else if(change == 'plain') {
+                    return this.markChang + this.stringifyObjectKey(key) + ': ';
                 }
-                return this.style.accent(this.markEqual + this.stringifyObjectKey(this.escapeString(key)) + ': ');
+                return this.style.main(this.markEqual + this.stringifyObjectKey(key) + ': ');
             };
-            DiffStylerFormat.prototype.stringifyObjectKey = function (key) {
+            DiffFormatter.prototype.stringifyObjectKey = function (key) {
                 return /^[a-z0-9_$]*$/i.test(key) ? key : JSON.stringify(key);
             };
-            DiffStylerFormat.prototype.escapeString = function (string) {
-                return string.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-            };
-            DiffStylerFormat.prototype.inspect = function (obj, change) {
+            DiffFormatter.prototype.inspect = function (obj, change) {
                 return this._inspect('', obj, change);
             };
-            DiffStylerFormat.prototype._inspect = function (accumulator, obj, change) {
+            DiffFormatter.prototype._inspect = function (accumulator, obj, change) {
                 switch(typeof obj) {
                     case 'object':
                         if(!obj) {
@@ -533,22 +595,91 @@ var unfunk;
                         accumulator += 'function()';
                         break;
                     case 'string':
-                        accumulator += JSON.stringify(this.escapeString(obj));
+                        accumulator += JSON.stringify(obj);
                         break;
                     case 'undefined':
                         accumulator += 'undefined';
                         break;
                     default:
-                        accumulator += this.escapeString(String(obj));
+                        accumulator += String(obj);
                         break;
                 }
                 return accumulator;
             };
-            return DiffStylerFormat;
+            return DiffFormatter;
         })();
-        diff.DiffStylerFormat = DiffStylerFormat;        
+        diff.DiffFormatter = DiffFormatter;        
     })(unfunk.diff || (unfunk.diff = {}));
     var diff = unfunk.diff;
+})(unfunk || (unfunk = {}));
+var unfunk;
+(function (unfunk) {
+    (function (stack) {
+        var splitLine = /[\r\n]+/g;
+        stack.moduleFilters = [
+            'mocha', 
+            'chai', 
+            'proclaim', 
+            'assert', 
+            'expect', 
+            'should'
+        ];
+        stack.nodeFilters = [];
+        stack.webFilters = [
+            'mocha.js', 
+            'chai.js', 
+            'assert.js', 
+            'proclaim.js'
+        ];
+        var StackFilter = (function () {
+            function StackFilter(style) {
+                this.style = style;
+                this.filters = [];
+            }
+            StackFilter.prototype.addModuleFilters = function (filters) {
+                var _this = this;
+                filters.forEach(function (filter) {
+                    filter = '/node_modules/' + filter + '/';
+                    var exp = new RegExp(filter.replace(/\\|\//g, '(\\\\|\\/)'));
+                    _this.filters.push(exp);
+                }, this);
+            };
+            StackFilter.prototype.addFilters = function (filters) {
+                var _this = this;
+                filters.forEach(function (filter) {
+                    var exp = new RegExp(filter.replace(/\\|\//g, '(\\\\|\\/)'));
+                    _this.filters.push(exp);
+                }, this);
+            };
+            StackFilter.prototype.filter = function (stack) {
+                if(!stack) {
+                    return '';
+                }
+                var lines = stack.split(splitLine);
+                var cut = -1;
+                var i, line;
+                for(i = lines.length - 1; i >= 0; i--) {
+                    line = lines[i];
+                    if(this.filters.some(function (filter) {
+                        return filter.test(line);
+                    })) {
+                        cut = i;
+                    } else {
+                        if(cut > -1) {
+                            break;
+                        }
+                    }
+                }
+                if(cut > -1) {
+                    lines = lines.slice(0, cut);
+                }
+                return lines.join('\n');
+            };
+            return StackFilter;
+        })();
+        stack.StackFilter = StackFilter;        
+    })(unfunk.stack || (unfunk.stack = {}));
+    var stack = unfunk.stack;
 })(unfunk || (unfunk = {}));
 var unfunk;
 (function (unfunk) {
@@ -568,12 +699,25 @@ var unfunk;
     unfunk.Stats = Stats;    
     var expose;
     var options = {
-        writer: 'stdout',
-        style: 'plain'
+        writer: 'log',
+        style: 'ansi',
+        stream: null,
+        commonjs: true,
+        stackFilter: true
     };
-    var option = function (name, value) {
-        if(typeof value !== 'undefined') {
-            options[name] = value;
+    var option = function (nameOrHash, value) {
+        if(arguments.length === 1) {
+            if(typeof nameOrHash === 'object') {
+                for(var name in nameOrHash) {
+                    if(nameOrHash.hasOwnProperty(name)) {
+                        options[name] = nameOrHash[name];
+                    }
+                }
+            }
+        } else if(arguments.length === 2) {
+            if(typeof value !== 'undefined') {
+                options[nameOrHash] = value;
+            }
         }
         return expose;
     };
@@ -599,6 +743,90 @@ var unfunk;
         str = ('' + str).toLowerCase();
         return str != '' && str != 'false' && str != '0' && str != 'null' && str != 'undefined';
     };
+    var toDebug = function (value, cutoff) {
+        if (typeof cutoff === "undefined") { cutoff = 20; }
+        var t = typeof value;
+        if(t === 'function') {
+            t = '' + t;
+        }
+        if(t === 'object') {
+            var str = '';
+            var match = Object.prototype.toString.call(value).match(/^\[object ([\S]*)]$/);
+            if(match && match.length > 1 && match[1] !== 'Object') {
+                str = match[1];
+            }
+            value = str + JSON.stringify(value);
+            if(value.length > cutoff) {
+                value = value.substr(0, cutoff) + '...';
+            }
+            return value;
+        }
+        if(t === 'string') {
+            if(value.length > cutoff) {
+                return JSON.stringify(value.substr(0, cutoff)) + '...';
+            }
+            return JSON.stringify(value);
+        }
+        return '' + value;
+    };
+    var extract = /^[ \t]*[A-Z][A-Za-z0-9_-]*Error: ([\s\S]+?)([\r\n]+[ \t]*at[\s\S]*)$/;
+    var errorType = /^[ \t]*([A-Z][A-Za-z0-9_-]*Error)/;
+    var assertType = /^AssertionError/;
+    var headlessStack = function (error) {
+        if(error.stack) {
+            var match = error.stack.match(extract);
+            if(match && match.length > 2) {
+                return match[2].replace(/(^\s+)|(\s+$)/g, '');
+            }
+        }
+        return '';
+    };
+    var getErrorPrefix = function (error) {
+        var str = error.stack || ('' + error);
+        var match = str.match(errorType);
+        if(match && match.length > 0) {
+            if(!assertType.test(match[1])) {
+                return match[1] + ': ';
+            }
+        }
+        return '';
+    };
+    var getErrorMessage = function (error) {
+        var msg = '';
+        if(error.message) {
+            msg = error.message;
+        } else if(error.operator) {
+            msg += toDebug(error.actual) + ' ' + error.operator + ' ' + toDebug(error.expected) + '';
+        }
+        if(!msg) {
+            msg = ('' + error);
+            if(msg === '[object Object]') {
+                msg = error.message || '';
+                if(!msg) {
+                    if(error.stack) {
+                        var match = error.stack.match(extract);
+                        if(match && match.length > 1) {
+                            msg = match[1];
+                        }
+                    }
+                }
+            }
+        }
+        if(msg) {
+            return getErrorPrefix(error) + ('' + msg).replace(/(\s+$)/g, '');
+        }
+        return getErrorPrefix(error) + '<no error message>';
+    };
+    var cleanErrorMessage = function (msg) {
+        return msg.replace(/^(AssertionError:[ \t]*)/, '');
+    };
+    var padRight = function (str, len, char) {
+        char = char.charAt(0);
+        while(str.length < len) {
+            str += char;
+        }
+        return str;
+    };
     var Unfunk = (function () {
         function Unfunk(runner) {
             this.init(runner);
@@ -621,8 +849,13 @@ var unfunk;
             return new unfunk.styler.PlainStyler();
         };
         Unfunk.prototype.getWriter = function () {
-            if(options.writer === 'stdout') {
-                return new unfunk.writer.StdOutStreamWriter();
+            if(options.stream) {
+                if(!options.stream.writable) {
+                    throw new Error('stream not writable');
+                }
+                return new unfunk.writer.StdStreamWriter(options.stream);
+            } else if(options.writer === 'stdout') {
+                return new unfunk.writer.StdStreamWriter(process.stdout);
             } else if(options.writer === 'bulk') {
                 return new unfunk.writer.ConsoleBulkWriter();
             } else if(options.writer === 'null') {
@@ -632,22 +865,28 @@ var unfunk;
             }
             return new unfunk.writer.ConsoleLineWriter();
         };
-        Unfunk.prototype.getDiffFormat = function (styler) {
-            return new unfunk.diff.DiffStylerFormat(styler);
-        };
         Unfunk.prototype.init = function (runner) {
             importEnv();
             var stats = this.stats = new Stats();
             var out = this.getWriter();
             var style = this.getStyler();
-            var diff = this.getDiffFormat(style);
+            var diffFormat = new unfunk.diff.DiffFormatter(style);
+            var stackFilter = new unfunk.stack.StackFilter(style);
+            stackFilter.addFilters(unfunk.stack.nodeFilters);
+            stackFilter.addModuleFilters(unfunk.stack.moduleFilters);
             runner.stats = stats;
             var indents = 0;
             var indenter = '  ';
             var failures = this.failures = [];
+            var suiteStack = [];
+            var currentSuite;
             var indent = function (add) {
                 if (typeof add === "undefined") { add = 0; }
-                return Array(indents + add).join(indenter);
+                return Array(indents + add + 1).join(indenter);
+            };
+            var indentLen = function (amount) {
+                if (typeof amount === "undefined") { amount = 1; }
+                return amount * indenter.length;
             };
             var pluralize = function (word, amount, plurl) {
                 if (typeof plurl === "undefined") { plurl = 's'; }
@@ -668,25 +907,36 @@ var unfunk;
                     }
                     out.writeln();
                 }
+                suite.parent = currentSuite;
+                suiteStack.push(suite);
+                currentSuite = suite;
                 stats.suites++;
-                indents++;
                 if(!suite.root && suite.title) {
                     out.writeln(indent() + style.accent(suite.title));
                 }
+                indents++;
             });
             runner.on('suite end', function (suite) {
                 indents--;
+                suiteStack.pop();
+                if(suiteStack.length > 0) {
+                    currentSuite = suiteStack[suiteStack.length - 1];
+                } else {
+                    currentSuite = null;
+                }
                 if(1 == indents && !suite.root) {
                     out.writeln();
                 }
             });
             runner.on('test', function (test) {
                 stats.tests++;
-                out.write(indent(1) + style.main(test.title + '.. '));
+                test.parent = currentSuite;
+                out.write(indent(0) + style.main(test.title + '.. '));
             });
             runner.on('pending', function (test) {
                 stats.pending++;
-                out.writeln(indent(1) + test.title + '.. ' + style.warn('pending'));
+                test.parent = currentSuite;
+                out.writeln(indent(0) + style.main(test.title + '.. ') + style.warn('pending'));
             });
             runner.on('pass', function (test) {
                 stats.passes++;
@@ -703,8 +953,9 @@ var unfunk;
             runner.on('fail', function (test, err) {
                 stats.failures++;
                 out.writeln(style.fail('fail'));
-                if(err.message) {
-                    out.writeln(style.error(stats.failures + ': ') + indent(1) + '' + style.warning(err.message));
+                var msg = cleanErrorMessage(getErrorMessage(err));
+                if(msg) {
+                    out.writeln(style.error(padRight(stats.failures + ': ', indentLen(indents + 1), ' ')) + '' + style.warning(msg));
                 }
                 test.err = err;
                 failures.push(test);
@@ -713,6 +964,7 @@ var unfunk;
                 var test;
                 var sum = '';
                 var fail;
+                indents = 0;
                 stats.end = new Date().getTime();
                 stats.duration = stats.end - stats.start;
                 if(stats.tests > 0) {
@@ -735,44 +987,37 @@ var unfunk;
                 if(stats.pending > 0) {
                     sum += ', left ' + style.warning(stats.pending + ' pending');
                 }
-                indents += 1;
                 if(failures.length > 0) {
                     out.writeln(style.accent('->') + ' reporting ' + pluralize('failure', failures.length));
                     out.writeln();
                     failures.forEach(function (test, num) {
-                        var title;
-                        var titles = [
-                            test.title
-                        ];
-                        var tmp = test.parent;
-                        while(tmp && !tmp.root) {
-                            titles.unshift(tmp.title);
-                            tmp = tmp.parent;
+                        var tmp = test.fullTitle();
+                        var ind = tmp.lastIndexOf(test.title);
+                        var title = style.accent(tmp.substring(0, ind)) + style.main(tmp.substring(ind));
+                        var err = test.err;
+                        var msg = getErrorMessage(err);
+                        var stack = headlessStack(err);
+                        if(err.message && msg.indexOf(err.message) < 0) {
+                            msg += ' ' + err.message;
                         }
-                        for(var i = 0, ii = titles.length; i < ii; i++) {
-                            if(i % 2 === 0) {
-                                titles[i] = style.main(titles[i]);
-                            } else {
-                                titles[i] = style.accent(titles[i]);
+                        msg = cleanErrorMessage(msg);
+                        out.writeln(style.error(padRight((num + 1) + ': ', indentLen(2), ' ')) + title);
+                        out.writeln(indent(2) + style.warning(msg));
+                        out.writeln();
+                        if(stack && stackFilter) {
+                            stack = stackFilter.filter(stack);
+                            if(stack) {
+                                out.writeln(stack.replace(/^[ \t]*/gm, indent(2)));
+                                out.writeln();
                             }
                         }
-                        title = titles.join(' ');
-                        var err = test.err;
-                        var message = err.message || '';
-                        var stack = err.stack || message;
-                        var index = stack.indexOf(message) + message.length;
-                        var msg = stack.slice(0, index);
-                        out.writeln(indent() + style.error((num + 1) + ': ') + title);
-                        out.writeln(indent(3) + style.warning(msg));
-                        stack = stack.slice(index ? index + 1 : index);
-                        if(stack) {
-                            out.writeln(stack.replace(/^[ \t]*/gm, indent(4)));
+                        if(err.showDiff || diffFormat.forcedDiff(err.actual, err.expected)) {
+                            var diff = diffFormat.styleObjectDiff(err.actual, err.expected, indent(2));
+                            if(diff) {
+                                out.writeln(diff);
+                                out.writeln();
+                            }
                         }
-                        if(err.showDiff) {
-                            out.writeln('');
-                            out.writeln(diff.styleObjectDiff(err.actual, err.expected, indent(3)));
-                        }
-                        out.writeln();
                     });
                 }
                 out.writeln(style.main('-> ') + sum + ' (' + (stats.duration) + 'ms)');

@@ -62,7 +62,14 @@ module.exports = function (grunt) {
 				options: {
 					base_path: 'test/'
 				},
-				src: ['test/objectDiff.test.ts'],
+				src: ['test/objectDiff*.test.ts'],
+				dest: 'test/_tmp.test.js'
+			},
+			test_jsDiff: {
+				options: {
+					base_path: 'test/'
+				},
+				src: ['test/jsDiff*.test.ts'],
 				dest: 'test/_tmp.test.js'
 			},
 			test_single: {
@@ -70,6 +77,20 @@ module.exports = function (grunt) {
 					base_path: 'test/'
 				},
 				src: ['test/async.test.ts'],
+				dest: 'test/_tmp.test.js'
+			},
+			test_kitteh: {
+				options: {
+					base_path: 'test/'
+				},
+				src: ['test/kitteh*.test.ts'],
+				dest: 'test/_tmp.test.js'
+			},
+			test_asserts: {
+				options: {
+					base_path: 'test/'
+				},
+				src: ['test/compare_assertion*.test.ts'],
 				dest: 'test/_tmp.test.js'
 			}
 		},
@@ -114,6 +135,10 @@ module.exports = function (grunt) {
 					execOptions: {
 						cwd: 'node_modules/.bin'
 					},
+					callback: function (err, stdout, stderrstderr, cb) {
+						console.log(stdout);
+						cb();
+					},
 					failOnError: true,
 					stdout: true,
 					stderr: true
@@ -124,26 +149,26 @@ module.exports = function (grunt) {
 		}
 	});
 
-	//see also ./test/_ref.ts
-	process.env['mocha-unfunk-style'] = 'ansi';
-	process.env['mocha-unfunk-writer'] = 'stdout';
+	//process.env['mocha-unfunk-style'] = 'plain';
+	//process.env['mocha-unfunk-writer'] = 'log';
+	//require('mocha-unfunk-reporter').option({style:'ansi', writer:'stdout'});
 
 	grunt.registerTask('default', ['test']);
 
 	grunt.registerTask('test', ['build_pass', 'run_all']);
-	grunt.registerTask('run_all', ['simplemocha', 'mochaTest', 'mocha',  'shell', 'mocha_spawn']);
+	grunt.registerTask('run_all', ['simplemocha', 'mochaTest', 'mocha', 'shell', 'mocha_spawn']);
 
 	grunt.registerTask('build', ['clean', 'typescript:reporter']);
 	grunt.registerTask('build_pass', ['build', 'jshint', 'typescript:test_objectDiff', 'typescript:test_pass']);
 	grunt.registerTask('build_fail', ['build', 'jshint', 'typescript:test_fail']);
 
 	//editor ui shortcuts/buttons
-	grunt.registerTask('edit_01', ['build_fail', 'mocha']);
-	grunt.registerTask('edit_02', ['build_fail', 'mocha_spawn']);
-	grunt.registerTask('edit_03', ['build_fail', 'mochaTest']);
-	grunt.registerTask('edit_04', ['build_fail', 'simplemocha']);
-	grunt.registerTask('edit_05', ['build_fail', 'shell']);
+	grunt.registerTask('edit_01', ['build', 'build_fail', 'mocha']);
+	grunt.registerTask('edit_02', ['build', 'build_fail', 'mocha_spawn']);
+	grunt.registerTask('edit_03', ['build', 'build_fail', 'mochaTest']);
+	grunt.registerTask('edit_04', ['build', 'build_fail', 'simplemocha']);
+	grunt.registerTask('edit_05', ['build', 'build_fail', 'shell']);
 
-	grunt.registerTask('dev', ['build', 'build_pass', 'mochaTest']);
-	grunt.registerTask('run', ['build', 'typescript:test_single', 'mochaTest']);
+	grunt.registerTask('dev', ['build', 'typescript:test_jsDiff', 'mochaTest']);
+	grunt.registerTask('run', ['build', 'typescript:test_asserts', 'mochaTest']);
 };

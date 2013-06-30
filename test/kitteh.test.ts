@@ -1,7 +1,5 @@
 ///<reference path="_ref.ts" />
 
-declare var assert:chai.Assert;
-
 describe('kitteh', () => {
 	describe('can', () => {
 		it('meow', () => {

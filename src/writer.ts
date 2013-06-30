@@ -103,7 +103,11 @@ module unfunk {
 			}
 		}
 
-		export class StdOutStreamWriter implements unfunk.TextWriter {
+		export class StdStreamWriter implements unfunk.TextWriter {
+
+			constructor(public stream:WritableStream) {
+
+			}
 
 			start() {
 			}
@@ -113,16 +117,16 @@ module unfunk {
 
 			write(...args:any[]) {
 				if (args.length > 0) {
-					process.stdout.write(args.join(''), 'utf8');
+					this.stream.write(args.join(''), 'utf8');
 				}
 			}
 
 			writeln(...args:any[]) {
 				if (args.length > 0) {
-					process.stdout.write(args.join('\n') + '\n', 'utf8');
+					this.stream.write(args.join('\n') + '\n', 'utf8');
 				}
 				else {
-					process.stdout.write('\n', 'utf8');
+					this.stream.write('\n', 'utf8');
 				}
 			}
 		}
