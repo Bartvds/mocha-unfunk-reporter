@@ -2,7 +2,7 @@
 ///<reference path="writer.ts" />
 ///<reference path="styler.ts" />
 ///<reference path="diff.ts" />
-///<reference path="stackFilter.ts" />
+///<reference path="stack.ts" />
 
 //declare mocha reporter data typings
 interface TestError {
@@ -99,7 +99,7 @@ module unfunk {
 	};
 
 	var importEnv = function ():any {
-		//import from env/document
+		//import from env
 		var pattern = /^mocha-unfunk-([\w]+(?:[\w_-][\w]+)*)$/;
 		var obj;
 		if (typeof process !== 'undefined' && process.env) {
@@ -194,35 +194,19 @@ module unfunk {
 					}
 				}
 			}
+			msg = cleanErrorMessage(msg);
 		}
 		if (msg) {
-			return getErrorPrefix(error) + ('' + msg).replace(/(\s+$)/g, '');
+			return getErrorPrefix(error) + msg.replace(/(\s+$)/g, '');
 		}
 		return getErrorPrefix(error) + '<no error message>';
 	};
-
-	/*var getErrorMessage = function (error:TestError):string {
-	 var head = ('' + error);
-	 if (head === '[object Object]') {
-	 head = error.message || '';
-	 }
-	 if (!head) {
-	 if (error.stack) {
-	 var match = error.stack.match(extract);
-	 if(match && match.length > 1) {
-	 return match[1];
-	 }
-	 }
-	 return '<no error message>';
-	 }
-	 return ('' + head).replace(/(\s+$)/g, '');
-	 };*/
 
 	var cleanErrorMessage = function (msg):string {
 		return msg.replace(/^(AssertionError:[ \t]*)/, '');
 	};
 
-	var padRight = function (str, len, char):string {
+	export function padRight (str, len, char):string {
 		char = char.charAt(0);
 		while (str.length < len) {
 			str += char;
@@ -298,11 +282,10 @@ module unfunk {
 			 console.log(style['constructor']);
 			 console.log(diffFormat['constructor']);*/
 
-			//ugly feature copied from mocha's Base
 			runner.stats = stats;
 
 			var indents = 0;
-			var indenter:string = '  ';
+			var indenter:string = '   ';
 			var failures = this.failures = [];
 			var suiteStack:TestSuite[] = [];
 			var currentSuite:TestSuite;
@@ -361,13 +344,11 @@ module unfunk {
 
 			runner.on('test', (test:Test) => {
 				stats.tests++;
-				test.parent = currentSuite;
 				out.write(indent(0) + style.main(test.title + '.. '));
 			});
 
 			runner.on('pending', (test:Test) => {
 				stats.pending++;
-				test.parent = currentSuite;
 				out.writeln(indent(0) + style.main(test.title + '.. ') + style.warn('pending'));
 			});
 
@@ -438,7 +419,7 @@ module unfunk {
 					//details
 					if (failures.length > 0) {
 
-						out.writeln(style.accent('->') + ' reporting ' + pluralize('failure', failures.length));
+						out.writeln(style.accent('->') + ' reporting ' + style.error(pluralize('failure', failures.length)));
 						out.writeln();
 
 						failures.forEach((test:Test, num:number) => {
@@ -451,30 +432,14 @@ module unfunk {
 							var err = test.err;
 							var msg = getErrorMessage(err);
 							var stack = headlessStack(err);
-							/*if (msg && stack) {
-							 var ind = stack.indexOf(msg);
-							 if (ind > -1) {
-							 var msg = stack.substring(0, ind + msg.length);
-							 stack = stack.substring(msg.length);
-							 }
-							 }*/
-							//fix odd assertions
-							if (err.message && msg.indexOf(err.message) < 0) {
-								msg += ' ' + err.message;
-							}
-							msg = cleanErrorMessage(msg);
 
 							out.writeln(style.error(padRight((num + 1) + ': ', indentLen(2), ' ')) + title);
 							out.writeln(indent(2) + style.warning(msg));
-
 							out.writeln();
 
-							if (stack && stackFilter) {
-								stack = stackFilter.filter(stack);
-								if (stack) {
-									out.writeln(stack.replace(/^[ \t]*/gm, indent(2)));
-									out.writeln();
-								}
+							if (test.err.operator && !test.err.message) {
+								out.writeln(indent(2) + toDebug(test.err.actual, 30) +' ' + test.err.operator + ' ' + toDebug(test.err.expected, 30));
+								out.writeln();
 							}
 
 							if (err.showDiff || diffFormat.forcedDiff(err.actual, err.expected)) {

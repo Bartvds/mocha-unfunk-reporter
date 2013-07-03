@@ -432,15 +432,17 @@ var unfunk;
             return ret;
         };
         var DiffFormatter = (function () {
-            function DiffFormatter(style) {
+            function DiffFormatter(style, maxWidth) {
+                if (typeof maxWidth === "undefined") { maxWidth = 80; }
                 this.style = style;
+                this.maxWidth = maxWidth;
                 this.prepend = '';
                 this.indents = 0;
-                this.indentert = '   ';
-                this.markAdded = '+  ';
-                this.markRemov = '-  ';
-                this.markChang = '?  ';
-                this.markEqual = '.  ';
+                this.indentert = '  ';
+                this.markAdded = '+ ';
+                this.markRemov = '- ';
+                this.markChang = '? ';
+                this.markEqual = '. ';
                 this.markSpace = '';
             }
             DiffFormatter.prototype.forcedDiff = function (actual, expected) {
@@ -465,13 +467,88 @@ var unfunk;
                     ret = this.objectDiffToLogString(diff);
                 } else if(typeof actual === 'string' && typeof expected === 'string') {
                     diff = jsDiff.diffChars(actual, expected);
-                    ret = this.stringDiffToLogString(diff, prepend);
+                    ret = this.stringDiffToLogWrapping(diff, this.maxWidth, prepend.length, [
+                        prepend, 
+                        prepend, 
+                        prepend
+                    ]);
                 }
                 return ret;
             };
             DiffFormatter.prototype.addIndent = function (amount) {
                 this.indents += amount;
                 return '';
+            };
+            DiffFormatter.prototype.stringDiffToLogWrapping = function (diff, maxWidth, padLength, padFirst) {
+                var dataLength = maxWidth - padLength;
+                var rowPad = repeatStr(' ', padLength);
+                if(padLength >= maxWidth) {
+                    return '<no space for padded diff>';
+                }
+                var top = '';
+                var middle = '';
+                var bottom = '';
+                var counter = 0;
+                var blocks = [];
+                var value;
+                var blockCount = 0;
+                for(var i = 0, ii = diff.length; i < ii; i++) {
+                    var change = diff[i];
+                    var word = JSON.stringify(change.value).replace(/(^")|("$)/g, '');
+                    var len = word.length;
+                    for(var j = 0; j < len; j++) {
+                        value = word[j];
+                        counter += 1;
+                        if(counter > dataLength) {
+                            counter = 0;
+                            if(blockCount > 0) {
+                                blocks.push([
+                                    rowPad + top, 
+                                    rowPad + middle, 
+                                    rowPad + bottom
+                                ].join('\n'));
+                            } else {
+                                blocks.push([
+                                    padFirst[0] + top, 
+                                    padFirst[1] + middle, 
+                                    padFirst[2] + bottom
+                                ].join('\n'));
+                            }
+                            blockCount += 1;
+                            top = '';
+                            middle = '';
+                            bottom = '';
+                        }
+                        if(!change.added && !change.removed) {
+                            top += value;
+                            middle += this.style.warning('|');
+                            bottom += value;
+                        } else if(change.removed) {
+                            top += ' ';
+                            middle += this.style.success('+');
+                            bottom += value;
+                        } else if(change.added) {
+                            top += value;
+                            middle += this.style.error('-');
+                            bottom += ' ';
+                        }
+                    }
+                }
+                if(blockCount > 0) {
+                    blocks.push([
+                        rowPad + top, 
+                        rowPad + middle, 
+                        rowPad + bottom
+                    ].join('\n'));
+                } else {
+                    blocks.push([
+                        padFirst[0] + top, 
+                        padFirst[1] + middle, 
+                        padFirst[2] + bottom
+                    ].join('\n'));
+                }
+                blockCount += 1;
+                return blocks.join('\n\n');
             };
             DiffFormatter.prototype.stringDiffToLogString = function (diff, prefix, join) {
                 if (typeof prefix === "undefined") { prefix = ''; }
@@ -513,25 +590,31 @@ var unfunk;
                 if(changes.changed == 'equal') {
                     return this.inspect(changes, changes.changed);
                 }
+                var indent = this.getIndent();
                 for(var key in diff) {
                     var changed = diff[key].changed;
                     switch(changed) {
                         case 'equal':
                         case 'removed':
                         case 'added':
-                            properties.push(this.getIndent() + this.getName(key, changed) + this.inspect(diff[key].value, changed));
+                            properties.push(indent + this.getName(key, changed) + this.inspect(diff[key].value, changed));
+                            break;
+                        case 'object change':
+                            properties.push(indent + this.getName(key, changed) + '\n' + this.addIndent(1) + this.objectDiffToLogString(diff[key]));
                             break;
                         case 'primitive change':
                             if(typeof diff[key].added === 'string' && typeof diff[key].removed === 'string') {
-                                var lines = this.stringDiffToLogString(jsDiff.diffChars(diff[key].removed, diff[key].added), '', false);
-                                var str = this.getName(key, 'plain');
-                                properties.push(this.getIndent() + this.getName(key, 'removed') + lines[0] + '\n' + this.getIndent() + '| ' + repeatStr(' ', str.length - 2) + lines[1] + '\n' + this.getIndent() + this.getName(key, 'added') + lines[2]);
+                                var plain = this.getName(key, 'empty');
+                                var preLen = plain.length;
+                                var prepend = [
+                                    indent + this.getName(key, 'removed'), 
+                                    indent + plain, 
+                                    indent + this.getName(key, 'added')
+                                ];
+                                properties.push(this.stringDiffToLogWrapping(jsDiff.diffChars(diff[key].removed, diff[key].added), this.maxWidth, indent.length + preLen, prepend));
                             } else {
-                                properties.push(this.getIndent() + this.getName(key, 'added') + this.inspect(diff[key].removed, 'added') + '\n' + this.getIndent() + this.getName(key, 'removed') + this.inspect(diff[key].added, 'removed') + '');
+                                properties.push(indent + this.getName(key, 'added') + this.inspect(diff[key].removed, 'added') + '\n' + indent + this.getName(key, 'removed') + this.inspect(diff[key].added, 'removed') + '');
                             }
-                            break;
-                        case 'object change':
-                            properties.push(this.getIndent() + this.getName(key, changed) + '\n' + this.addIndent(1) + this.objectDiffToLogString(diff[key]));
                             break;
                     }
                 }
@@ -553,7 +636,9 @@ var unfunk;
                 } else if(change == 'object change') {
                     return this.style.warning(this.markChang + this.stringifyObjectKey(key) + ': ');
                 } else if(change == 'plain') {
-                    return this.markChang + this.stringifyObjectKey(key) + ': ';
+                    return this.markEqual + this.stringifyObjectKey(key) + ': ';
+                } else if(change == 'empty') {
+                    return this.markEqual + repeatStr(' ', this.stringifyObjectKey(key).length) + ': ';
                 }
                 return this.style.main(this.markEqual + this.stringifyObjectKey(key) + ': ');
             };
@@ -631,6 +716,7 @@ var unfunk;
             'assert.js', 
             'proclaim.js'
         ];
+        var trim = /(^[ \t]*)|([ \t]*$)/;
         var StackFilter = (function () {
             function StackFilter(style) {
                 this.style = style;
@@ -653,14 +739,16 @@ var unfunk;
             };
             StackFilter.prototype.filter = function (stack) {
                 if(!stack) {
-                    return '';
+                    return '<no stack>';
                 }
                 var lines = stack.split(splitLine);
                 var cut = -1;
                 var i, line;
                 for(i = lines.length - 1; i >= 0; i--) {
-                    line = lines[i];
-                    if(this.filters.some(function (filter) {
+                    line = lines[i].replace(trim, '');
+                    if(line.length == 0) {
+                        cut = i;
+                    } else if(this.filters.some(function (filter) {
                         return filter.test(line);
                     })) {
                         cut = i;
@@ -672,6 +760,9 @@ var unfunk;
                 }
                 if(cut > -1) {
                     lines = lines.slice(0, cut);
+                }
+                if(lines.length === 0) {
+                    return '<no unfiltered calls in stack>';
                 }
                 return lines.join('\n');
             };
@@ -811,22 +902,25 @@ var unfunk;
                     }
                 }
             }
+            msg = cleanErrorMessage(msg);
         }
         if(msg) {
-            return getErrorPrefix(error) + ('' + msg).replace(/(\s+$)/g, '');
+            return getErrorPrefix(error) + msg.replace(/(\s+$)/g, '');
         }
         return getErrorPrefix(error) + '<no error message>';
     };
     var cleanErrorMessage = function (msg) {
         return msg.replace(/^(AssertionError:[ \t]*)/, '');
     };
-    var padRight = function (str, len, char) {
+    function padRight(str, len, char) {
         char = char.charAt(0);
         while(str.length < len) {
             str += char;
         }
         return str;
-    };
+    }
+    unfunk.padRight = padRight;
+    ;
     var Unfunk = (function () {
         function Unfunk(runner) {
             this.init(runner);
@@ -876,7 +970,7 @@ var unfunk;
             stackFilter.addModuleFilters(unfunk.stack.moduleFilters);
             runner.stats = stats;
             var indents = 0;
-            var indenter = '  ';
+            var indenter = '   ';
             var failures = this.failures = [];
             var suiteStack = [];
             var currentSuite;
@@ -930,12 +1024,10 @@ var unfunk;
             });
             runner.on('test', function (test) {
                 stats.tests++;
-                test.parent = currentSuite;
                 out.write(indent(0) + style.main(test.title + '.. '));
             });
             runner.on('pending', function (test) {
                 stats.pending++;
-                test.parent = currentSuite;
                 out.writeln(indent(0) + style.main(test.title + '.. ') + style.warn('pending'));
             });
             runner.on('pass', function (test) {
@@ -988,7 +1080,7 @@ var unfunk;
                     sum += ', left ' + style.warning(stats.pending + ' pending');
                 }
                 if(failures.length > 0) {
-                    out.writeln(style.accent('->') + ' reporting ' + pluralize('failure', failures.length));
+                    out.writeln(style.accent('->') + ' reporting ' + style.error(pluralize('failure', failures.length)));
                     out.writeln();
                     failures.forEach(function (test, num) {
                         var tmp = test.fullTitle();
@@ -997,19 +1089,12 @@ var unfunk;
                         var err = test.err;
                         var msg = getErrorMessage(err);
                         var stack = headlessStack(err);
-                        if(err.message && msg.indexOf(err.message) < 0) {
-                            msg += ' ' + err.message;
-                        }
-                        msg = cleanErrorMessage(msg);
                         out.writeln(style.error(padRight((num + 1) + ': ', indentLen(2), ' ')) + title);
                         out.writeln(indent(2) + style.warning(msg));
                         out.writeln();
-                        if(stack && stackFilter) {
-                            stack = stackFilter.filter(stack);
-                            if(stack) {
-                                out.writeln(stack.replace(/^[ \t]*/gm, indent(2)));
-                                out.writeln();
-                            }
+                        if(test.err.operator && !test.err.message) {
+                            out.writeln(indent(2) + toDebug(test.err.actual, 30) + ' ' + test.err.operator + ' ' + toDebug(test.err.expected, 30));
+                            out.writeln();
                         }
                         if(err.showDiff || diffFormat.forcedDiff(err.actual, err.expected)) {
                             var diff = diffFormat.styleObjectDiff(err.actual, err.expected, indent(2));

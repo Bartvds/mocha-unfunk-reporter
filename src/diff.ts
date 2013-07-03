@@ -26,14 +26,14 @@ module unfunk {
 			prepend = '';
 			indents:number = 0;
 
-			indentert:string = '   ';
-			markAdded:string = '+  ';
-			markRemov:string = '-  ';
-			markChang:string = '?  ';
-			markEqual:string = '.  ';
+			indentert:string = '  ';
+			markAdded:string = '+ ';
+			markRemov:string = '- ';
+			markChang:string = '? ';
+			markEqual:string = '. ';
 			markSpace:string = '';
 
-			constructor(public style:Styler) {
+			constructor(public style:Styler, public maxWidth:number = 80) {
 
 			}
 
@@ -62,7 +62,7 @@ module unfunk {
 				}
 				else if (typeof actual === 'string' && typeof expected === 'string') {
 					diff = jsDiff.diffChars(actual, expected);
-					ret = this.stringDiffToLogString(diff, prepend);
+					ret = this.stringDiffToLogWrapping(diff, this.maxWidth, prepend.length, [prepend, prepend, prepend]);
 				}
 				return ret;
 			}
@@ -72,7 +72,73 @@ module unfunk {
 				return '';
 			}
 
-			private stringDiffToLogString(diff, prefix?:string = '', join?:any = '\n'):any {
+			public stringDiffToLogWrapping(diff, maxWidth:number, padLength:number, padFirst:string[]):string {
+
+				var dataLength = maxWidth - padLength;
+				var rowPad = repeatStr(' ', padLength);
+
+				if (padLength >= maxWidth) {
+					return '<no space for padded diff>';
+				}
+
+				var top = '';
+				var middle = '';
+				var bottom = '';
+
+				var counter = 0;
+				var blocks = [];
+				var value;
+				var blockCount = 0;
+
+				for (var i = 0, ii = diff.length; i < ii; i++) {
+					var change = diff[i];
+					var word = JSON.stringify(change.value).replace(/(^")|("$)/g, '');
+					var len = word.length;
+					//per char
+					for (var j = 0; j < len; j++) {
+						value = word[j];
+						counter += 1;
+						if (counter > dataLength) {
+							counter = 0;
+							if (blockCount > 0) {
+								blocks.push([rowPad + top, rowPad + middle, rowPad + bottom].join('\n'));
+							} else {
+								blocks.push([padFirst[0] + top, padFirst[1] + middle, padFirst[2] + bottom].join('\n'));
+							}
+							blockCount += 1;
+							top = '';
+							middle = '';
+							bottom = '';
+						}
+
+						if (!change.added && !change.removed) {
+							top += value;
+							middle += this.style.warning('|');
+							bottom += value;
+						}
+						else if (change.removed) {
+							top += ' ';
+							middle += this.style.success('+');
+							bottom += value;
+						}
+						else if (change.added) {
+							top += value;
+							middle += this.style.error('-');
+							bottom += ' ';
+						}
+					}
+				}
+				if (blockCount > 0) {
+					blocks.push([rowPad + top, rowPad + middle, rowPad + bottom].join('\n'));
+				} else {
+					blocks.push([padFirst[0] + top, padFirst[1] + middle, padFirst[2] + bottom].join('\n'));
+				}
+				blockCount += 1;
+
+				return blocks.join('\n\n');
+			}
+
+			public stringDiffToLogString(diff, prefix?:string = '', join?:any = '\n'):any {
 
 				var top = '';
 				var middle = '';
@@ -99,9 +165,6 @@ module unfunk {
 						bottom += repeatStr(' ', len);
 					}
 				}
-				/*top += '';
-				middle += '';
-				bottom += '';*/
 				var ret:any = [prefix + top, prefix + middle, prefix + bottom];
 				if (join !== false) {
 					return ret.join(join);
@@ -118,35 +181,36 @@ module unfunk {
 				if (changes.changed == 'equal') {
 					return this.inspect(changes, changes.changed);
 				}
+				var indent = this.getIndent();
+
 				for (var key in diff) {
 					var changed = diff[key].changed;
 					switch (changed) {
 						case 'equal':
 						case 'removed':
 						case 'added':
-							properties.push(this.getIndent() + this.getName(key, changed) + this.inspect(diff[key].value, changed));
+							properties.push(indent + this.getName(key, changed) + this.inspect(diff[key].value, changed));
+							break;
+						case 'object change':
+							properties.push(indent + this.getName(key, changed) + '\n' + this.addIndent(1) + this.objectDiffToLogString(diff[key]));
 							break;
 						case 'primitive change':
 							if (typeof diff[key].added === 'string' && typeof diff[key].removed === 'string') {
-
-								var lines = this.stringDiffToLogString(jsDiff.diffChars(diff[key].removed, diff[key].added), '', false);
-								var str = this.getName(key, 'plain');
-								properties.push(
-									this.getIndent() +  this.getName(key, 'removed') + lines[0] + '\n' +
-									this.getIndent() +  '| ' + repeatStr(' ', str.length - 2) + lines[1] + '\n' +
-									this.getIndent() +  this.getName(key, 'added') + lines[2]
-								);
+								var plain = this.getName(key, 'empty');
+								var preLen = plain.length;
+								var prepend = [
+									indent + this.getName(key, 'removed'),
+									indent + plain, //'| ' + repeatStr(' ', preLen - 2),
+									indent + this.getName(key, 'added')
+								];
+								properties.push(this.stringDiffToLogWrapping(jsDiff.diffChars(diff[key].removed, diff[key].added), this.maxWidth, indent.length + preLen, prepend));
 							}
 							else {
 								properties.push(
-									this.getIndent() + this.getName(key, 'added') + this.inspect(diff[key].removed, 'added') + '\n' +
-									this.getIndent() + this.getName(key, 'removed') + this.inspect(diff[key].added, 'removed') + ''
+									indent + this.getName(key, 'added') + this.inspect(diff[key].removed, 'added') + '\n' +
+									indent + this.getName(key, 'removed') + this.inspect(diff[key].added, 'removed') + ''
 								);
 							}
-							break;
-
-						case 'object change':
-							properties.push(this.getIndent() + this.getName(key, changed) + '\n' + this.addIndent(1) + this.objectDiffToLogString(diff[key]));
 							break;
 					}
 				}
@@ -172,7 +236,10 @@ module unfunk {
 					return this.style.warning(this.markChang + this.stringifyObjectKey(key) + ': ');
 				}
 				else if (change == 'plain') {
-					return this.markChang + this.stringifyObjectKey(key) + ': ';
+					return this.markEqual + this.stringifyObjectKey(key) + ': ';
+				}
+				else if (change == 'empty') {
+					return this.markEqual + repeatStr(' ', this.stringifyObjectKey(key).length) + ': ';
 				}
 				return this.style.main(this.markEqual + this.stringifyObjectKey(key) + ': ');
 			}
