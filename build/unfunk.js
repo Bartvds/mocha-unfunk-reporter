@@ -1092,8 +1092,9 @@ var unfunk;
                         out.writeln(style.error(padRight((num + 1) + ': ', indentLen(2), ' ')) + title);
                         out.writeln(indent(2) + style.warning(msg));
                         out.writeln();
-                        if(test.err.operator && !test.err.message) {
-                            out.writeln(indent(2) + toDebug(test.err.actual, 30) + ' ' + test.err.operator + ' ' + toDebug(test.err.expected, 30));
+                        stack = stackFilter.filter(stack);
+                        if(stack) {
+                            out.writeln(stack.replace(/^[ \t]*/gm, indent(3)));
                             out.writeln();
                         }
                         if(err.showDiff || diffFormat.forcedDiff(err.actual, err.expected)) {

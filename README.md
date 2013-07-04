@@ -14,10 +14,10 @@ Main use-case is running mocha's in basic console views embedded in some IDE's o
 
 * There are many features to ease testing usability, like aggressive attempts at getting a sensible error message or a stack filter that attempts to compact the stack trace by dropping mocha functions calls.
 
-### Diff for every display
+### Diff
 
-* String compare powered by [JsDiff](https://github.com/kpdecker/jsdiff), rendering even supports colorless display! 
-* Object-compare diff output powered by [objectDiff](https://github.com/NV/objectDiff.js). Currently maybe even stricter then your assertions!
+* String-diff powered by [JsDiff](https://github.com/kpdecker/jsdiff), rendering even supports colorless display! 
+* Object-diff tree powered by [objectDiff](https://github.com/NV/objectDiff.js). Currently maybe even stricter then your assertions!
 
 ## Usage
 Install from npm:
@@ -57,20 +57,19 @@ require('mocha-unfunk-reporter').option('<option_name>', <option_value>);
 require('mocha-unfunk-reporter').option({<name>: <value>, <name>: <value>});
 ````
 
-Report styling: **`style`** 
+Report styling: `style`
 
 * `'ansi'` - plain with ansi color codes (default)
 * `'plain'` - plain text
-* `'html'` - html span's with colors
+* `'html'` - html span's with css colors
 * `'css'` - html span's with css classes
 
-Output mode: **`writer`** 
+Output mode: `writer` 
 
 * `'log'` - buffer and stream per line to `console.log()` (default)
 * `'stdio'` - stream to `process.stdout`
 * `'bulk'` - single buffered `console.log()`
 * `'null'` - ignore output
-* `'stream'` - stream to a WriteableStream
 
 ## Examples
 
@@ -94,8 +93,8 @@ Option: `style = 'ansi'`
 Tested with:
 
 * [Chai Assertion Libary](http://chaijs.com) (best of the best, but no IE < 9)
-* [Proclaim](https://github.com/Bartvds/proclaim) (Chai-like assert, supports IE < 9)
-* CommonJS `'assert'` (Node.js, browserify etc)
+* [Proclaim](https://github.com/Bartvds/proclaim) (Chai-like `'assert'`, supports IE < 9)
+* CommonJS-style `'assert'` (Node.js, browserify etc)
 
 Should work with any assertion library, like:
 
