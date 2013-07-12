@@ -77,7 +77,6 @@ module unfunk {
 		writer: 'log',
 		style: 'ansi',
 		stream: null,
-		commonjs: true,
 		stackFilter: true
 	};
 
@@ -178,7 +177,7 @@ module unfunk {
 			msg = error.message;
 		}
 		else if (error.operator) {
-			msg += toDebug(error.actual) + ' ' + error.operator + ' ' + toDebug(error.expected) + '';
+			msg += toDebug(error.actual, 50) + ' ' + error.operator + ' ' + toDebug(error.expected, 50) + '';
 		}
 
 		if (!msg) {
@@ -275,8 +274,11 @@ module unfunk {
 			var style = this.getStyler();
 			var diffFormat = new diff.DiffFormatter(style);
 			var stackFilter = new stack.StackFilter(style);
-			stackFilter.addFilters(stack.nodeFilters);
-			stackFilter.addModuleFilters(stack.moduleFilters);
+			if (options.stackFilter) {
+				stackFilter.addFilters(stack.nodeFilters);
+				stackFilter.addFilters(stack.webFilters);
+				stackFilter.addModuleFilters(stack.moduleFilters);
+			}
 
 			/*console.log(out['constructor']);
 			 console.log(style['constructor']);

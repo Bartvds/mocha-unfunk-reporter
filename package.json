@@ -32,8 +32,7 @@
   "scripts": {
     "test": "grunt test"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "underscore": "~1.4.4",
     "grunt": "~0.4.1",
@@ -49,6 +48,8 @@
     "mocha": "~1.11.0",
     "grunt-shell": "~0.3.0",
     "chai": "~1.6.0",
-    "proclaim": "~1.4.0"
+    "proclaim": "~1.4.0",
+    "grunt-wait": "~0.1.0",
+    "source-map-support": "~0.1.8"
   }
 }

@@ -741,6 +741,9 @@ var unfunk;
                 if(!stack) {
                     return '<no stack>';
                 }
+                if(this.filters.length === 0) {
+                    return stack;
+                }
                 var lines = stack.split(splitLine);
                 var cut = -1;
                 var i, line;
@@ -793,7 +796,6 @@ var unfunk;
         writer: 'log',
         style: 'ansi',
         stream: null,
-        commonjs: true,
         stackFilter: true
     };
     var option = function (nameOrHash, value) {
@@ -887,7 +889,7 @@ var unfunk;
         if(error.message) {
             msg = error.message;
         } else if(error.operator) {
-            msg += toDebug(error.actual) + ' ' + error.operator + ' ' + toDebug(error.expected) + '';
+            msg += toDebug(error.actual, 50) + ' ' + error.operator + ' ' + toDebug(error.expected, 50) + '';
         }
         if(!msg) {
             msg = ('' + error);
@@ -966,8 +968,11 @@ var unfunk;
             var style = this.getStyler();
             var diffFormat = new unfunk.diff.DiffFormatter(style);
             var stackFilter = new unfunk.stack.StackFilter(style);
-            stackFilter.addFilters(unfunk.stack.nodeFilters);
-            stackFilter.addModuleFilters(unfunk.stack.moduleFilters);
+            if(options.stackFilter) {
+                stackFilter.addFilters(unfunk.stack.nodeFilters);
+                stackFilter.addFilters(unfunk.stack.webFilters);
+                stackFilter.addModuleFilters(unfunk.stack.moduleFilters);
+            }
             runner.stats = stats;
             var indents = 0;
             var indenter = '   ';
@@ -1118,3 +1123,4 @@ var unfunk;
     expose.option = option;
     exports = (module).exports = expose;
 })(unfunk || (unfunk = {}));
+//@ sourceMappingURL=unfunk.js.map

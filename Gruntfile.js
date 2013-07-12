@@ -18,6 +18,7 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-mocha-test');
 	grunt.loadNpmTasks('grunt-simple-mocha');
 	grunt.loadNpmTasks('grunt-shell');
+	grunt.loadNpmTasks('grunt-wait');
 
 	var path = require('path');
 
@@ -33,10 +34,10 @@ module.exports = function (grunt) {
 			]
 		},
 		clean: {
-			tests: ['build', 'test/tmp', 'test/_tmp.*']
+			tests: ['build', 'test/tmp', 'test/_tmp.*', '*.js.map']
 		},
 		typescript: {
-			options: { target: 'es5', sourcemap: false },
+			options: { target: 'es5', sourcemap: true },
 			reporter: {
 				options: {
 					base_path: 'src/'
@@ -146,6 +147,13 @@ module.exports = function (grunt) {
 				//use local mocha
 				command: 'mocha --reporter ' + path.resolve(__dirname) + ' ' + path.resolve('test/_tmp.test')
 			}
+		},
+		wait: {
+			short: {
+				options: {
+					delay: 100
+				}
+			}
 		}
 	});
 
@@ -156,7 +164,7 @@ module.exports = function (grunt) {
 	grunt.registerTask('default', ['test']);
 
 	grunt.registerTask('test', ['build_pass', 'run_all']);
-	grunt.registerTask('run_all', ['simplemocha', 'mochaTest', 'mocha', 'shell', 'mocha_spawn']);
+	grunt.registerTask('run_all', ['simplemocha', 'wait', 'mochaTest', 'mocha', 'shell', 'mocha_spawn']);
 
 	grunt.registerTask('build', ['clean', 'typescript:reporter']);
 	grunt.registerTask('build_pass', ['build', 'jshint', 'typescript:test_objectDiff', 'typescript:test_pass']);
@@ -170,5 +178,5 @@ module.exports = function (grunt) {
 	grunt.registerTask('edit_05', ['build', 'build_fail', 'shell']);
 
 	grunt.registerTask('dev', ['build', 'typescript:test_jsDiff', 'mochaTest']);
-	grunt.registerTask('run', ['build', 'typescript:test_asserts', 'mochaTest']);
+	grunt.registerTask('run', ['build', 'typescript:test_asserts', 'mocha']);
 };

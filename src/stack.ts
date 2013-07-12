@@ -40,6 +40,9 @@ module unfunk {
 				if (!stack) {
 					return '<no stack>';
 				}
+				if (this.filters.length === 0) {
+					return stack;
+				}
 				var lines = stack.split(splitLine);
 				var cut = -1;
 				var i, line;

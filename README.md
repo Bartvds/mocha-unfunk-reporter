@@ -71,6 +71,14 @@ Output mode: `writer`
 * `'bulk'` - single buffered `console.log()`
 * `'null'` - ignore output
 
+Use custom stream: `stream` 
+
+* any standard `WritableStream`
+
+Filter internals from stack: `stackFilter` 
+
+* `true` (default) or `false`
+
 ## Examples
 
 Something like this (may be outdated):
@@ -98,7 +106,7 @@ Tested with:
 
 Should work with any assertion library, like:
 
-* Expect.js (no decent reporting, use Chai's expect-style)
+* Expect.js (minimal reporting, use Chai's expect-style)
 * Should.js (untested, use Chai's should-style)
 
 Create an issue if you got a tip or see bugs.
@@ -121,7 +129,7 @@ Create an issue if you got a tip or request for more.
 
 ## Versions
 
-* 0.2.0 - added string diff, more assertions and runner compatibility, changed defaults: `style='ansi'`
+* 0.2.0 - added string diff, more assertions and runner compatibility, changed default to `style='ansi'`
 * 0.1.13 - fix for grunt-mocha duration stats compatibility
 * 0.1.12 - refactored options; added style and writer
 * 0.1.11 - added mocha bin command test, improved reporting

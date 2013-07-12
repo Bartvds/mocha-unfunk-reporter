@@ -6,3 +6,4 @@ tmp
 /*.tgz
 /.idea
 /test/_tmp.test.js
+*.js.map

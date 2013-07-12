@@ -6,6 +6,8 @@
 
 /// <reference path="_helper.ts" />
 
+require('source-map-support').install();
+
 declare var window:Window;
 declare interface Window {
 	chai:chai;
