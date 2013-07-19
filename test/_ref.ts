@@ -6,7 +6,6 @@
 
 /// <reference path="_helper.ts" />
 
-require('source-map-support').install();
 
 declare var window:Window;
 declare interface Window {
@@ -33,6 +32,8 @@ if (typeof require === "function" && typeof exports === "object" && typeof modul
 
 	var objectDiff = require('../lib/objectDiff');
 	var jsDiff = require('../lib/jsDiff');
+
+	require('source-map-support').install();
 }
 else {
 	// Other environment (usually <script> tag): plug in to global chai instance directly.
