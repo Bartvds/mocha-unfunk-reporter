@@ -71,6 +71,10 @@ Output mode: `writer`
 * `'bulk'` - single buffered `console.log()`
 * `'null'` - ignore output
 
+Report details about pending specs, alongside failures: `reportPending`
+
+* `false` (default) or `true`
+
 Use custom stream: `stream` 
 
 * any standard `WritableStream`

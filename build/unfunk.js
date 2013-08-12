@@ -977,6 +977,7 @@ var unfunk;
             var indents = 0;
             var indenter = '   ';
             var failures = this.failures = [];
+            var pending = this.pending = [];
             var suiteStack = [];
             var currentSuite;
             var indent = function (add) {
@@ -1034,6 +1035,7 @@ var unfunk;
             runner.on('pending', function (test) {
                 stats.pending++;
                 out.writeln(indent(0) + style.main(test.title + '.. ') + style.warn('pending'));
+                pending.push(test);
             });
             runner.on('pass', function (test) {
                 stats.passes++;
@@ -1081,8 +1083,19 @@ var unfunk;
                 } else {
                     sum += style.warning(pluralize('test', stats.tests));
                 }
-                if(stats.pending > 0) {
+                if(pending.length > 0) {
                     sum += ', left ' + style.warning(stats.pending + ' pending');
+                }
+                if(options.reportPending && pending.length > 0) {
+                    out.writeln(style.accent('->') + ' reporting ' + style.warn(pluralize('pending spec', pending.length)));
+                    out.writeln();
+                    pending.forEach(function (test, num) {
+                        var tmp = test.fullTitle();
+                        var ind = tmp.lastIndexOf(test.title);
+                        var title = style.accent(tmp.substring(0, ind)) + style.main(tmp.substring(ind));
+                        out.writeln(style.warn(padRight((num + 1) + ': ', indentLen(2), ' ')) + title);
+                    });
+                    out.writeln();
                 }
                 if(failures.length > 0) {
                     out.writeln(style.accent('->') + ' reporting ' + style.error(pluralize('failure', failures.length)));

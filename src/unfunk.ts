@@ -221,7 +221,8 @@ module unfunk {
 
 		stats:Stats;
 		failures:Test[];
-
+		pending:Test[];
+        
 		constructor(runner) {
 			this.init(runner);
 		}
@@ -289,7 +290,8 @@ module unfunk {
 			var indents = 0;
 			var indenter:string = '   ';
 			var failures = this.failures = [];
-			var suiteStack:TestSuite[] = [];
+            var pending = this.pending = [];
+            var suiteStack:TestSuite[] = [];
 			var currentSuite:TestSuite;
 
 			var indent = (add?:number = 0):string => {
@@ -352,7 +354,8 @@ module unfunk {
 			runner.on('pending', (test:Test) => {
 				stats.pending++;
 				out.writeln(indent(0) + style.main(test.title + '.. ') + style.warn('pending'));
-			});
+				pending.push(test);
+            });
 
 			runner.on('pass', (test:Test) => {
 				stats.passes++;
@@ -414,11 +417,22 @@ module unfunk {
 						sum += style.warning(pluralize('test', stats.tests));
 					}
 
-					if (stats.pending > 0) {
+					if (pending.length > 0) {
 						sum += ', left ' + style.warning(stats.pending + ' pending');
 					}
 
 					//details
+					if(options.reportPending && pending.length > 0) {
+						out.writeln(style.accent('->') + ' reporting ' + style.warn(pluralize('pending spec', pending.length)));
+						out.writeln();
+						pending.forEach((test:Test, num:number) => {
+							var tmp = test.fullTitle();
+							var ind = tmp.lastIndexOf(test.title);
+							var title = style.accent(tmp.substring(0, ind)) + style.main(tmp.substring(ind));
+							out.writeln(style.warn(padRight((num + 1) + ': ', indentLen(2), ' ')) + title);
+						});
+						out.writeln();
+					}                        
 					if (failures.length > 0) {
 
 						out.writeln(style.accent('->') + ' reporting ' + style.error(pluralize('failure', failures.length)));
