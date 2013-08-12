@@ -56,7 +56,7 @@ module.exports = function (grunt) {
 				options: {
 					base_path: 'test/'
 				},
-				src: ['test/async_slow.test.ts', 'test/objectDiff.test.ts', 'test/jsDiff.test.ts'],
+				src: ['test/async_slow.test.ts', 'test/objectDiff.test.ts', 'test/jsDiff.test.ts', 'test/pending.test.ts'],
 				dest: 'test/_tmp.test.js'
 			},
 			test_objectDiff: {
@@ -160,8 +160,9 @@ module.exports = function (grunt) {
 	//process.env['mocha-unfunk-style'] = 'plain';
 	//process.env['mocha-unfunk-writer'] = 'log';
 	//require('mocha-unfunk-reporter').option({style:'ansi', writer:'stdout'});
+	process.env['mocha-unfunk-reportPending'] = true;
 
-	grunt.registerTask('default', ['test']);
+    grunt.registerTask('default', ['test']);
 
 	grunt.registerTask('test', ['build_pass', 'run_core']);
 	grunt.registerTask('run_core', ['mochaTest', 'mocha']);

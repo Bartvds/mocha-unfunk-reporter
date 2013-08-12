@@ -1083,10 +1083,10 @@ var unfunk;
                 } else {
                     sum += style.warning(pluralize('test', stats.tests));
                 }
-                if(stats.pending > 0) {
+                if(pending.length > 0) {
                     sum += ', left ' + style.warning(stats.pending + ' pending');
                 }
-                if(options.reportPending && stats.pending > 0) {
+                if(options.reportPending && pending.length > 0) {
                     out.writeln(style.accent('->') + ' reporting ' + style.warn(pluralize('pending spec', pending.length)));
                     out.writeln();
                     pending.forEach(function (test, num) {
