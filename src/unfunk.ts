@@ -431,7 +431,7 @@ module unfunk {
 							var title = style.accent(tmp.substring(0, ind)) + style.main(tmp.substring(ind));
 							out.writeln(style.warn(padRight((num + 1) + ': ', indentLen(2), ' ')) + title);
 						});
-                        out.writeln();
+						out.writeln();
 					}                        
 					if (failures.length > 0) {
 

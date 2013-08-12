@@ -162,7 +162,7 @@ module.exports = function (grunt) {
 	//require('mocha-unfunk-reporter').option({style:'ansi', writer:'stdout'});
 	process.env['mocha-unfunk-reportPending'] = true;
 
-    grunt.registerTask('default', ['test']);
+	grunt.registerTask('default', ['test']);
 
 	grunt.registerTask('test', ['build_pass', 'run_core']);
 	grunt.registerTask('run_core', ['mochaTest', 'mocha']);
