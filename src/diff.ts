@@ -4,13 +4,15 @@ module unfunk {
 
 	export module diff {
 		/*
-		 uses objectDiff by 'NV'
+		 depends on jsDiff by 'Nikita Vasilyev'
 		 https://github.com/NV/objectDiff.js
-
 		 MIT license
 
-		 diff output algorithm based on objectDiff HTML printer
+		 depends on objectDiff by 'Kevin Decker'
+		 https://github.com/kpdecker/jsdiff
+		 BSD license
 
+		 diff output algorithm based on objectDiff HTML printer
 		 */
 
 		var repeatStr = function (str, amount) {
@@ -31,6 +33,8 @@ module unfunk {
 			markRemov:string = '- ';
 			markChang:string = '? ';
 			markEqual:string = '. ';
+			markEmpty:string = '  ';
+			markColum:string = '| ';
 			markSpace:string = '';
 
 			constructor(public style:Styler, public maxWidth:number = 80) {
@@ -62,7 +66,7 @@ module unfunk {
 				}
 				else if (typeof actual === 'string' && typeof expected === 'string') {
 					diff = jsDiff.diffChars(actual, expected);
-					ret = this.stringDiffToLogWrapping(diff, this.maxWidth, prepend.length, [prepend, prepend, prepend]);
+					ret = this.stringDiffToLogWrapping(diff, this.maxWidth, prepend.length, [prepend, prepend, prepend], true);
 				}
 				return ret;
 			}
@@ -72,7 +76,7 @@ module unfunk {
 				return '';
 			}
 
-			public stringDiffToLogWrapping(diff, maxWidth:number, padLength:number, padFirst:string[]):string {
+			public stringDiffToLogWrapping(diff, maxWidth:number, padLength:number, padFirst:string[], leadSymbols:bool = false):string {
 
 				var dataLength = maxWidth - padLength;
 				var rowPad = repeatStr(' ', padLength);
@@ -89,6 +93,12 @@ module unfunk {
 				var blocks = [];
 				var value;
 				var blockCount = 0;
+
+				if (leadSymbols){
+					padFirst[0] += this.style.error(this.markRemov);
+					padFirst[1] += this.style.main(this.markEmpty);
+					padFirst[2] += this.style.success(this.markAdded);
+				}
 
 				for (var i = 0, ii = diff.length; i < ii; i++) {
 					var change = diff[i];
@@ -138,40 +148,6 @@ module unfunk {
 				return blocks.join('\n\n');
 			}
 
-			public stringDiffToLogString(diff, prefix?:string = '', join?:any = '\n'):any {
-
-				var top = '';
-				var middle = '';
-				var bottom = '';
-
-				for (var i = 0, ii = diff.length; i < ii; i++) {
-					var change = diff[i];
-					var value = JSON.stringify(change.value).replace(/(^")|("$)/g, '');
-					var len = value.length;
-
-					if (!change.added && !change.removed) {
-						top += value;
-						middle += this.style.warning(repeatStr('|', len));
-						bottom += value;
-					}
-					else if (change.removed) {
-						top += repeatStr(' ', len);
-						middle += this.style.success(repeatStr('+', len));
-						bottom += value;
-					}
-					else if (change.added) {
-						top += value;
-						middle += this.style.error(repeatStr('-', len));
-						bottom += repeatStr(' ', len);
-					}
-				}
-				var ret:any = [prefix + top, prefix + middle, prefix + bottom];
-				if (join !== false) {
-					return ret.join(join);
-				}
-				return ret;
-			}
-
 			private objectDiffToLogString(changes) {
 				var properties = [];
 
@@ -207,8 +183,8 @@ module unfunk {
 							}
 							else {
 								properties.push(
-									indent + this.getName(key, 'added') + this.inspect(diff[key].removed, 'added') + '\n' +
-									indent + this.getName(key, 'removed') + this.inspect(diff[key].added, 'removed') + ''
+									indent + this.getName(key, 'removed') + this.inspect(diff[key].added, 'removed') + '\n' +
+								indent + this.getName(key, 'added') + this.inspect(diff[key].removed, 'added') + ''
 								);
 							}
 							break;
@@ -239,7 +215,7 @@ module unfunk {
 					return this.markEqual + this.stringifyObjectKey(key) + ': ';
 				}
 				else if (change == 'empty') {
-					return this.markEqual + repeatStr(' ', this.stringifyObjectKey(key).length) + ': ';
+					return this.markColum + repeatStr(' ', this.stringifyObjectKey(key).length) + ': ';
 				}
 				return this.style.main(this.markEqual + this.stringifyObjectKey(key) + ': ');
 			}

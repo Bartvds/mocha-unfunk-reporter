@@ -1,13 +1,27 @@
 ///<reference path="_ref.ts" />
 
+function mouse() {
+	couch();
+}
+function couch() {
+	table();
+}
+function table() {
+	chair();
+}
+function chair() {
+	assert(false, 'pretty stack trace is pretty');
+	//throw(new Error('pretty stack trace is pretty'));
+}
+
 describe('kitteh', () => {
 	describe('can', () => {
 		it('meow', () => {
 			assert.equal('meow', 'meow');
 		});
 		describe('not', () => {
-			it('count', () => {
-				assert.deepEqual({one: 1, two: 2, three:3}, {one: 3, two: 2, four:4});
+			it('spell', () => {
+				assert.equal('abcdefghijdelm actual', 'abcdfghjklm expected');
 			});
 		});
 		describe('has', () => {
@@ -17,30 +31,35 @@ describe('kitteh', () => {
 			it('cheeseburgers', () => {
 				assert.ok(true);
 			});
+			it.skip('sushi', () => {
+				assert.ok(true);
+			});
 			describe('no', () => {
-				it('dogs', () => {
-					assert.equal('dogs', 'not here');
-				});
-
 				it('computer skills', () => {
-					throw(new Error('pretty stack trace is pretty'));
+					mouse();
 				});
 			});
 			describe('some', () => {
 				it('fun', () => {
-					assert.deepEqual([
-						[1],
-						[1, 2],
-						[1, 2, 3]
-					], [
-						[1],
-						[1, 2],
-						[1, 2, 3]
-					]);
+					assert.deepEqual({
+							aa: 'meeeeiiow actual',
+							bb: 'purrrrrrr actual',
+							cc: [111, 222, 555],
+							dd: {one: 33, two: 22, three: 44}
+						}, {
+							aa: 'meow meow expected',
+							ff: 'hsss expected',
+							cc: [1, 2, 3],
+							dd: {one: 1, two: 2, three: 3}
+						}
+					);
+					it('hats', () => {
+						assert.equal('hat', 'silly');
+					})
+					it.skip('lasers', () => {
+						assert.ok(true);
+					});
 				});
-				it('hats', () => {
-					assert.equal('hat', 'silly');
-				})
 			});
 		});
 	});

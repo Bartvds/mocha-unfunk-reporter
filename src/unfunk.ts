@@ -3,6 +3,7 @@
 ///<reference path="styler.ts" />
 ///<reference path="diff.ts" />
 ///<reference path="stack.ts" />
+///<reference path="stream.ts" />
 
 //declare mocha reporter data typings
 interface TestError {
@@ -78,6 +79,16 @@ module unfunk {
 		style: 'ansi',
 		stream: null,
 		stackFilter: true
+	};
+
+	var tty = require('tty');
+	var isatty = (tty.isatty('1') && tty.isatty('2'));
+	var viewport = {
+		width: isatty
+			? process.stdout['getWindowSize']
+			? process.stdout['getWindowSize'](1)[0]
+			: tty.getWindowSize()[1]
+			: 78
 	};
 
 	var option = function (nameOrHash:any, value?:any):any {
@@ -202,11 +213,22 @@ module unfunk {
 	};
 
 	var cleanErrorMessage = function (msg):string {
+		//TODO all errors
 		return msg.replace(/^(AssertionError:[ \t]*)/, '');
 	};
 
-	export function padRight (str, len, char):string {
-		char = char.charAt(0);
+	export function padLeft(str, len, char):string {
+		str = String(str);
+		char = String(char).charAt(0);
+		while (str.length < len) {
+			str = char + str;
+		}
+		return str;
+	};
+
+	export function padRight(str, len, char):string {
+		str = String(str);
+		char = String(char).charAt(0);
 		while (str.length < len) {
 			str += char;
 		}
@@ -222,7 +244,7 @@ module unfunk {
 		stats:Stats;
 		failures:Test[];
 		pending:Test[];
-        
+
 		constructor(runner) {
 			this.init(runner);
 		}
@@ -273,7 +295,8 @@ module unfunk {
 			var stats = this.stats = new Stats();
 			var out = this.getWriter();
 			var style = this.getStyler();
-			var diffFormat = new diff.DiffFormatter(style);
+
+			var diffFormat = new diff.DiffFormatter(style, viewport.width);
 			var stackFilter = new stack.StackFilter(style);
 			if (options.stackFilter) {
 				stackFilter.addFilters(stack.nodeFilters);
@@ -290,8 +313,8 @@ module unfunk {
 			var indents = 0;
 			var indenter:string = '   ';
 			var failures = this.failures = [];
-            var pending = this.pending = [];
-            var suiteStack:TestSuite[] = [];
+			var pending = this.pending = [];
+			var suiteStack:TestSuite[] = [];
 			var currentSuite:TestSuite;
 
 			var indent = (add?:number = 0):string => {
@@ -304,6 +327,7 @@ module unfunk {
 				return amount + ' ' + (1 == amount ? word : word + plurl);
 			};
 			var start;
+			//var buffer = new stream.StreamBuffer(process.stderr);
 
 			runner.on('start', () => {
 				stats.start = new Date().getTime();
@@ -355,7 +379,7 @@ module unfunk {
 				stats.pending++;
 				out.writeln(indent(0) + style.main(test.title + '.. ') + style.warn('pending'));
 				pending.push(test);
-            });
+			});
 
 			runner.on('pass', (test:Test) => {
 				stats.passes++;
@@ -386,99 +410,100 @@ module unfunk {
 			});
 
 			runner.on('end', () => {
-					var test;
-					var sum = '';
-					var fail; //reused
 
-					indents = 0;
+				var test;
+				var sum = '';
+				var fail; //reused
 
-					stats.end = new Date().getTime();
-					stats.duration = stats.end - stats.start;
+				indents = 0;
 
-					//pre build summaries
-					if (stats.tests > 0) {
+				stats.end = new Date().getTime();
+				stats.duration = stats.end - stats.start;
 
-						if (stats.failures > 0) {
-							fail = style.error('failed ' + stats.failures)
-							sum += fail + ' and ';
-						}
+				//pre build summaries
+				if (stats.tests > 0) {
 
-						if (stats.passes == stats.tests) {
-							sum += style.success('passed ' + stats.passes);
-						} else if (stats.passes === 0) {
-							sum += style.error('passed ' + stats.passes);
-						} else {
-							sum += style.warning('passed ' + stats.passes)
-						}
-						sum += ' of ';
-						sum += style.accent(pluralize('test', stats.tests));
+					if (stats.failures > 0) {
+						fail = style.error('failed ' + stats.failures)
+						sum += fail + ' and ';
+					}
 
+					if (stats.passes == stats.tests) {
+						sum += style.success('passed ' + stats.passes);
+					} else if (stats.passes === 0) {
+						sum += style.error('passed ' + stats.passes);
 					} else {
-						sum += style.warning(pluralize('test', stats.tests));
+						sum += style.warning('passed ' + stats.passes)
 					}
+					sum += ' of ';
+					sum += style.accent(pluralize('test', stats.tests));
 
-					if (pending.length > 0) {
-						sum += ', left ' + style.warning(stats.pending + ' pending');
-					}
-
-					//details
-					if(options.reportPending && pending.length > 0) {
-						out.writeln(style.accent('->') + ' reporting ' + style.warn(pluralize('pending spec', pending.length)));
-						out.writeln();
-						pending.forEach((test:Test, num:number) => {
-							var tmp = test.fullTitle();
-							var ind = tmp.lastIndexOf(test.title);
-							var title = style.accent(tmp.substring(0, ind)) + style.main(tmp.substring(ind));
-							out.writeln(style.warn(padRight((num + 1) + ': ', indentLen(2), ' ')) + title);
-						});
-						out.writeln();
-					}                        
-					if (failures.length > 0) {
-
-						out.writeln(style.accent('->') + ' reporting ' + style.error(pluralize('failure', failures.length)));
-						out.writeln();
-
-						failures.forEach((test:Test, num:number) => {
-							//deep get title chain
-							var tmp = test.fullTitle();
-							var ind = tmp.lastIndexOf(test.title)
-							var title = style.accent(tmp.substring(0, ind)) + style.main(tmp.substring(ind));
-
-							//error message
-							var err = test.err;
-							var msg = getErrorMessage(err);
-							var stack = headlessStack(err);
-
-							out.writeln(style.error(padRight((num + 1) + ': ', indentLen(2), ' ')) + title);
-							out.writeln(indent(2) + style.warning(msg));
-							out.writeln();
-
-							stack = stackFilter.filter(stack);
-							if (stack) {
-								out.writeln(stack.replace(/^[ \t]*/gm, indent(3)));
-								out.writeln();
-							}
-
-							if (err.showDiff || diffFormat.forcedDiff(err.actual, err.expected)) {
-								var diff = diffFormat.styleObjectDiff(err.actual, err.expected, indent(2));
-								if (diff) {
-									out.writeln(diff);
-									out.writeln();
-								}
-							}
-						});
-					}
-					out.writeln(style.main('-> ') + sum + ' (' + (stats.duration) + 'ms)');
-					out.writeln();
-					out.finish();
+				} else {
+					sum += style.warning(pluralize('test', stats.tests));
 				}
 
-			)
-			;
+				if (pending.length > 0) {
+					sum += ', left ' + style.warning(stats.pending + ' pending');
+				}
+
+				//details
+				if (options.reportPending && pending.length > 0) {
+					out.writeln(style.accent('->') + ' reporting ' + style.warn(pluralize('pending spec', pending.length)));
+					out.writeln();
+					pending.forEach((test:Test, num:number) => {
+						var tmp = test.fullTitle();
+						var ind = tmp.lastIndexOf(test.title);
+						var title = style.accent(tmp.substring(0, ind)) + style.main(tmp.substring(ind));
+						out.writeln(style.warn(padRight((num + 1) + ': ', indentLen(2), ' ')) + title);
+					});
+					out.writeln();
+				}
+				if (failures.length > 0) {
+
+					out.writeln(style.accent('->') + ' reporting ' + style.error(pluralize('failure', failures.length)));
+					out.writeln();
+
+					failures.forEach((test:Test, num:number) => {
+						//deep get title chain
+						var tmp = test.fullTitle();
+						var ind = tmp.lastIndexOf(test.title);
+						var title = style.accent(tmp.substring(0, ind)) + style.main(tmp.substring(ind));
+
+						//error message
+						var err = test.err;
+						var msg = getErrorMessage(err);
+						var stack = headlessStack(err);
+
+						out.writeln(style.error(padRight((num + 1) + ': ', indentLen(2), ' ')) + title);
+						out.writeln();
+						out.writeln(indent(2) + style.warning(msg));
+						out.writeln();
+
+						stack = stackFilter.filter(stack);
+						if (stack) {
+							out.writeln(stack.replace(/^[ \t]*/gm, indent(3)));
+							out.writeln();
+						}
+
+						if (err.showDiff || diffFormat.forcedDiff(err.actual, err.expected)) {
+							var diff = diffFormat.styleObjectDiff(err.actual, err.expected, indent(2));
+							if (diff) {
+								out.writeln(diff);
+								out.writeln();
+							}
+						}
+					});
+				}
+				out.writeln(style.main('-> ') + sum + ' (' + (stats.duration) + 'ms)');
+				out.writeln();
+
+				// bye!
+				out.finish();
+			});
 		}
 	}
 
-//combine
+	//combine
 	expose = Unfunk;
 	expose.option = option;
 	exports = (module).exports = expose;

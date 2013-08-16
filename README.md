@@ -5,42 +5,20 @@
 
 ## What?
 
-This is a `Spec`-style console reporter for [mocha](http://visionmedia.github.io/mocha/) that doesn't confuse lesser console environments with funky display modes, cursor tricks or weird control characters and won't use `stderr`.
+This is a `Spec`-style console reporter for [mocha](http://visionmedia.github.io/mocha/) that doesn't confuse lesser console environments with funky display modes, cursor tricks or weird control characters.
 
-Main use-case is running mocha's in basic console views embedded in some IDE's or setups with text buffered output. The default config uses only some ANSI console color codes and writes with console.log() but has option to be tuned for your unfunky use case.
+Main use-case is running mocha's in basic console views embedded in IDE's or setups with text buffered output. The default config uses only some ANSI console colour codes and writes with console.log() but has option to be tuned up or down for your specific unfunky use-case.
 
 ### Notes
+
 * The reporter does *not* extend mocha's default Base prototype because that is a main source of funkyness. This means not all of mocha's reporter features are supported.
+* There are many features to ease testing usability, like aggressive attempts at getting a sensible error message or a stack filter that attempts to compact the stack trace by dropping mocha function calls.
 
-* There are many features to ease testing usability, like aggressive attempts at getting a sensible error message or a stack filter that attempts to compact the stack trace by dropping mocha functions calls.
+### Diffs
 
-### Diff
-
-* String-diff powered by [JsDiff](https://github.com/kpdecker/jsdiff), rendering even supports colorless display! 
-* Object-diff tree powered by [objectDiff](https://github.com/NV/objectDiff.js). Currently maybe even stricter then your assertions!
-
-## Usage
-Install from npm:
-
-````
-$ npm install mocha-unfunk-reporter
-```` 
-
-Then use `'mocha-unfunk-reporter'` as `reporter` parameter in your favorite mocha runner. For example in `grunt-mocha-test`:
-
-````js
-grunt.initConfig({
-	// ...
-	mochaTest: {
-		options: {
-			reporter: 'mocha-unfunk-reporter'
-		},
-		any: {
-			src: ['test/_tmp.test.js']
-		}
-	}
-});
-````
+* There is a diff report with custom display that works even on plain-text display.
+* String-diff algorithm is [jsDiff](https://github.com/kpdecker/jsdiff). 
+* Object-diff algorithm is [objectDiff](https://github.com/NV/objectDiff.js) with nested string-diff. May currently be even stricter then your assertions!
 
 ### Options
 
@@ -83,9 +61,35 @@ Filter internals from stack: `stackFilter`
 
 * `true` (default) or `false`
 
+
+## Usage
+Install from npm:
+
+````
+$ npm install mocha-unfunk-reporter
+```` 
+
+Then use `'mocha-unfunk-reporter'` as `reporter` parameter in your favourite mocha runner. 
+
+For example in `grunt-mocha-test`:
+
+````js
+grunt.initConfig({
+	// ...
+	mochaTest: {
+		options: {
+			reporter: 'mocha-unfunk-reporter'
+		},
+		any: {
+			src: ['test/**/*.test.js']
+		}
+	}
+});
+````
+
 ## Examples
 
-Something like this (may be outdated):
+Something like this (outdated?):
 
 Option: `style = 'plain'`
 
@@ -97,6 +101,7 @@ Option: `style = 'ansi'`
 
 ![ansi](https://raw.github.com/Bartvds/mocha-unfunk-reporter/master/media/example_output_color.png)
 
+If you got development install you can use `$ grunt demo` to get a quick feature overview.
 
 ## Compatibility
 
@@ -120,19 +125,20 @@ Create an issue if you got a tip or see bugs.
 Testing on:
 
 * mocha (bin cli)
+* [grunt-mocha](https://github.com/kmiyashiro/grunt-mocha) (grunt + phantomJS)
 * [grunt-mocha-test](https://github.com/pghalliday/grunt-mocha-test) (grunt + node)
-* grunt-simple-mocha (grunt + node)
-* grunt-mocha-spawn (grunt + node)
-* grunt-mocha (grunt + phantomJS) (use my [fork](https://github.com/Bartvds/grunt-mocha) until this [pull request](https://github.com/kmiyashiro/grunt-mocha/pull/74) lands)
 
 Known to work:
 
+* grunt-simple-mocha (grunt + node)
+* grunt-mocha-spawn (grunt + node)
 * grunt-cafe-mocha (grunt + node)
 
 Create an issue if you got a tip or request for more.
 
 ## Versions
 
+* 0.2.1 - tweaked display, added pending test report (by @geekdave)
 * 0.2.0 - added string diff, more assertions and runner compatibility, changed default to `style='ansi'`
 * 0.1.13 - fix for grunt-mocha duration stats compatibility
 * 0.1.12 - refactored options; added style and writer
@@ -167,6 +173,7 @@ See the `Gruntfile` for additional commands, including many mocha runners.
 
 ## Credit
 
+* String diff from [jsDiff](https://github.com/kpdecker/jsdiff) by Kevin Decker
 * Object diff from [objectDiff](https://github.com/NV/objectDiff.js) by Nikita Vasilyev
 * Color codes from [colors.js](https://github.com/marak/colors.js/) by Marak Squires & Alexis Sellier (cloudhead)
 

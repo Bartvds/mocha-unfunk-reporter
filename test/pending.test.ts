@@ -9,19 +9,19 @@ describe('pending specs', () => {
 			done();
 		}, 10);
 	});
-
-    it.skip('and a second pending spec', (done:() => void) => {
-        setTimeout(() => {
-            assert.ok(true);
-            done();
-        }, 10);
-    });
-
-    it.skip('finally a third pending spec', (done:() => void) => {
-        setTimeout(() => {
-            assert.ok(true);
-            done();
-        }, 10);
-    });
+	it.skip('and a second pending spec', (done:() => void) => {
+		setTimeout(() => {
+			assert.ok(true);
+			done();
+		}, 10);
+	});
+	describe('sub group', () => {
+		it.skip('finally a third pending spec', (done:() => void) => {
+			setTimeout(() => {
+				assert.ok(true);
+				done();
+			}, 10);
+		});
+	});
 });
 

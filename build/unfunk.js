@@ -443,6 +443,8 @@ var unfunk;
                 this.markRemov = '- ';
                 this.markChang = '? ';
                 this.markEqual = '. ';
+                this.markEmpty = '  ';
+                this.markColum = '| ';
                 this.markSpace = '';
             }
             DiffFormatter.prototype.forcedDiff = function (actual, expected) {
@@ -471,7 +473,7 @@ var unfunk;
                         prepend, 
                         prepend, 
                         prepend
-                    ]);
+                    ], true);
                 }
                 return ret;
             };
@@ -479,7 +481,8 @@ var unfunk;
                 this.indents += amount;
                 return '';
             };
-            DiffFormatter.prototype.stringDiffToLogWrapping = function (diff, maxWidth, padLength, padFirst) {
+            DiffFormatter.prototype.stringDiffToLogWrapping = function (diff, maxWidth, padLength, padFirst, leadSymbols) {
+                if (typeof leadSymbols === "undefined") { leadSymbols = false; }
                 var dataLength = maxWidth - padLength;
                 var rowPad = repeatStr(' ', padLength);
                 if(padLength >= maxWidth) {
@@ -492,6 +495,11 @@ var unfunk;
                 var blocks = [];
                 var value;
                 var blockCount = 0;
+                if(leadSymbols) {
+                    padFirst[0] += this.style.error(this.markRemov);
+                    padFirst[1] += this.style.main(this.markEmpty);
+                    padFirst[2] += this.style.success(this.markAdded);
+                }
                 for(var i = 0, ii = diff.length; i < ii; i++) {
                     var change = diff[i];
                     var word = JSON.stringify(change.value).replace(/(^")|("$)/g, '');
@@ -550,40 +558,6 @@ var unfunk;
                 blockCount += 1;
                 return blocks.join('\n\n');
             };
-            DiffFormatter.prototype.stringDiffToLogString = function (diff, prefix, join) {
-                if (typeof prefix === "undefined") { prefix = ''; }
-                if (typeof join === "undefined") { join = '\n'; }
-                var top = '';
-                var middle = '';
-                var bottom = '';
-                for(var i = 0, ii = diff.length; i < ii; i++) {
-                    var change = diff[i];
-                    var value = JSON.stringify(change.value).replace(/(^")|("$)/g, '');
-                    var len = value.length;
-                    if(!change.added && !change.removed) {
-                        top += value;
-                        middle += this.style.warning(repeatStr('|', len));
-                        bottom += value;
-                    } else if(change.removed) {
-                        top += repeatStr(' ', len);
-                        middle += this.style.success(repeatStr('+', len));
-                        bottom += value;
-                    } else if(change.added) {
-                        top += value;
-                        middle += this.style.error(repeatStr('-', len));
-                        bottom += repeatStr(' ', len);
-                    }
-                }
-                var ret = [
-                    prefix + top, 
-                    prefix + middle, 
-                    prefix + bottom
-                ];
-                if(join !== false) {
-                    return ret.join(join);
-                }
-                return ret;
-            };
             DiffFormatter.prototype.objectDiffToLogString = function (changes) {
                 var properties = [];
                 var diff = changes.value;
@@ -613,7 +587,7 @@ var unfunk;
                                 ];
                                 properties.push(this.stringDiffToLogWrapping(jsDiff.diffChars(diff[key].removed, diff[key].added), this.maxWidth, indent.length + preLen, prepend));
                             } else {
-                                properties.push(indent + this.getName(key, 'added') + this.inspect(diff[key].removed, 'added') + '\n' + indent + this.getName(key, 'removed') + this.inspect(diff[key].added, 'removed') + '');
+                                properties.push(indent + this.getName(key, 'removed') + this.inspect(diff[key].added, 'removed') + '\n' + indent + this.getName(key, 'added') + this.inspect(diff[key].removed, 'added') + '');
                             }
                             break;
                     }
@@ -638,7 +612,7 @@ var unfunk;
                 } else if(change == 'plain') {
                     return this.markEqual + this.stringifyObjectKey(key) + ': ';
                 } else if(change == 'empty') {
-                    return this.markEqual + repeatStr(' ', this.stringifyObjectKey(key).length) + ': ';
+                    return this.markColum + repeatStr(' ', this.stringifyObjectKey(key).length) + ': ';
                 }
                 return this.style.main(this.markEqual + this.stringifyObjectKey(key) + ': ');
             };
@@ -777,6 +751,54 @@ var unfunk;
 })(unfunk || (unfunk = {}));
 var unfunk;
 (function (unfunk) {
+    (function (stream) {
+        var StreamBuffer = (function () {
+            function StreamBuffer(stream, start) {
+                if (typeof start === "undefined") { start = true; }
+                this.stream = stream;
+                this.buffer = [];
+                this._running = false;
+                var self = this;
+                this.handle = function (data) {
+                    self.buffer.push(data);
+                };
+                if(start) {
+                    this.start();
+                }
+            }
+            StreamBuffer.prototype.start = function () {
+                if(!this._running) {
+                    this._running = true;
+                    this.stream.addListener('data', this.handle);
+                }
+            };
+            StreamBuffer.prototype.peek = function () {
+                return this.buffer.join('');
+            };
+            StreamBuffer.prototype.get = function () {
+                var data = this.buffer.join('');
+                this.buffer = [];
+                return data;
+            };
+            StreamBuffer.prototype.clear = function () {
+                this.buffer = [];
+            };
+            StreamBuffer.prototype.stop = function () {
+                var data = this.get();
+                if(this._running) {
+                    this._running = false;
+                    this.stream.removeListener('data', this.handle);
+                }
+                return data;
+            };
+            return StreamBuffer;
+        })();
+        stream.StreamBuffer = StreamBuffer;        
+    })(unfunk.stream || (unfunk.stream = {}));
+    var stream = unfunk.stream;
+})(unfunk || (unfunk = {}));
+var unfunk;
+(function (unfunk) {
     var Stats = (function () {
         function Stats() {
             this.suites = 0;
@@ -797,6 +819,11 @@ var unfunk;
         style: 'ansi',
         stream: null,
         stackFilter: true
+    };
+    var tty = require('tty');
+    var isatty = (tty.isatty('1') && tty.isatty('2'));
+    var viewport = {
+        width: isatty ? process.stdout['getWindowSize'] ? process.stdout['getWindowSize'](1)[0] : tty.getWindowSize()[1] : 78
     };
     var option = function (nameOrHash, value) {
         if(arguments.length === 1) {
@@ -914,8 +941,19 @@ var unfunk;
     var cleanErrorMessage = function (msg) {
         return msg.replace(/^(AssertionError:[ \t]*)/, '');
     };
+    function padLeft(str, len, char) {
+        str = String(str);
+        char = String(char).charAt(0);
+        while(str.length < len) {
+            str = char + str;
+        }
+        return str;
+    }
+    unfunk.padLeft = padLeft;
+    ;
     function padRight(str, len, char) {
-        char = char.charAt(0);
+        str = String(str);
+        char = String(char).charAt(0);
         while(str.length < len) {
             str += char;
         }
@@ -966,7 +1004,7 @@ var unfunk;
             var stats = this.stats = new Stats();
             var out = this.getWriter();
             var style = this.getStyler();
-            var diffFormat = new unfunk.diff.DiffFormatter(style);
+            var diffFormat = new unfunk.diff.DiffFormatter(style, viewport.width);
             var stackFilter = new unfunk.stack.StackFilter(style);
             if(options.stackFilter) {
                 stackFilter.addFilters(unfunk.stack.nodeFilters);
@@ -1108,6 +1146,7 @@ var unfunk;
                         var msg = getErrorMessage(err);
                         var stack = headlessStack(err);
                         out.writeln(style.error(padRight((num + 1) + ': ', indentLen(2), ' ')) + title);
+                        out.writeln();
                         out.writeln(indent(2) + style.warning(msg));
                         out.writeln();
                         stack = stackFilter.filter(stack);
@@ -1136,4 +1175,3 @@ var unfunk;
     expose.option = option;
     exports = (module).exports = expose;
 })(unfunk || (unfunk = {}));
-//@ sourceMappingURL=unfunk.js.map

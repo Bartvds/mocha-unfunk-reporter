@@ -20,7 +20,7 @@ describe('async tests', () => {
 			done();
 		}, 10);
 	});
-	it.skip('fouth pending', (done:() => void) => {
+	it.skip('fourth pending', (done:() => void) => {
 		setTimeout(() => {
 			assert.ok(true);
 			done();
