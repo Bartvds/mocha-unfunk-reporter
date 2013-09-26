@@ -1,7 +1,7 @@
 # mocha-unfunk-reporter
 [![Build Status](https://secure.travis-ci.org/Bartvds/mocha-unfunk-reporter.png?branch=master)](http://travis-ci.org/Bartvds/mocha-unfunk-reporter) [![Dependency Status](https://gemnasium.com/Bartvds/mocha-unfunk-reporter.png)](https://gemnasium.com/Bartvds/mocha-unfunk-reporter) [![NPM version](https://badge.fury.io/js/mocha-unfunk-reporter.png)](http://badge.fury.io/js/mocha-unfunk-reporter)
 
-> Mocha console reporter without funkyness
+> Mocha reporter without console funkyness
 
 ## What?
 
@@ -25,14 +25,15 @@ Main use-case is running mocha's in basic console views embedded in IDE's or set
 There are multiple ways to pass globals:
 
 ````js
-//on env with prefixed name
-process.env['mocha-unfunk-<option_name>'] = <option_value>;
-
 //on module using .option() method
 require('mocha-unfunk-reporter').option('<option_name>', <option_value>);
 
 //also in bulk
 require('mocha-unfunk-reporter').option({<name>: <value>, <name>: <value>});
+
+//or on env with prefixed name
+process.env['mocha-unfunk-<option_name>'] = <option_value>;
+
 ````
 
 Report styling: `style`
@@ -89,19 +90,11 @@ grunt.initConfig({
 
 ## Examples
 
-Something like this (outdated?):
+Something like this:
 
-Option: `style = 'plain'`
+![ansi](https://raw.github.com/Bartvds/mocha-unfunk-reporter/master/media/mocha-unfunk-04.png)
 
-![plain](https://raw.github.com/Bartvds/mocha-unfunk-reporter/master/media/example_output_default.png)
-
------
-
-Option: `style = 'ansi'`
-
-![ansi](https://raw.github.com/Bartvds/mocha-unfunk-reporter/master/media/example_output_color.png)
-
-If you got development install you can use `$ grunt demo` to get a quick feature overview.
+If you got development install you can use `$ grunt demo` to get a quick demo overview.
 
 ## Compatibility
 
@@ -136,16 +129,6 @@ Known to work:
 
 Create an issue if you got a tip or request for more.
 
-## Versions
-
-* 0.2.1 - tweaked display, added pending test report (by @geekdave)
-* 0.2.0 - added string diff, more assertions and runner compatibility, changed default to `style='ansi'`
-* 0.1.13 - fix for grunt-mocha duration stats compatibility
-* 0.1.12 - refactored options; added style and writer
-* 0.1.11 - added mocha bin command test, improved reporting
-* 0.1.10 - objectDiff fix, added option() methods
-* 0.1.8 - compatible with grunt-mocha (PhantomJS)
-
 ## Build
 
 Unfunk-reporter is written in [TypeScript](http://typescript.com) and built using [grunt](http://gruntjs.com).
@@ -170,6 +153,17 @@ $ grunt dev
 ````
 
 See the `Gruntfile` for additional commands, including many mocha runners.
+
+## Versions
+
+* 0.2.2 - fixed regular Error (stack) reporting, added `chai-as-promised` & `mocha-as-promised` to stack filter, updated screenshot
+* 0.2.1 - tweaked display, added pending test report (by @geekdave)
+* 0.2.0 - added string diff, more assertions and runner compatibility, changed default to `style='ansi'`
+* 0.1.13 - fix for grunt-mocha duration stats compatibility
+* 0.1.12 - refactored options; added style and writer
+* 0.1.11 - added mocha bin command test, improved reporting
+* 0.1.10 - objectDiff fix, added option() methods
+* 0.1.8 - compatible with grunt-mocha (PhantomJS)
 
 ## Credit
 

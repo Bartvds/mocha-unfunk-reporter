@@ -78,7 +78,8 @@ module unfunk {
 		writer: 'log',
 		style: 'ansi',
 		stream: null,
-		stackFilter: true
+		stackFilter: true,
+		reportPending: false
 	};
 
 	var tty = require('tty');
@@ -159,8 +160,8 @@ module unfunk {
 		}
 		return '' + value;
 	};
-	var extract = /^[ \t]*[A-Z][A-Za-z0-9_-]*Error: ([\s\S]+?)([\r\n]+[ \t]*at[\s\S]*)$/;
-	var errorType = /^[ \t]*([A-Z][A-Za-z0-9_-]*Error)/;
+	var extract = /^[A-Z][\w_]*:[ \t]*([\s\S]+?)([\r\n]+[ \t]*at[\s\S]*)$/;
+	var errorType = /^([A-Z][\w_]*)/;
 	var assertType = /^AssertionError/;
 
 	var headlessStack = function (error:TestError):string {
@@ -176,6 +177,7 @@ module unfunk {
 		var str = error.stack || ('' + error);
 		var match = str.match(errorType);
 		if (match && match.length > 0) {
+			//show error type only if not an AssertionError
 			if (!assertType.test(match[1])) {
 				return match[1] + ': ';
 			}
@@ -213,8 +215,7 @@ module unfunk {
 	};
 
 	var cleanErrorMessage = function (msg):string {
-		//TODO all errors
-		return msg.replace(/^(AssertionError:[ \t]*)/, '');
+		return msg.replace(/^([A-Z][\w_]*:[ \t]*)/, '');
 	};
 
 	export function padLeft(str, len, char):string {

@@ -17,6 +17,8 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-mocha-test');
 	grunt.loadNpmTasks('grunt-shell');
 	grunt.loadNpmTasks('grunt-bump');
+	grunt.loadNpmTasks('grunt-continue');
+	grunt.loadNpmTasks('grunt-fileindex');
 
 	var path = require('path');
 
@@ -49,7 +51,18 @@ module.exports = function (grunt) {
 			]
 		},
 		clean: {
-			tests: ['build', 'test/tmp', 'test/_tmp.*', '*.js.map']
+			build: ['build'],
+			test: ['test/tmp', 'test/_tmp.*', '*.js.map']
+		},
+		fileindex : {
+			test: {
+				options: {
+					format: 'script_src'
+				},
+				files: [
+					{dest: 'test/_tmp.tags.js', src: ['**/*.test.js'], cwd: 'test'}
+				]
+			}
 		},
 		typescript: {
 			options: { base_path: 'test/', target: 'es5', sourcemap: false },
@@ -63,39 +76,39 @@ module.exports = function (grunt) {
 			//TODO clean this up with gruntfile-gtx later
 			test_fail: {
 				src: ['test/*.test.ts'],
-				dest: 'test/_tmp.test.js'
+				dest: 'test/_tmp.fail.test.js'
 			},
 			test_pass: {
 				src: ['test/async_slow.test.ts', 'test/objectDiff.test.ts', 'test/jsDiff.test.ts', 'test/pending.test.ts'],
-				dest: 'test/_tmp.test.js'
+				dest: 'test/_tmp.pass.test.js'
 			},
 			test_objectDiff: {
 				src: ['test/objectDiff*.test.ts'],
-				dest: 'test/_tmp.test.js'
+				dest: 'test/_tmp.objectDiff.test.js'
 			},
 			test_jsDiff: {
 				src: ['test/jsDiff*.test.ts'],
-				dest: 'test/_tmp.test.js'
+				dest: 'test/_tmp.jsDiff.test.js'
 			},
 			test_single: {
 				src: ['test/async.test.ts'],
-				dest: 'test/_tmp.test.js'
+				dest: 'test/_tmp.async.test.js'
 			},
 			test_kitteh: {
 				src: ['test/kitteh*.test.ts'],
-				dest: 'test/_tmp.test.js'
+				dest: 'test/_tmp.kitteh.test.js'
 			},
 			test_errors: {
 				src: ['test/errors*.test.ts'],
-				dest: 'test/_tmp.test.js'
+				dest: 'test/_tmp.errors.test.js'
 			},
 			test_asserts: {
 				src: ['test/compare_assertion*.test.ts'],
-				dest: 'test/_tmp.test.js'
+				dest: 'test/_tmp.compare_assertion.test.js'
 			},
 			test_demo: {
-				src: ['test/async.test.ts', 'test/kitteh.test.ts'],
-				dest: 'test/_tmp.test.js'
+				src: ['test/kitteh.test.ts'],
+				dest: 'test/_tmp.demo.test.js'
 			}
 		},
 		//buh
@@ -145,11 +158,21 @@ module.exports = function (grunt) {
 
 	grunt.registerTask('default', ['test']);
 
-	grunt.registerTask('test', ['build_pass', 'run_core']);
+	grunt.registerTask('test', [
+		'build',
+		'typescript:test_pass',
+		'run_core',
+		'clean:test',
+		'typescript:test_demo',
+		'fileindex:test',
+		'continueOn',
+		'mochaTest',
+		'continueOff'
+	]);
 	grunt.registerTask('run_core', ['mocha', 'mochaTest']);
 	grunt.registerTask('run_all', ['mocha', 'shell', 'mochaTest']);
 
-	grunt.registerTask('build', ['clean', 'typescript:reporter']);
+	grunt.registerTask('build', ['clean', 'jshint', 'typescript:reporter']);
 	grunt.registerTask('build_pass', ['build', 'jshint', 'typescript:test_pass']);
 	grunt.registerTask('build_fail', ['build', 'jshint', 'typescript:test_fail']);
 

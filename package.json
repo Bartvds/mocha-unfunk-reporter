@@ -1,7 +1,7 @@
 {
   "name": "mocha-unfunk-reporter",
   "version": "0.2.1",
-  "description": " Mocha console reporter without funkyness",
+  "description": "Mocha reporter without console funkyness",
   "author": {
     "name": "Bart van der Schoor",
     "url": "https://github.com/Bartvds"
@@ -51,6 +51,8 @@
     "source-map-support": "0.1.8",
     "grunt-bump": "0.0.11",
     "grunt-mocha": "0.4.1",
-    "grunt-contrib-jshint": "~0.6.3"
+    "grunt-contrib-jshint": "~0.6.3",
+    "grunt-continue": "0.0.1",
+    "grunt-fileindex": "~0.1.0"
   }
 }

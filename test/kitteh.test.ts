@@ -43,14 +43,14 @@ describe('kitteh', () => {
 				it('fun', () => {
 					assert.deepEqual({
 							aa: 'meeeeiiow actual',
-							bb: 'purrrrrrr actual',
-							cc: [111, 222, 555],
-							dd: {one: 33, two: 22, three: 44}
+							bb: {one: 33, two: 22, three: 'aabbccddeeffgghiijjkklmnoprst'},
+							ff: 'purrrrrrr actual',
+							cc: [111, 222, 555]
 						}, {
 							aa: 'meow meow expected',
-							ff: 'hsss expected',
-							cc: [1, 2, 3],
-							dd: {one: 1, two: 2, three: 3}
+							bb: {one: 1, two: 2, three: 'aabcdddfegehijklmnnop'},
+							dd: 'hisss expected',
+							cc: [1, 2, 3]
 						}
 					);
 					it('hats', () => {

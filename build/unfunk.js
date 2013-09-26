@@ -681,7 +681,9 @@ var unfunk;
             'proclaim', 
             'assert', 
             'expect', 
-            'should'
+            'should', 
+            'chai-as-promised', 
+            'mocha-as-promised'
         ];
         stack.nodeFilters = [];
         stack.webFilters = [
@@ -712,13 +714,14 @@ var unfunk;
                 }, this);
             };
             StackFilter.prototype.filter = function (stack) {
-                if(!stack) {
+                if(/^\s+$/.test(stack)) {
                     return '<no stack>';
                 }
                 if(this.filters.length === 0) {
                     return stack;
                 }
-                var lines = stack.split(splitLine);
+                var allLines = stack.split(splitLine);
+                var lines = allLines.slice(0);
                 var cut = -1;
                 var i, line;
                 for(i = lines.length - 1; i >= 0; i--) {
@@ -735,8 +738,11 @@ var unfunk;
                         }
                     }
                 }
-                if(cut > -1) {
-                    lines = lines.slice(0, cut);
+                if(cut > 0) {
+                    lines = lines.splice(0, cut);
+                }
+                if(allLines.length === 0) {
+                    return '<no lines in stack>';
                 }
                 if(lines.length === 0) {
                     return '<no unfiltered calls in stack>';
@@ -818,7 +824,8 @@ var unfunk;
         writer: 'log',
         style: 'ansi',
         stream: null,
-        stackFilter: true
+        stackFilter: true,
+        reportPending: false
     };
     var tty = require('tty');
     var isatty = (tty.isatty('1') && tty.isatty('2'));
@@ -889,8 +896,8 @@ var unfunk;
         }
         return '' + value;
     };
-    var extract = /^[ \t]*[A-Z][A-Za-z0-9_-]*Error: ([\s\S]+?)([\r\n]+[ \t]*at[\s\S]*)$/;
-    var errorType = /^[ \t]*([A-Z][A-Za-z0-9_-]*Error)/;
+    var extract = /^[A-Z][\w_]*:[ \t]*([\s\S]+?)([\r\n]+[ \t]*at[\s\S]*)$/;
+    var errorType = /^([A-Z][\w_]*)/;
     var assertType = /^AssertionError/;
     var headlessStack = function (error) {
         if(error.stack) {
@@ -939,7 +946,7 @@ var unfunk;
         return getErrorPrefix(error) + '<no error message>';
     };
     var cleanErrorMessage = function (msg) {
-        return msg.replace(/^(AssertionError:[ \t]*)/, '');
+        return msg.replace(/^([A-Z][\w_]*:[ \t]*)/, '');
     };
     function padLeft(str, len, char) {
         str = String(str);
