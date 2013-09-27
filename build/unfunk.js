@@ -424,6 +424,7 @@ var unfunk;
 var unfunk;
 (function (unfunk) {
     (function (diff) {
+        var objectNameExp = /(^\[object )|(\]$)/gi;
         var repeatStr = function (str, amount) {
             var ret = '';
             for(var i = 0; i < amount; i++) {
@@ -455,6 +456,22 @@ var unfunk;
                 }
                 return false;
             };
+            DiffFormatter.prototype.isOverlyLengthyObject = function (obj) {
+                var type = this.getObjectType(obj);
+                switch(type) {
+                    case 'array':
+                    case 'arguments':
+                    case 'buffer':
+                        return (obj.length > 100);
+                    case 'string':
+                        return (obj.length > 250);
+                    default:
+                        return false;
+                }
+            };
+            DiffFormatter.prototype.getObjectType = function (obj) {
+                return Object.prototype.toString.call(obj).replace(objectNameExp, '').toLowerCase();
+            };
             DiffFormatter.prototype.styleObjectDiff = function (actual, expected, prepend) {
                 if (typeof prepend === "undefined") { prepend = ''; }
                 if(typeof actual === 'undefined' || typeof expected === 'undefined') {
@@ -464,6 +481,16 @@ var unfunk;
                 this.indents = 0;
                 var ret = '';
                 var diff;
+                var len = [];
+                if(this.isOverlyLengthyObject(actual)) {
+                    len.push(prepend + '<actual too lengthy for diff: ' + actual.length + '>');
+                }
+                if(this.isOverlyLengthyObject(expected)) {
+                    len.push(prepend + '<expected too lengthy for diff: ' + expected.length + '>');
+                }
+                if(len.length > 0) {
+                    return len.join('\n');
+                }
                 if(typeof actual === 'object' && typeof expected === 'object') {
                     diff = objectDiff.diff(actual, expected);
                     ret = this.objectDiffToLogString(diff);
@@ -714,7 +741,7 @@ var unfunk;
                 }, this);
             };
             StackFilter.prototype.filter = function (stack) {
-                if(/^\s+$/.test(stack)) {
+                if(!stack || /^\s+$/.test(stack)) {
                     return '<no stack>';
                 }
                 if(this.filters.length === 0) {
@@ -843,13 +870,21 @@ var unfunk;
             }
         } else if(arguments.length === 2) {
             if(typeof value !== 'undefined') {
-                options[nameOrHash] = value;
+                var propLower = nameOrHash.toLowerCase();
+                for(var name in options) {
+                    if(options.hasOwnProperty(name)) {
+                        var nameLower = name.toLowerCase();
+                        if(nameLower === propLower) {
+                            options[name] = value;
+                        }
+                    }
+                }
             }
         }
         return expose;
     };
     var importEnv = function () {
-        var pattern = /^mocha-unfunk-([\w]+(?:[\w_-][\w]+)*)$/;
+        var pattern = /^mocha[_-]unfunk[_-]([\w]+(?:[\w_-][\w]+)*)$/i;
         var obj;
         if(typeof process !== 'undefined' && process.env) {
             obj = process.env;
@@ -860,7 +895,8 @@ var unfunk;
                     pattern.lastIndex = 0;
                     var match = pattern.exec(name);
                     if(match && match.length > 1) {
-                        option(match[1], obj[name]);
+                        var prop = match[1].toLowerCase();
+                        option(prop, obj[name]);
                     }
                 }
             }

@@ -14,6 +14,7 @@ module unfunk {
 
 		 diff output algorithm based on objectDiff HTML printer
 		 */
+		var objectNameExp = /(^\[object )|(\]$)/gi;
 
 		var repeatStr = function (str, amount) {
 			var ret = '';
@@ -51,15 +52,46 @@ module unfunk {
 				return false;
 			}
 
+			public isOverlyLengthyObject(obj:any):bool {
+				var type = this.getObjectType(obj);
+				switch (type) {
+					case 'array':
+					case 'arguments':
+					case 'buffer':
+						return (obj.length > 100);
+					case 'string':
+						return (obj.length > 250);
+					default:
+						return false;
+				}
+			}
+
+			public getObjectType(obj:any):string {
+				return Object.prototype.toString.call(obj).replace(objectNameExp, '').toLowerCase();
+			}
+
 			public styleObjectDiff(actual:any, expected:any, prepend?:string = ''):string {
 				if (typeof actual === 'undefined' || typeof expected === 'undefined') {
 					return '';
 				}
 				this.prepend = prepend;
 				this.indents = 0;
-
 				var ret:string = '';
 				var diff;
+
+				var len = [];
+				if (this.isOverlyLengthyObject(actual)) {
+					len.push(prepend + '<actual too lengthy for diff: ' + actual.length + '>');
+				}
+				if (this.isOverlyLengthyObject(expected)) {
+					len.push(prepend + '<expected too lengthy for diff: ' + expected.length + '>');
+				}
+				if(len.length > 0) {
+					return len.join('\n');
+				}
+
+				//TODO rewrite to improve diffs for buffers etc
+
 				if (typeof actual === 'object' && typeof expected === 'object') {
 					diff = objectDiff.diff(actual, expected);
 					ret = this.objectDiffToLogString(diff);
@@ -94,7 +126,7 @@ module unfunk {
 				var value;
 				var blockCount = 0;
 
-				if (leadSymbols){
+				if (leadSymbols) {
 					padFirst[0] += this.style.error(this.markRemov);
 					padFirst[1] += this.style.main(this.markEmpty);
 					padFirst[2] += this.style.success(this.markAdded);
@@ -184,7 +216,7 @@ module unfunk {
 							else {
 								properties.push(
 									indent + this.getName(key, 'removed') + this.inspect(diff[key].added, 'removed') + '\n' +
-								indent + this.getName(key, 'added') + this.inspect(diff[key].removed, 'added') + ''
+										indent + this.getName(key, 'added') + this.inspect(diff[key].removed, 'added') + ''
 								);
 							}
 							break;

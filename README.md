@@ -34,6 +34,16 @@ require('mocha-unfunk-reporter').option({<name>: <value>, <name>: <value>});
 //or on env with prefixed name
 process.env['mocha-unfunk-<option_name>'] = <option_value>;
 
+//env also work Bash-style: upper-cased and underscores instead of dashes
+process.env['MOCHA_UNFUNK_<OPTION_NAME>'] = <option_value>;
+````
+For example these are ll equivalent:
+````
+process.env['MOCHA_UNFUNK_REPORTPENDING'] = true;
+process.env['mocha-unfunk-reportPending'] = true;
+
+require('mocha-unfunk-reporter').option('reportPending', true);
+require('mocha-unfunk-reporter').option({reportPending: true});
 ````
 
 Report styling: `style`
@@ -156,6 +166,7 @@ See the `Gruntfile` for additional commands, including many mocha runners.
 
 ## Versions
 
+* 0.2.3 - support bash style uppercased+underscore-style ENV options, don't diff excessively lengthy objects (strings/arrays/arguments/buffers) 
 * 0.2.2 - fixed regular Error (stack) reporting, added `chai-as-promised` & `mocha-as-promised` to stack filter, updated screenshot
 * 0.2.1 - tweaked display, added pending test report (by @geekdave)
 * 0.2.0 - added string diff, more assertions and runner compatibility, changed default to `style='ansi'`

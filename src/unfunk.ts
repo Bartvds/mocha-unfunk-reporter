@@ -103,7 +103,18 @@ module unfunk {
 			}
 		} else if (arguments.length === 2) {
 			if (typeof value !== 'undefined') {
-				options[nameOrHash] = value;
+
+				//allow case-in-sensitive options (from Bash etc)
+				var propLower = nameOrHash.toLowerCase();
+				for (var name in options) {
+					if (options.hasOwnProperty(name)) {
+						var nameLower = name.toLowerCase();
+						if (nameLower === propLower) {
+							//store using real name
+							options[name] = value;
+						}
+					}
+				}
 			}
 		}
 		return expose;
@@ -111,7 +122,8 @@ module unfunk {
 
 	var importEnv = function ():any {
 		//import from env
-		var pattern = /^mocha-unfunk-([\w]+(?:[\w_-][\w]+)*)$/;
+
+		var pattern = /^mocha[_-]unfunk[_-]([\w]+(?:[\w_-][\w]+)*)$/i;
 		var obj;
 		if (typeof process !== 'undefined' && process.env) {
 			obj = process.env;
@@ -122,7 +134,8 @@ module unfunk {
 					pattern.lastIndex = 0;
 					var match = pattern.exec(name);
 					if (match && match.length > 1) {
-						option(match[1], obj[name]);
+						var prop = match[1].toLowerCase();
+						option(prop, obj[name]);
 					}
 				}
 			}

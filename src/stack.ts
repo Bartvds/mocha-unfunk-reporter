@@ -37,7 +37,7 @@ module unfunk {
 			}
 
 			filter(stack:string):string {
-				if (/^\s+$/.test(stack)) {
+				if (!stack || /^\s+$/.test(stack)) {
 					return '<no stack>';
 				}
 				if (this.filters.length === 0) {

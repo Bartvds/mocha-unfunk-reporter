@@ -73,7 +73,11 @@ module.exports = function (grunt) {
 				src: ['src/unfunk.ts'],
 				dest: 'build/unfunk.js'
 			},
-			//TODO clean this up with gruntfile-gtx later
+
+
+			//TODO clean this mess up by using 'gruntfile-gtx'
+
+
 			test_fail: {
 				src: ['test/*.test.ts'],
 				dest: 'test/_tmp.fail.test.js'
@@ -107,8 +111,12 @@ module.exports = function (grunt) {
 				dest: 'test/_tmp.compare_assertion.test.js'
 			},
 			test_demo: {
-				src: ['test/kitteh.test.ts'],
+				src: ['test/diff.test.ts', 'test/kitteh.test.ts'],
 				dest: 'test/_tmp.demo.test.js'
+			},
+			test_diff: {
+				src: ['test/diff.test.ts'],
+				dest: 'test/_tmp.diff.test.js'
 			}
 		},
 		//buh
@@ -154,13 +162,16 @@ module.exports = function (grunt) {
 	//process.env['mocha-unfunk-style'] = 'plain';
 	//process.env['mocha-unfunk-writer'] = 'log';
 
-	process.env['mocha-unfunk-reportPending'] = true;
+	//process.env['mocha-unfunk-style'] = 'plain'
+	//process.env['mocha-unfunk-reportPending'] = true;
+	//process.env['MOCHA_UNFUNK_REPORTPENDING'] = true;
 
 	grunt.registerTask('default', ['test']);
 
 	grunt.registerTask('test', [
 		'build',
 		'typescript:test_pass',
+		'fileindex:test',
 		'run_core',
 		'clean:test',
 		'typescript:test_demo',
