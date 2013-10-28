@@ -1,5 +1,4 @@
-///<reference path="_ref.ts" />
-
+///<reference path="../../../_ref.ts" />
 
 describe('king kitteh', () => {
 	describe('proclaims they shall', () => {

@@ -106,7 +106,9 @@ module unfunk {
 		export class StdStreamWriter implements unfunk.TextWriter {
 
 			constructor(public stream:WritableStream) {
-
+				if (!stream.writable) {
+					throw new Error('stream not writable');
+				}
 			}
 
 			start() {

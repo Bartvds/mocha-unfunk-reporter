@@ -1,5 +1,3 @@
-
-
 module unfunk {
 
 	export module stack {
@@ -17,11 +15,11 @@ module unfunk {
 
 			public filters:RegExp[] = [];
 
-			constructor (public style:Styler) {
+			constructor(public style:Styler) {
 
 			}
 
-			addModuleFilters(filters:string[]){
+			addModuleFilters(filters:string[]) {
 				filters.forEach((filter:string) => {
 					filter = '/node_modules/' + filter + '/';
 					var exp = new RegExp(filter.replace(/\\|\//g, '(\\\\|\\/)'));
@@ -29,7 +27,7 @@ module unfunk {
 				}, this);
 			}
 
-			addFilters(filters:string[]){
+			addFilters(filters:string[]) {
 				filters.forEach((filter:string) => {
 					var exp = new RegExp(filter.replace(/\\|\//g, '(\\\\|\\/)'));
 					this.filters.push(exp);
@@ -56,7 +54,7 @@ module unfunk {
 					}
 					else if (this.filters.some((filter:RegExp) => {
 						return filter.test(line);
-					})){
+					})) {
 						cut = i;
 					}
 					else {
@@ -75,7 +73,7 @@ module unfunk {
 					return '<no unfiltered calls in stack>';
 				}
 				return lines.join('\n');
-			};
+			}
 		}
 	}
 }

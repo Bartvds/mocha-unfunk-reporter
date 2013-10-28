@@ -1,6 +1,4 @@
-///<reference path="_ref.ts" />
-
-declare var assert:chai.Assert;
+///<reference path="../../../_ref.ts" />
 
 describe('async tests', () => {
 	it('first passes', (done:() => void) => {

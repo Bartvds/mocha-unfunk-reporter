@@ -1,0 +1,400 @@
+[4mRunning "mocha_unfunk:plain" (mocha_unfunk) task[24m
+
+[4mRunning "mochaTest:base" (mochaTest) task[24m
+
+-> running 2 suites
+
+   compare
+      pre test
+         common assert.. FAIL
+1:          test bad type
+      strictEqual boolean
+         basic
+            chai.. FAIL
+2:             expected true to equal false
+            proclaim.. FAIL
+3:             true === false
+            common assert.. FAIL
+4:             true === false
+         message
+            chai.. FAIL
+5:             chai message: expected true to equal false
+            proclaim.. FAIL
+6:             proclaim message
+            common assert.. FAIL
+7:             common assert message
+      strictEqual string
+         basic
+            chai.. FAIL
+8:             expected 'Alpha Beta' to equal 'Beta Gamma'
+            proclaim.. FAIL
+9:             "Alpha Beta" === "Beta Gamma"
+            common assert.. FAIL
+10:            "Alpha Beta Delta" === "Beta Gamma Delta"
+         message
+            chai.. FAIL
+11:            chai message: expected 'Alpha Beta Delta' to equal 'Beta Gamma Delta'
+            proclaim.. FAIL
+12:            proclaim message
+            common assert.. FAIL
+13:            common assert message
+      deepEqual object
+         basic
+            chai.. FAIL
+14:            expected { Object (a, b, ...) } to deeply equal { Object (a, b, ...) }
+            proclaim.. FAIL
+15:            {"a":{"aa":1,"bb":4,"cc":"cdehj","dd":4},"b":[1,2]... deepEqual {"a":{"aa":1,"bb":2,"cc":"aceegijk"},"b":[1,2],"f"...
+            common assert.. FAIL
+16:            {"a":{"aa":1,"bb":4,"cc":"cdehj","dd":4},"b":[1,2],"f":"bb cc gg"} deepEqual {"a":{"aa":1,"bb":2,"cc":"aceegijk"},"b":[1,2],"f":"aa cc dd ee gg hh"}
+         message
+            chai.. FAIL
+17:            chai message: expected { Object (a, b, ...) } to deeply equal { Object (a, b, ...) }
+            proclaim.. FAIL
+18:            proclaim message
+            common assert.. FAIL
+19:            common assert message
+
+   king kitteh
+      proclaims they shall
+         meow.. OK
+         have them
+            count.. FAIL
+20:            {"one":1,"two":2,"three":3} deepEqual {"one":3,"two":2,"four":4}
+         has
+            royal milk.. OK
+            cheeseburgers royale.. OK
+            royal no to
+               dogs.. FAIL
+21:               "dogs" == "not here"
+               computer skills.. FAIL
+22:               pretty stack trace is pretty
+            some royal 
+               fun.. OK
+               hats.. FAIL
+23:               "hat" == "silly"
+
+-> reporting 23 failures
+
+1:    compare pre test common assert
+
+      TypeError: test bad type
+
+         at Context.<anonymous> ({PATH}test/modules/compare/tmp/_tmp.test.js:{Y}:{X})
+
+2:    compare strictEqual boolean basic chai
+
+      expected true to equal false
+
+         at Assertion.assertEqual ({PATH}node_modules/chai/lib/chai/core/assertions.js:{Y}:{X})
+         at Assertion.ctx.(anonymous function) [as equal] ({PATH}node_modules/chai/lib/chai/utils/addMethod.js:{Y}:{X})
+         at Function.assert.strictEqual ({PATH}node_modules/chai/lib/chai/interface/assert.js:{Y}:{X})
+         at Context.<anonymous> ({PATH}test/modules/compare/tmp/_tmp.test.js:{Y}:{X})
+
+3:    compare strictEqual boolean basic proclaim
+
+      true === false
+
+         at Object.proclaim.strictEqual ({PATH}node_modules/proclaim/lib/proclaim.js:{Y}:{X})
+         at Context.<anonymous> ({PATH}test/modules/compare/tmp/_tmp.test.js:{Y}:{X})
+
+4:    compare strictEqual boolean basic common assert
+
+      true === false
+
+         at Context.<anonymous> ({PATH}test/modules/compare/tmp/_tmp.test.js:{Y}:{X})
+
+5:    compare strictEqual boolean message chai
+
+      chai message: expected true to equal false
+
+         at Assertion.assertEqual ({PATH}node_modules/chai/lib/chai/core/assertions.js:{Y}:{X})
+         at Assertion.ctx.(anonymous function) [as equal] ({PATH}node_modules/chai/lib/chai/utils/addMethod.js:{Y}:{X})
+         at Function.assert.strictEqual ({PATH}node_modules/chai/lib/chai/interface/assert.js:{Y}:{X})
+         at Context.<anonymous> ({PATH}test/modules/compare/tmp/_tmp.test.js:{Y}:{X})
+
+6:    compare strictEqual boolean message proclaim
+
+      proclaim message
+
+         at Object.proclaim.strictEqual ({PATH}node_modules/proclaim/lib/proclaim.js:{Y}:{X})
+         at Context.<anonymous> ({PATH}test/modules/compare/tmp/_tmp.test.js:{Y}:{X})
+
+7:    compare strictEqual boolean message common assert
+
+      common assert message
+
+         at Context.<anonymous> ({PATH}test/modules/compare/tmp/_tmp.test.js:{Y}:{X})
+
+8:    compare strictEqual string basic chai
+
+      expected 'Alpha Beta' to equal 'Beta Gamma'
+
+         at Assertion.assertEqual ({PATH}node_modules/chai/lib/chai/core/assertions.js:{Y}:{X})
+         at Assertion.ctx.(anonymous function) [as equal] ({PATH}node_modules/chai/lib/chai/utils/addMethod.js:{Y}:{X})
+         at Function.assert.strictEqual ({PATH}node_modules/chai/lib/chai/interface/assert.js:{Y}:{X})
+         at Context.<anonymous> ({PATH}test/modules/compare/tmp/_tmp.test.js:{Y}:{X})
+
+      -       Beta Gamma
+        ++++++||||------
+      + Alpha Beta      
+
+9:    compare strictEqual string basic proclaim
+
+      "Alpha Beta" === "Beta Gamma"
+
+         at Object.proclaim.strictEqual ({PATH}node_modules/proclaim/lib/proclaim.js:{Y}:{X})
+         at Context.<anonymous> ({PATH}test/modules/compare/tmp/_tmp.test.js:{Y}:{X})
+
+      -       Beta Gamma
+        ++++++||||------
+      + Alpha Beta      
+
+10:   compare strictEqual string basic common assert
+
+      "Alpha Beta Delta" === "Beta Gamma Delta"
+
+         at Context.<anonymous> ({PATH}test/modules/compare/tmp/_tmp.test.js:{Y}:{X})
+
+      -       Beta Gamma Delta
+        ++++++|||||------|||||
+      + Alpha Beta       Delta
+
+11:   compare strictEqual string message chai
+
+      chai message: expected 'Alpha Beta Delta' to equal 'Beta Gamma Delta'
+
+         at Assertion.assertEqual ({PATH}node_modules/chai/lib/chai/core/assertions.js:{Y}:{X})
+         at Assertion.ctx.(anonymous function) [as equal] ({PATH}node_modules/chai/lib/chai/utils/addMethod.js:{Y}:{X})
+         at Function.assert.strictEqual ({PATH}node_modules/chai/lib/chai/interface/assert.js:{Y}:{X})
+         at Context.<anonymous> ({PATH}test/modules/compare/tmp/_tmp.test.js:{Y}:{X})
+
+      -       Beta Gamma Delta
+        ++++++|||||------|||||
+      + Alpha Beta       Delta
+
+12:   compare strictEqual string message proclaim
+
+      proclaim message
+
+         at Object.proclaim.strictEqual ({PATH}node_modules/proclaim/lib/proclaim.js:{Y}:{X})
+         at Context.<anonymous> ({PATH}test/modules/compare/tmp/_tmp.test.js:{Y}:{X})
+
+      -       Beta Gamma Delta
+        ++++++|||||------|||||
+      + Alpha Beta       Delta
+
+13:   compare strictEqual string message common assert
+
+      common assert message
+
+         at Context.<anonymous> ({PATH}test/modules/compare/tmp/_tmp.test.js:{Y}:{X})
+
+      -       Beta Gamma Delta
+        ++++++|||||------|||||
+      + Alpha Beta       Delta
+
+14:   compare deepEqual object basic chai
+
+      expected { Object (a, b, ...) } to deeply equal { Object (a, b, ...) }
+
+         at Assertion.assertEql ({PATH}node_modules/chai/lib/chai/core/assertions.js:{Y}:{X})
+         at Assertion.ctx.(anonymous function) [as eql] ({PATH}node_modules/chai/lib/chai/utils/addMethod.js:{Y}:{X})
+         at Function.assert.deepEqual ({PATH}node_modules/chai/lib/chai/interface/assert.js:{Y}:{X})
+         at Context.<anonymous> ({PATH}test/modules/compare/tmp/_tmp.test.js:{Y}:{X})
+
+      ? a: 
+        aa: 1
+        - aa: 1
+        - bb: 2
+        + bb: 4
+        - cc: ac e egijk
+        |   : -|+|+---|-
+        + cc:  cdeh   j 
+        + dd: 4      
+      b: 
+        . 0: 1
+        . 1: 2
+      - b: 
+        . 0: 1
+        . 1: 2
+      - f:   aa cc dd ee gg hh
+      |  : ++--||||------||---
+      + f: bb   cc       gg         
+
+15:   compare deepEqual object basic proclaim
+
+      {"a":{"aa":1,"bb":4,"cc":"cdehj","dd":4},"b":[1,2]... deepEqual {"a":{"aa":1,"bb":2,"cc":"aceegijk"},"b":[1,2],"f"...
+
+         at Object.proclaim.deepEqual ({PATH}node_modules/proclaim/lib/proclaim.js:{Y}:{X})
+         at Context.<anonymous> ({PATH}test/modules/compare/tmp/_tmp.test.js:{Y}:{X})
+
+      ? a: 
+        aa: 1
+        - aa: 1
+        - bb: 2
+        + bb: 4
+        - cc: ac e egijk
+        |   : -|+|+---|-
+        + cc:  cdeh   j 
+        + dd: 4      
+      b: 
+        . 0: 1
+        . 1: 2
+      - b: 
+        . 0: 1
+        . 1: 2
+      - f:   aa cc dd ee gg hh
+      |  : ++--||||------||---
+      + f: bb   cc       gg         
+
+16:   compare deepEqual object basic common assert
+
+      {"a":{"aa":1,"bb":4,"cc":"cdehj","dd":4},"b":[1,2],"f":"bb cc gg"} deepEqual {"a":{"aa":1,"bb":2,"cc":"aceegijk"},"b":[1,2],"f":"aa cc dd ee gg hh"}
+
+         at Context.<anonymous> ({PATH}test/modules/compare/tmp/_tmp.test.js:{Y}:{X})
+
+      ? a: 
+        aa: 1
+        - aa: 1
+        - bb: 2
+        + bb: 4
+        - cc: ac e egijk
+        |   : -|+|+---|-
+        + cc:  cdeh   j 
+        + dd: 4      
+      b: 
+        . 0: 1
+        . 1: 2
+      - b: 
+        . 0: 1
+        . 1: 2
+      - f:   aa cc dd ee gg hh
+      |  : ++--||||------||---
+      + f: bb   cc       gg         
+
+17:   compare deepEqual object message chai
+
+      chai message: expected { Object (a, b, ...) } to deeply equal { Object (a, b, ...) }
+
+         at Assertion.assertEql ({PATH}node_modules/chai/lib/chai/core/assertions.js:{Y}:{X})
+         at Assertion.ctx.(anonymous function) [as eql] ({PATH}node_modules/chai/lib/chai/utils/addMethod.js:{Y}:{X})
+         at Function.assert.deepEqual ({PATH}node_modules/chai/lib/chai/interface/assert.js:{Y}:{X})
+         at Context.<anonymous> ({PATH}test/modules/compare/tmp/_tmp.test.js:{Y}:{X})
+
+      ? a: 
+        aa: 1
+        - aa: 1
+        - bb: 2
+        + bb: 4
+        - cc: ac e egijk
+        |   : -|+|+---|-
+        + cc:  cdeh   j 
+        + dd: 4      
+      b: 
+        . 0: 1
+        . 1: 2
+      - b: 
+        . 0: 1
+        . 1: 2
+      - f:   aa cc dd ee gg hh
+      |  : ++--||||------||---
+      + f: bb   cc       gg         
+
+18:   compare deepEqual object message proclaim
+
+      proclaim message
+
+         at Object.proclaim.deepEqual ({PATH}node_modules/proclaim/lib/proclaim.js:{Y}:{X})
+         at Context.<anonymous> ({PATH}test/modules/compare/tmp/_tmp.test.js:{Y}:{X})
+
+      ? a: 
+        aa: 1
+        - aa: 1
+        - bb: 2
+        + bb: 4
+        - cc: ac e egijk
+        |   : -|+|+---|-
+        + cc:  cdeh   j 
+        + dd: 4      
+      b: 
+        . 0: 1
+        . 1: 2
+      - b: 
+        . 0: 1
+        . 1: 2
+      - f:   aa cc dd ee gg hh
+      |  : ++--||||------||---
+      + f: bb   cc       gg         
+
+19:   compare deepEqual object message common assert
+
+      common assert message
+
+         at Context.<anonymous> ({PATH}test/modules/compare/tmp/_tmp.test.js:{Y}:{X})
+
+      ? a: 
+        aa: 1
+        - aa: 1
+        - bb: 2
+        + bb: 4
+        - cc: ac e egijk
+        |   : -|+|+---|-
+        + cc:  cdeh   j 
+        + dd: 4      
+      b: 
+        . 0: 1
+        . 1: 2
+      - b: 
+        . 0: 1
+        . 1: 2
+      - f:   aa cc dd ee gg hh
+      |  : ++--||||------||---
+      + f: bb   cc       gg         
+
+20:   king kitteh proclaims they shall have them count
+
+      {"one":1,"two":2,"three":3} deepEqual {"one":3,"two":2,"four":4}
+
+         at Object.proclaim.deepEqual ({PATH}node_modules/proclaim/lib/proclaim.js:{Y}:{X})
+         at Context.<anonymous> ({PATH}test/modules/compare/tmp/_tmp.test.js:{Y}:{X})
+
+      - one: 3
+      + one: 1
+      two: 2
+      - two: 2
+      + three: 3
+      - four: 4      
+
+21:   king kitteh proclaims they shall has royal no to dogs
+
+      "dogs" == "not here"
+
+         at Object.proclaim.equal ({PATH}node_modules/proclaim/lib/proclaim.js:{Y}:{X})
+         at Context.<anonymous> ({PATH}test/modules/compare/tmp/_tmp.test.js:{Y}:{X})
+
+      -  no  t here
+        +-|++------
+      + d ogs      
+
+22:   king kitteh proclaims they shall has royal no to computer skills
+
+      Error: pretty stack trace is pretty
+
+         at Context.<anonymous> ({PATH}test/modules/compare/tmp/_tmp.test.js:{Y}:{X})
+
+23:   king kitteh proclaims they shall has some royal  hats
+
+      "hat" == "silly"
+
+         at Object.proclaim.equal ({PATH}node_modules/proclaim/lib/proclaim.js:{Y}:{X})
+         at Context.<anonymous> ({PATH}test/modules/compare/tmp/_tmp.test.js:{Y}:{X})
+
+      -    silly
+        +++-----
+      + hat     
+
+-> failed 23 and passed 4 of 27 tests ({TIME_INT})
+
+[33mWarning: Task "mochaTest:base" failed. Use --force to continue.[39m
+
+[31mAborted due to warnings.[39m

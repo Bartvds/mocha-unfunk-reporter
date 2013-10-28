@@ -1,0 +1,75 @@
+[4mRunning "mocha_unfunk:plain" (mocha_unfunk) task[24m
+
+[4mRunning "mochaTest:base" (mochaTest) task[24m
+
+-> running 4 suites
+
+   async tests
+      first passes.. OK
+      second fails.. FAIL
+1:       expected false to be truthy
+      third errors.. OK
+      fourth pending.. PENDING
+      fifth passes.. OK
+      medium slow.. MEDIUM ({TIME_INT})
+      very slow.. SLOW ({TIME_INT})
+
+   diffs
+      long strings
+         should show big diffs.. PENDING
+         should bail on long diffs.. FAIL
+2:          expected 'Lorem ipsum dolor sit amet, consectetur'...(2731) to equal 'Lorem ipsum dolor sit amet, consectetur'...(2869)
+
+   errors
+      sync fails.. FAIL
+3:       MyError
+      async error.. FAIL
+4:       MyError
+
+   slow test
+      normal.. OK
+      medium.. MEDIUM ({TIME_INT})
+      slow.. SLOW ({TIME_INT})
+
+-> reporting 4 failures
+
+1:    async tests second fails
+
+      expected false to be truthy
+
+         at Assertion.<anonymous> ({PATH}node_modules/chai/lib/chai/core/assertions.js:{Y}:{X})
+         at Assertion.Object.defineProperty.get ({PATH}node_modules/chai/lib/chai/utils/addProperty.js:{Y}:{X})
+         at Function.assert.ok ({PATH}node_modules/chai/lib/chai/interface/assert.js:{Y}:{X})
+         at null._onTimeout ({PATH}test/modules/core/tmp/_tmp.test.js:{Y}:{X})
+         at Timer.listOnTimeout [as ontimeout] (timers.js:{Y}:{X})
+
+2:    diffs long strings should bail on long diffs
+
+      expected 'Lorem ipsum dolor sit amet, consectetur'...(2731) to equal 'Lorem ipsum dolor sit amet, consectetur'...(2869)
+
+         at Assertion.assertEqual ({PATH}node_modules/chai/lib/chai/core/assertions.js:{Y}:{X})
+         at Assertion.ctx.(anonymous function) [as equal] ({PATH}node_modules/chai/lib/chai/utils/addMethod.js:{Y}:{X})
+         at Function.assert.strictEqual ({PATH}node_modules/chai/lib/chai/interface/assert.js:{Y}:{X})
+         at Context.<anonymous> ({PATH}test/modules/core/tmp/_tmp.test.js:{Y}:{X})
+
+      <actual too lengthy for diff: 2715>
+      <expected too lengthy for diff: 2853>
+
+3:    errors sync fails
+
+      Error: MyError
+
+         at Context.<anonymous> ({PATH}test/modules/core/tmp/_tmp.test.js:{Y}:{X})
+
+4:    errors async error
+
+      Error: MyError
+
+         at null._onTimeout ({PATH}test/modules/core/tmp/_tmp.test.js:{Y}:{X})
+         at Timer.listOnTimeout [as ontimeout] (timers.js:{Y}:{X})
+
+-> failed 4 and passed 8 of 12 tests, left 2 pending ({TIME_INT})
+
+[33mWarning: Task "mochaTest:base" failed. Use --force to continue.[39m
+
+[31mAborted due to warnings.[39m

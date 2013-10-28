@@ -1,0 +1,86 @@
+[4mRunning "mocha_unfunk:dev" (mocha_unfunk) task[24m
+
+[4mRunning "mocha:base" (mocha) task[24m
+Testing: index.html
+
+[accent|->] running suites
+
+   [accent|kitteh]
+      [accent|can]
+         [plain|meow.. ][ok|ok]
+         [accent|not]
+            [plain|spell.. ][fail|fail]
+[error|1:             ][warning|expected 'abcdefghijdelm actual' to equal 'abcdfghjklm expected']
+         [accent|has]
+            [plain|milk.. ][ok|ok]
+            [plain|cheeseburgers.. ][ok|ok]
+            [plain|sushi.. ][warn|pending]
+            [accent|no]
+               [plain|computer skills.. ][fail|fail]
+[error|2:                ][warning|pretty stack trace is pretty]
+            [accent|some]
+               [plain|fun.. ][fail|fail]
+[error|3:                ][warning|expected { Object (aa, bb, ...) } to deeply equal { Object (aa, bb, ...) }]
+
+[accent|->] reporting [error|3 failures]
+
+[error|1:    ][accent|kitteh can not ][plain|spell]
+
+      [warning|expected 'abcdefghijdelm actual' to equal 'abcdfghjklm expected']
+
+         at {PATH}node_modules/chai/chai.js:{Y}
+         at {PATH}node_modules/chai/chai.js:{Y}
+         at {PATH}test/modules/kitteh/tmp/_tmp.test.js:{Y}
+
+      [error|- ]abcd fgh j  klm  expect   ed
+      [plain|  ][warning||][warning||][warning||][warning||][success|+][warning||][warning||][warning||][success|+][warning||][success|+][success|+][error|-][warning||][warning||][warning||][success|+][error|-][error|-][error|-][error|-][warning||][warning||][success|+][success|+][success|+][error|-][error|-]
+      [success|+ ]abcdefghijde lm a    ctual  
+
+[error|2:    ][accent|kitteh can has no ][plain|computer skills]
+
+      [warning|pretty stack trace is pretty]
+
+         at {PATH}node_modules/chai/chai.js:{Y}
+         at {PATH}node_modules/chai/chai.js:{Y}
+         at chair ({PATH}test/modules/kitteh/tmp/_tmp.test.js:{Y})
+         at table ({PATH}test/modules/kitteh/tmp/_tmp.test.js:{Y})
+         at couch ({PATH}test/modules/kitteh/tmp/_tmp.test.js:{Y})
+         at mouse ({PATH}test/modules/kitteh/tmp/_tmp.test.js:{Y})
+         at {PATH}test/modules/kitteh/tmp/_tmp.test.js:{Y}
+
+[error|3:    ][accent|kitteh can has some ][plain|fun]
+
+      [warning|expected { Object (aa, bb, ...) } to deeply equal { Object (aa, bb, ...) }]
+
+         at {PATH}node_modules/chai/chai.js:{Y}
+         at assertEql ({PATH}node_modules/chai/chai.js:{Y})
+         at {PATH}node_modules/chai/chai.js:{Y}
+         at {PATH}node_modules/chai/chai.js:{Y}
+         at {PATH}test/modules/kitteh/tmp/_tmp.test.js:{Y}
+
+      [error|- aa: ]meow me    ow
+      |   : [warning||][warning||][error|-][error|-][error|-][error|-][warning||][success|+][success|+][success|+][success|+][warning||][warning||]
+      [success|+ aa: ]me    eeeiiow
+      [warning|? bb: ]
+        [error|- one: ]1
+        [success|+ one: ]33
+        [error|- two: ]2
+        [success|+ two: ]22
+        [error|- three: ]aab c dd  df eg ehi j k lmnnop   
+        |      : [warning||][warning||][warning||][success|+][warning||][success|+][warning||][warning||][success|+][success|+][error|-][warning||][success|+][error|-][warning||][success|+][error|-][warning||][warning||][success|+][warning||][success|+][warning||][success|+][warning||][warning||][warning||][error|-][warning||][warning||][success|+][success|+][success|+]
+        [success|+ three: ]aabbccddee ff gg hiijjkklmn oprst      
+      [success|+ ff: ]"purrrrrrr"
+      [warning|? cc: ]
+        [error|- 0: ]1
+        [success|+ 0: ]111
+        [error|- 1: ]2
+        [success|+ 1: ]222
+        [error|- 2: ]3
+        [success|+ 2: ]555      
+      [error|- dd: ]"hisss"      
+
+[plain|-> ][error|failed 3] and [warning|passed 3] of [accent|6 tests], left [warning|1 pending] ({TIME_INT})
+
+[33mWarning: 3/6 tests failed ({TIME_FLOAT}) Use --force to continue.[39m
+
+[31mAborted due to warnings.[39m

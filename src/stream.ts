@@ -6,9 +6,9 @@ module unfunk {
 
 			public buffer:any[] = [];
 			public handle:Function;
-			private _running:bool = false;
+			private _running:boolean = false;
 
-			constructor(public stream:WritableStream, start?:bool = true) {
+			constructor(public stream:WritableStream, start:boolean = true) {
 
 				var self:StreamBuffer = this;
 				this.handle = (data) => {
@@ -27,11 +27,11 @@ module unfunk {
 			}
 
 			peek() {
-				return this.buffer.join('');
+				return Buffer.concat(this.buffer);
 			}
 
 			get() {
-				var data = this.buffer.join('');
+				var data = Buffer.concat(this.buffer);
 				this.buffer = [];
 				return data;
 			}

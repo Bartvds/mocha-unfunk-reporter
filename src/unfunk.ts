@@ -14,15 +14,15 @@ interface TestError {
 	actual:any;
 	expected:any;
 	operator:string;
-	showDiff:bool;
+	showDiff:boolean;
 }
 interface TestSuite {
 	title:string;
 	parent:TestSuite;
-	root:bool;
+	root:boolean;
 	tests:Test[];
 	suites:TestSuite[];
-	pending:bool;
+	pending:boolean;
 	ctx:any;
 }
 interface Test {
@@ -31,8 +31,8 @@ interface Test {
 	speed:string;
 	duration:number;
 	async:number;
-	timedOut:bool;
-	pending:bool;
+	timedOut:boolean;
+	pending:boolean;
 	ctx:any;
 	err:TestError;
 	slow():number;
@@ -46,19 +46,6 @@ module unfunk {
 		write(...args:any[]);
 		writeln(...args:any[]);
 		finish();
-	}
-
-	export interface Styler {
-		ok(str:string):string;
-		fail(str:string):string;
-		warn(str:string):string;
-
-		error(str:string):string;
-		warning(str:string):string;
-		success(str:string):string;
-
-		accent(str:string):string;
-		main(str:string):string;
 	}
 
 	export class Stats {
@@ -79,20 +66,24 @@ module unfunk {
 		style: 'ansi',
 		stream: null,
 		stackFilter: true,
-		reportPending: false
+		reportPending: false,
+		width: 0
 	};
 
 	var tty = require('tty');
 	var isatty = (tty.isatty('1') && tty.isatty('2'));
-	var viewport = {
-		width: isatty
-			? process.stdout['getWindowSize']
-			? process.stdout['getWindowSize'](1)[0]
-			: tty.getWindowSize()[1]
-			: 78
-	};
 
-	var option = function (nameOrHash:any, value?:any):any {
+	function getViewWidth() {
+		if (options.width > 0) {
+			return options.width;
+		}
+		if (isatty) {
+			return Math.min(options.width, process.stdout['getWindowSize'] ?  process.stdout['getWindowSize'](1)[0]: tty.getWindowSize()[1]);
+		}
+		return 80;
+	}
+
+	function option(nameOrHash:any, value?:any):any {
 		if (arguments.length === 1) {
 			if (typeof nameOrHash === 'object') {
 				for (var name in nameOrHash) {
@@ -102,7 +93,7 @@ module unfunk {
 				}
 			}
 		} else if (arguments.length === 2) {
-			if (typeof value !== 'undefined') {
+			if (typeof value !== 'undefined' && typeof nameOrHash === 'string') {
 
 				//allow case-in-sensitive options (from Bash etc)
 				var propLower = nameOrHash.toLowerCase();
@@ -118,9 +109,9 @@ module unfunk {
 			}
 		}
 		return expose;
-	};
+	}
 
-	var importEnv = function ():any {
+	function importEnv():any {
 		//import from env
 
 		var pattern = /^mocha[_-]unfunk[_-]([\w]+(?:[\w_-][\w]+)*)$/i;
@@ -140,14 +131,14 @@ module unfunk {
 				}
 			}
 		}
-	};
+	}
 
-	var stringTrueish = function (str:string):bool {
+	function stringTrueish(str:string):boolean {
 		str = ('' + str).toLowerCase();
 		return str != '' && str != 'false' && str != '0' && str != 'null' && str != 'undefined';
-	};
+	}
 
-	var toDebug = function (value, cutoff?:number = 20) {
+	function toDebug(value, cutoff:number = 20) {
 
 		var t = typeof value;
 		if (t === 'function') {
@@ -172,12 +163,13 @@ module unfunk {
 			return JSON.stringify(value);
 		}
 		return '' + value;
-	};
+	}
+
 	var extract = /^[A-Z][\w_]*:[ \t]*([\s\S]+?)([\r\n]+[ \t]*at[\s\S]*)$/;
 	var errorType = /^([A-Z][\w_]*)/;
 	var assertType = /^AssertionError/;
 
-	var headlessStack = function (error:TestError):string {
+	function headlessStack(error:TestError):string {
 		if (error.stack) {
 			var match = error.stack.match(extract);
 			if (match && match.length > 2) {
@@ -185,8 +177,9 @@ module unfunk {
 			}
 		}
 		return '';
-	};
-	var getErrorPrefix = function (error:TestError):string {
+	}
+
+	function getErrorPrefix(error:TestError):string {
 		var str = error.stack || ('' + error);
 		var match = str.match(errorType);
 		if (match && match.length > 0) {
@@ -196,8 +189,9 @@ module unfunk {
 			}
 		}
 		return '';
-	};
-	var getErrorMessage = function (error:TestError):string {
+	}
+
+	function getErrorMessage(error:TestError):string {
 		var msg = '';
 		if (error.message) {
 			msg = error.message;
@@ -225,11 +219,11 @@ module unfunk {
 			return getErrorPrefix(error) + msg.replace(/(\s+$)/g, '');
 		}
 		return getErrorPrefix(error) + '<no error message>';
-	};
+	}
 
-	var cleanErrorMessage = function (msg):string {
+	function cleanErrorMessage(msg):string {
 		return msg.replace(/^([A-Z][\w_]*:[ \t]*)/, '');
-	};
+	}
 
 	export function padLeft(str, len, char):string {
 		str = String(str);
@@ -238,7 +232,7 @@ module unfunk {
 			str = char + str;
 		}
 		return str;
-	};
+	}
 
 	export function padRight(str, len, char):string {
 		str = String(str);
@@ -247,13 +241,44 @@ module unfunk {
 			str += char;
 		}
 		return str;
-	};
+	}
+
+	function getStyler():Styler {
+		switch (options.style) {
+			case 'no':
+			case 'none':
+				return new styler.NoStyler();
+			case 'plain':
+				return new styler.PlainStyler();
+			case 'dev':
+				return new styler.DevStyler();
+			case 'html':
+				return new styler.HTMLWrapStyler();
+			case 'css':
+				return new styler.CSSStyler();
+			case 'ansi':
+				return new styler.ANSIStyler();
+		}
+		return new styler.ANSIStyler();
+	}
+
+	function getWriter():TextWriter {
+		if (options.stream) {
+			return new writer.StdStreamWriter(options.stream);
+		}
+		switch (options.writer) {
+			case 'stdout':
+				return new writer.StdStreamWriter(process.stdout);
+			case 'bulk':
+				return new writer.ConsoleBulkWriter();
+			case 'null':
+				return new writer.NullWriter();
+		}
+		return new writer.ConsoleLineWriter();
+	}
 
 	//the reporter
 	export class Unfunk {
-
-		//TODO expose alternate writer/styler choices?a
-		//TODO fix/auto switch colors
 
 		stats:Stats;
 		failures:Test[];
@@ -263,64 +288,20 @@ module unfunk {
 			this.init(runner);
 		}
 
-		getStyler():Styler {
-			if (typeof options.style !== 'undefined') {
-				if (options.style === 'plain') {
-					return new styler.PlainStyler();
-				}
-				if (options.style === 'ansi') {
-					return new styler.AnsiStyler();
-				}
-				if (options.style === 'html') {
-					return new styler.HtmlStyler();
-				}
-				if (options.style === 'css') {
-					return new styler.CssStyler();
-				}
-			}
-			return new styler.PlainStyler();
-		}
-
-		getWriter():TextWriter {
-			if (options.stream) {
-				if (!options.stream.writable) {
-					throw new Error('stream not writable');
-				}
-				return new writer.StdStreamWriter(options.stream);
-			}
-			else if (options.writer === 'stdout') {
-				return new writer.StdStreamWriter(process.stdout);
-			}
-			else if (options.writer === 'bulk') {
-				return new writer.ConsoleBulkWriter();
-			}
-			else if (options.writer === 'null') {
-				return new writer.NullWriter();
-			}
-			else if (options.writer === 'log') {
-				return new writer.ConsoleLineWriter();
-			}
-			return new writer.ConsoleLineWriter();
-		}
-
 		init(runner) {
 			importEnv();
 
 			var stats = this.stats = new Stats();
-			var out = this.getWriter();
-			var style = this.getStyler();
+			var out = getWriter();
+			var style = getStyler();
 
-			var diffFormat = new diff.DiffFormatter(style, viewport.width);
+			var diffFormat = new diff.DiffFormatter(style, getViewWidth());
 			var stackFilter = new stack.StackFilter(style);
 			if (options.stackFilter) {
 				stackFilter.addFilters(stack.nodeFilters);
 				stackFilter.addFilters(stack.webFilters);
 				stackFilter.addModuleFilters(stack.moduleFilters);
 			}
-
-			/*console.log(out['constructor']);
-			 console.log(style['constructor']);
-			 console.log(diffFormat['constructor']);*/
 
 			runner.stats = stats;
 
@@ -331,17 +312,16 @@ module unfunk {
 			var suiteStack:TestSuite[] = [];
 			var currentSuite:TestSuite;
 
-			var indent = (add?:number = 0):string => {
+			var indent = (add:number = 0):string => {
 				return Array(indents + add + 1).join(indenter);
 			};
-			var indentLen = (amount?:number = 1):number => {
+			var indentLen = (amount:number = 1):number => {
 				return amount * indenter.length;
 			};
 			var pluralize = (word:string, amount:number, plurl = 's'):string => {
 				return amount + ' ' + (1 == amount ? word : word + plurl);
 			};
 			var start;
-			//var buffer = new stream.StreamBuffer(process.stderr);
 
 			runner.on('start', () => {
 				stats.start = new Date().getTime();
@@ -386,12 +366,12 @@ module unfunk {
 
 			runner.on('test', (test:Test) => {
 				stats.tests++;
-				out.write(indent(0) + style.main(test.title + '.. '));
+				out.write(indent(0) + style.plain(test.title + '.. '));
 			});
 
 			runner.on('pending', (test:Test) => {
 				stats.pending++;
-				out.writeln(indent(0) + style.main(test.title + '.. ') + style.warn('pending'));
+				out.writeln(indent(0) + style.plain(test.title + '.. ') + style.warn('pending'));
 				pending.push(test);
 			});
 
@@ -467,7 +447,7 @@ module unfunk {
 					pending.forEach((test:Test, num:number) => {
 						var tmp = test.fullTitle();
 						var ind = tmp.lastIndexOf(test.title);
-						var title = style.accent(tmp.substring(0, ind)) + style.main(tmp.substring(ind));
+						var title = style.accent(tmp.substring(0, ind)) + style.plain(tmp.substring(ind));
 						out.writeln(style.warn(padRight((num + 1) + ': ', indentLen(2), ' ')) + title);
 					});
 					out.writeln();
@@ -481,7 +461,7 @@ module unfunk {
 						//deep get title chain
 						var tmp = test.fullTitle();
 						var ind = tmp.lastIndexOf(test.title);
-						var title = style.accent(tmp.substring(0, ind)) + style.main(tmp.substring(ind));
+						var title = style.accent(tmp.substring(0, ind)) + style.plain(tmp.substring(ind));
 
 						//error message
 						var err = test.err;
@@ -500,7 +480,7 @@ module unfunk {
 						}
 
 						if (err.showDiff || diffFormat.forcedDiff(err.actual, err.expected)) {
-							var diff = diffFormat.styleObjectDiff(err.actual, err.expected, indent(2));
+							var diff = diffFormat.getStyledDiff(err.actual, err.expected, indent(2));
 							if (diff) {
 								out.writeln(diff);
 								out.writeln();
@@ -508,7 +488,7 @@ module unfunk {
 						}
 					});
 				}
-				out.writeln(style.main('-> ') + sum + ' (' + (stats.duration) + 'ms)');
+				out.writeln(style.plain('-> ') + sum + ' (' + (stats.duration) + 'ms)');
 				out.writeln();
 
 				// bye!

@@ -1,6 +1,4 @@
-///<reference path="_ref.ts" />
-
-declare var assert:chai.Assert;
+///<reference path="../../../_ref.ts" />
 
 describe('pending specs', () => {
 	it.skip('this is the first pending spec', (done:() => void) => {

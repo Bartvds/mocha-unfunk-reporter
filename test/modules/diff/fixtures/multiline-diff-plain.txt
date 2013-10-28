@@ -1,0 +1,27 @@
+? nested: 
+  - aa: abaa 
+  |   : |-||+
+  + aa: a aab
+- lines: Lorem ipsum dolor sit amet, consectetur adipiscing elit.\r\n
+|      : ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
++ lines: Lorem ipsum dolor sit amet, consectetur adipiscing elit.\r\n
+
+         Lorem dolor sit amet elit.\r\n
+         ||||||-------|----------------
+         Lorem        i                
+
+         Lorem ipsum dolor  elit.\r\n
+         -------|||||||||||+--||-----
+                psum dolor s  it     
+
+         Lorem  ipsum   adipiscing elit.\r\n
+         -----|+----|++|||||||||||||||||||||
+               a    met adipiscing elit.\r\n
+
+         Lorem ipsum dolor sit amet adipiscing elit.\r\n
+         ||||||||||||----------|-----|||||||||||||||||||
+         Lorem ipsum           a     dipiscing elit.\r\n
+
+         Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+         ||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+         Lorem ipsum dolor sit amet, consectetur adipiscing elit.

@@ -8,21 +8,44 @@
 
 'use strict';
 
+/*jshint -W107*/
+
 module.exports = function (grunt) {
 
-	grunt.loadNpmTasks('grunt-typescript');
-	grunt.loadNpmTasks('grunt-contrib-clean');
-	grunt.loadNpmTasks('grunt-contrib-jshint');
-	grunt.loadNpmTasks('grunt-mocha');
-	grunt.loadNpmTasks('grunt-mocha-test');
-	grunt.loadNpmTasks('grunt-shell');
-	grunt.loadNpmTasks('grunt-bump');
-	grunt.loadNpmTasks('grunt-continue');
-	grunt.loadNpmTasks('grunt-fileindex');
+	var tty = require('tty');
+	var isatty = (tty.isatty('1') && tty.isatty('2'));
 
+	function getViewWidth() {
+		if (isatty) {
+			return (process.stdout['getWindowSize'] ? process.stdout['getWindowSize'](1)[0] : tty.getWindowSize()[1]);
+		}
+		return 80;
+	}
+
+	var gtx = require('gruntfile-gtx').wrap(grunt);
+
+	gtx.loadNpmTasks(
+		'grunt-typescript',
+		'grunt-contrib-clean',
+		'grunt-contrib-jshint',
+		'grunt-continue',
+		'grunt-mocha-test',
+		'grunt-bump',
+		'grunt-tslint',
+		'grunt-run-grunt');
+
+	gtx.loadTasks(
+		'./tasks'
+	);
 	var path = require('path');
+	var ansidiff = require('ansidiff');
 
-	grunt.initConfig({
+	//http://stackoverflow.com/a/1144788/1026362
+	function escapeRegExp(str) {
+		return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+	}
+
+	gtx.addConfig({
 		pkg: grunt.file.readJSON('package.json'),
 		bump: {
 			options: {
@@ -41,161 +64,252 @@ module.exports = function (grunt) {
 				gitDescribeOptions: '--tags --always --abbrev=1 --dirty=-d'
 			}
 		},
+		clean: {
+			build: ['build']
+		},
 		jshint: {
 			options: grunt.util._.defaults(grunt.file.readJSON('.jshintrc'), {
 				reporter: './node_modules/jshint-path-reporter'
 			}),
-			all: [
+			support: [
 				'Gruntfile.js',
-				'lib/**/*.js'
+				'tasks/**/*.js',
+				'lib/**/*.js',
+				'test/*.js'
 			]
 		},
-		clean: {
-			build: ['build'],
-			test: ['test/tmp', 'test/_tmp.*', '*.js.map']
+		tslint: {
+			options: {
+				configuration: grunt.file.readJSON('tslint.json'),
+				formatter: 'tslint-path-formatter'
+			},
+			src: ['src/**/*.ts']
 		},
-		fileindex : {
-			test: {
+		run_grunt: {
+			options: {
+				log: true
+			},
+			demo: {
 				options: {
-					format: 'script_src'
+					task: ['build', 'ansi'],
+					indentLog: ''
 				},
-				files: [
-					{dest: 'test/_tmp.tags.js', src: ['**/*.test.js'], cwd: 'test'}
-				]
+				src: ['./test/modules/kitteh/Gruntfile.js']
 			}
 		},
 		typescript: {
-			options: { base_path: 'test/', target: 'es5', sourcemap: false },
+			options: { base_path: 'test/', target: 'es5', sourcemap: true },
 			reporter: {
 				options: {
 					base_path: 'src/'
 				},
 				src: ['src/unfunk.ts'],
 				dest: 'build/unfunk.js'
-			},
-
-
-			//TODO clean this mess up by using 'gruntfile-gtx'
-
-
-			test_fail: {
-				src: ['test/*.test.ts'],
-				dest: 'test/_tmp.fail.test.js'
-			},
-			test_pass: {
-				src: ['test/async_slow.test.ts', 'test/objectDiff.test.ts', 'test/jsDiff.test.ts', 'test/pending.test.ts'],
-				dest: 'test/_tmp.pass.test.js'
-			},
-			test_objectDiff: {
-				src: ['test/objectDiff*.test.ts'],
-				dest: 'test/_tmp.objectDiff.test.js'
-			},
-			test_jsDiff: {
-				src: ['test/jsDiff*.test.ts'],
-				dest: 'test/_tmp.jsDiff.test.js'
-			},
-			test_single: {
-				src: ['test/async.test.ts'],
-				dest: 'test/_tmp.async.test.js'
-			},
-			test_kitteh: {
-				src: ['test/kitteh*.test.ts'],
-				dest: 'test/_tmp.kitteh.test.js'
-			},
-			test_errors: {
-				src: ['test/errors*.test.ts'],
-				dest: 'test/_tmp.errors.test.js'
-			},
-			test_asserts: {
-				src: ['test/compare_assertion*.test.ts'],
-				dest: 'test/_tmp.compare_assertion.test.js'
-			},
-			test_demo: {
-				src: ['test/diff.test.ts', 'test/kitteh.test.ts'],
-				dest: 'test/_tmp.demo.test.js'
-			},
-			test_diff: {
-				src: ['test/diff.test.ts'],
-				dest: 'test/_tmp.diff.test.js'
 			}
 		},
-		//buh
 		mochaTest: {
 			options: {
 				reporter: __dirname //yes!
 			},
-			any: {
-				src: ['test/_tmp.*test.js']
+			integrity: {
+				src: ['test/integrity.js']
 			}
 		},
-		mocha: {
-			options: {
-				log: true,
-				run: true,
-				reporter: __dirname //yes!
-			},
-			any: {
-				src: ['test/*.html']
-			}
-		},
-		shell: {
-			mocha: {
+		mocha_unfunk: {
+			width: {
 				options: {
-					execOptions: {
-						cwd: 'node_modules/.bin'
-					},
-					callback: function (err, stdout, stderrstderr, cb) {
-						console.log(stdout);
-						cb();
-					},
-					failOnError: true,
-					stdout: true,
-					stderr: true
-				},
-				//use local mocha
-				command: 'mocha --reporter ' + path.resolve(__dirname) + ' ' + path.resolve('test/_tmp.*test')
+					width: getViewWidth() - 10
+				}
 			}
 		}
 	});
 
-	//require('mocha-unfunk-reporter').option({style:'ansi', writer:'stdout'});
-	//process.env['mocha-unfunk-style'] = 'plain';
-	//process.env['mocha-unfunk-writer'] = 'log';
+	grunt.registerMultiTask('file_diff', function () {
+		var options = this.options({});
 
-	//process.env['mocha-unfunk-style'] = 'plain'
-	//process.env['mocha-unfunk-reportPending'] = true;
-	//process.env['MOCHA_UNFUNK_REPORTPENDING'] = true;
+		var actual = grunt.file.read(options.actualPath);
+		var expected = grunt.file.read(options.expectedPath);
+		if (options.label) {
+			grunt.log.writeln('');
+			grunt.log.writeln('-> ' + options.label);
+		}
 
-	grunt.registerTask('default', ['test']);
+		grunt.log.writeln('-> ' + options.actualPath);
+		grunt.log.writeln('-> ' + options.expectedPath);
 
-	grunt.registerTask('test', [
-		'build',
-		'typescript:test_pass',
-		'fileindex:test',
-		'run_core',
-		'clean:test',
-		'typescript:test_demo',
-		'fileindex:test',
-		'continueOn',
-		'mochaTest',
-		'continueOff'
+		if (actual !== expected) {
+			grunt.log.writeln('');
+			grunt.log.writeln('-------diff start-------');
+			grunt.log.writeln(ansidiff.chars(actual, expected));
+			grunt.log.writeln('-------diff end-------');
+			grunt.log.writeln('');
+			grunt.fail.warn('files not equal');
+		}
+	});
+
+	// module bulk tester
+	gtx.define('moduleTest', function (macro, id) {
+		var testPath = 'test/modules/' + id + '/';
+
+		var tasks = macro.getParam('tasks', 'default');
+		if (!Array.isArray(tasks)) {
+			tasks = [tasks];
+		}
+
+		var assertOutput = macro.getParam('assert', false);
+		var ignore = macro.getParam('ignore', false);
+
+		macro.newTask('clean', [testPath + 'tmp/**/*']);
+		macro.newTask('typescript', {
+			options: {
+				base_path: testPath
+			},
+			src: [testPath + 'src/**/*.ts'],
+			dest: testPath + 'tmp/_tmp.test.js'
+		});
+		/*macro.newTask('tslint', {
+		 src: [testPath + 'src/**  /*.ts']
+		 });*/
+
+		if (assertOutput || ignore) {
+			macro.newTask('continueOn', {});
+		}
+
+		var indentLog = macro.getParam('indentLog', '  |  ');
+
+		tasks.forEach(function (task) {
+
+			var taskEscaped = task.replace(':', '__');
+
+			macro.newTask('run_grunt', {
+				options: {
+					task: task,
+					indentLog: indentLog,
+					log: macro.getParam('log', false),
+					env: {
+						'MOCHA_UNFUNK_WIDTH': getViewWidth() - indentLog.length
+					},
+					process: function (res) {
+						var p = path.resolve('./') + path.sep;
+
+						var actual = res.res.stdout;
+
+						var pathExpStr = '(?:file:\/\/\/?)?';
+						pathExpStr += '(?:' + escapeRegExp(p) + '|' +  escapeRegExp(p.replace(/\\/g, '/')) + ')';
+
+						var pathExp = new RegExp(pathExpStr, 'g');
+
+							//process stack traces
+						actual = actual.replace(/^([ \t]*at) (.*)$/gm, function (all, one, two) {
+							//plain paths
+							//(replace only work once with strings so split/join)
+							two = two.replace(pathExp, '{PATH}');
+							//un-windows
+							two = two.replace(/\\/g, '/');
+							//lines numbers
+							two = two.replace(/:\d+:\d+(\)?)/g, ':{Y}:{X}$1');
+							two = two.replace(/:\d+(\)?)/g, ':{Y}$1');
+
+							return one + ' ' + two;
+						});
+
+						//grunt-mocha leaks file urls
+						actual = actual.replace(pathExp, '{PATH}');
+
+						actual = actual.replace(/^(.*?)(\{PATH\})(.*)$/gm, function (all, one, two, three) {
+							three = three.replace(/:\d+:\d+(\)?)/g, ':{Y}:{X}$1');
+							three = three.replace(/:\d+(\)?)/g, ':{Y}$1');
+							return one + two + three;
+						});
+
+						//normalise some changing info (time, line numbers etc)
+						actual = actual.replace(/\(\d+(?:ms|s)\)/g, '({TIME_INT})');
+						actual = actual.replace(/\(\d+\.\d+(?:ms|s)\)/g, '({TIME_FLOAT})');
+
+						//keep it
+						grunt.file.write(testPath + 'tmp/output-' + taskEscaped + '.txt', actual);
+						//grunt.file.write(testPath + 'tmp/output-' + taskEscaped + '-raw.txt', res.res.stdout);
+					}
+				},
+				src: [testPath + 'Gruntfile.js']
+			});
+		});
+
+		if (assertOutput || ignore) {
+			macro.newTask('continueOff', {});
+		}
+		if (assertOutput) {
+			//re-loop
+			tasks.forEach(function (task) {
+				var taskEscaped = task.replace(':', '__');
+
+				macro.newTask('file_diff', {
+					options: {
+						label: 'diffing: ' + id + ' ' + task,
+						actualPath: testPath + 'tmp/output-' + taskEscaped + '.txt',
+						expectedPath: testPath + 'fixtures/output-' + taskEscaped + '.txt'
+					}
+				});
+			});
+		}
+
+		macro.tag('module');
+	}, {
+		concurrent: 1
+	});
+
+	// assemble!
+	gtx.alias('default', ['test']);
+
+	gtx.alias('prep', [
+		'clean:build',
+		'jshint:support'
 	]);
-	grunt.registerTask('run_core', ['mocha', 'mochaTest']);
-	grunt.registerTask('run_all', ['mocha', 'shell', 'mochaTest']);
+	gtx.alias('build', [
+		'prep',
+		'typescript:reporter',
+		'mochaTest:integrity'
+	]);
+	gtx.alias('test', [
+		'build',
+		'gtx:kitteh',
+		'gtx:core',
+		'gtx:pending',
+		'gtx:diff',
+		'demo-run',
+	]);
 
-	grunt.registerTask('build', ['clean', 'jshint', 'typescript:reporter']);
-	grunt.registerTask('build_pass', ['build', 'jshint', 'typescript:test_pass']);
-	grunt.registerTask('build_fail', ['build', 'jshint', 'typescript:test_fail']);
+	gtx.alias('dev', ['demo']);
+	gtx.alias('demo', ['build', 'run_grunt:demo']);
+	gtx.alias('demo-run', ['continueOn', 'run_grunt:demo', 'continueOff']);
+
+	gtx.create('core', 'moduleTest', {
+		assert: true,
+		log: true
+	});
+	gtx.create('kitteh', 'moduleTest', {
+		tasks: ['default', 'ansi', 'dev', 'phantom' /*, 'bin'*/],
+		assert: true
+	});
+	gtx.create('compare', 'moduleTest', {
+		tasks: ['ansi'],
+		log: true,
+		ignore: true
+	});
+	gtx.create('pending', 'moduleTest', {
+		log: true
+	});
+	gtx.create('diff', 'moduleTest', {
+		tasks: ['ansi'],
+		log: true,
+		assert: false
+	});
 
 	//editor ui shortcuts/buttons
-	grunt.registerTask('edit_01', ['build_fail', 'mocha']);
-	grunt.registerTask('edit_02', ['build_fail', 'mochaTest']);
-	grunt.registerTask('edit_03', ['build_fail', 'shell']);
-	grunt.registerTask('edit_04', ['build_fail']);
-	grunt.registerTask('edit_05', ['demo']);
+	gtx.alias('edit_01', ['gtx:diff']);
+	gtx.alias('edit_02', ['demo']);
 
-	grunt.registerTask('demo', ['build', 'jshint', 'typescript:test_demo', 'mochaTest']);
+	gtx.alias('dev', ['demo']);
 
-	grunt.registerTask('dev', ['build', 'typescript:test_errors', 'mochaTest']);
-	grunt.registerTask('run', ['build', 'build_pass', 'mocha']);
+	gtx.finalise();
 };

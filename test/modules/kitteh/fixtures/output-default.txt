@@ -1,0 +1,82 @@
+[4mRunning "mocha_unfunk:plain" (mocha_unfunk) task[24m
+
+[4mRunning "mochaTest:base" (mochaTest) task[24m
+
+-> running 1 suite
+
+   kitteh
+      can
+         meow.. OK
+         not
+            spell.. FAIL
+1:             expected 'abcdefghijdelm actual' to equal 'abcdfghjklm expected'
+         has
+            milk.. OK
+            cheeseburgers.. OK
+            sushi.. PENDING
+            no
+               computer skills.. FAIL
+2:                pretty stack trace is pretty
+            some
+               fun.. FAIL
+3:                expected { Object (aa, bb, ...) } to deeply equal { Object (aa, bb, ...) }
+
+-> reporting 3 failures
+
+1:    kitteh can not spell
+
+      expected 'abcdefghijdelm actual' to equal 'abcdfghjklm expected'
+
+         at Function.assert.equal ({PATH}node_modules/chai/lib/chai/interface/assert.js:{Y}:{X})
+         at Context.<anonymous> ({PATH}test/modules/kitteh/tmp/_tmp.test.js:{Y}:{X})
+
+      - abcd fgh j  klm  expect   ed
+        ||||+|||+|++-|||+----||+++--
+      + abcdefghijde lm a    ctual  
+
+2:    kitteh can has no computer skills
+
+      pretty stack trace is pretty
+
+         at chai.assert ({PATH}node_modules/chai/lib/chai/interface/assert.js:{Y}:{X})
+         at chair ({PATH}test/modules/kitteh/tmp/_tmp.test.js:{Y}:{X})
+         at table ({PATH}test/modules/kitteh/tmp/_tmp.test.js:{Y}:{X})
+         at couch ({PATH}test/modules/kitteh/tmp/_tmp.test.js:{Y}:{X})
+         at mouse ({PATH}test/modules/kitteh/tmp/_tmp.test.js:{Y}:{X})
+         at Context.<anonymous> ({PATH}test/modules/kitteh/tmp/_tmp.test.js:{Y}:{X})
+
+3:    kitteh can has some fun
+
+      expected { Object (aa, bb, ...) } to deeply equal { Object (aa, bb, ...) }
+
+         at Assertion.assertEql ({PATH}node_modules/chai/lib/chai/core/assertions.js:{Y}:{X})
+         at Assertion.ctx.(anonymous function) [as eql] ({PATH}node_modules/chai/lib/chai/utils/addMethod.js:{Y}:{X})
+         at Function.assert.deepEqual ({PATH}node_modules/chai/lib/chai/interface/assert.js:{Y}:{X})
+         at Context.<anonymous> ({PATH}test/modules/kitteh/tmp/_tmp.test.js:{Y}:{X})
+
+      - aa: meow me    ow
+      |   : ||----|++++||
+      + aa: me    eeeiiow
+      ? bb: 
+        - one: 1
+        + one: 33
+        - two: 2
+        + two: 22
+        - three: aab c dd  df eg ehi j k lmnnop   
+        |      : |||+|+||++-|+-|+-||+|+|+|||-||+++
+        + three: aabbccddee ff gg hiijjkklmn oprst      
+      + ff: "purrrrrrr"
+      ? cc: 
+        - 0: 1
+        + 0: 111
+        - 1: 2
+        + 1: 222
+        - 2: 3
+        + 2: 555      
+      - dd: "hisss"      
+
+-> failed 3 and passed 3 of 6 tests, left 1 pending ({TIME_INT})
+
+[33mWarning: Task "mochaTest:base" failed. Use --force to continue.[39m
+
+[31mAborted due to warnings.[39m

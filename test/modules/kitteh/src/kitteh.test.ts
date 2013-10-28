@@ -1,4 +1,4 @@
-///<reference path="_ref.ts" />
+///<reference path="../../../_ref.ts" />
 
 function mouse() {
 	couch();
@@ -34,6 +34,7 @@ describe('kitteh', () => {
 			it.skip('sushi', () => {
 				assert.ok(true);
 			});
+
 			describe('no', () => {
 				it('computer skills', () => {
 					mouse();
@@ -42,14 +43,14 @@ describe('kitteh', () => {
 			describe('some', () => {
 				it('fun', () => {
 					assert.deepEqual({
-							aa: 'meeeeiiow actual',
+							aa: 'meeeeiiow',
 							bb: {one: 33, two: 22, three: 'aabbccddeeffgghiijjkklmnoprst'},
-							ff: 'purrrrrrr actual',
+							ff: 'purrrrrrr',
 							cc: [111, 222, 555]
 						}, {
-							aa: 'meow meow expected',
+							aa: 'meow meow',
 							bb: {one: 1, two: 2, three: 'aabcdddfegehijklmnnop'},
-							dd: 'hisss expected',
+							dd: 'hisss',
 							cc: [1, 2, 3]
 						}
 					);

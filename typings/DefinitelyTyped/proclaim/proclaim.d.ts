@@ -34,8 +34,8 @@ declare module Proclaim
 		isBoolean(value, message?:string):void;
 		isNotBoolean(value, message?:string):void;
 
-		isTrue(value:bool, message?:string):void;
-		isFalse(value:bool, message?:string):void;
+		isTrue(value:boolean, message?:string):void;
+		isFalse(value:boolean, message?:string):void;
 
 		isFunction(value, message?:string):void;
 		isNotFunction(value, message?:string):void;
@@ -64,7 +64,7 @@ declare module Proclaim
 		length(value, expected, message?:string):void;
 	}
 	//node module
-	declare var proclaim:Assert;
+	var proclaim:Assert;
 }
 //browser global
 declare var proclaim:Proclaim.Assert;

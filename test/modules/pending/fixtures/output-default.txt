@@ -1,0 +1,20 @@
+[4mRunning "mochaTest:base" (mochaTest) task[24m
+
+[accent|->] running [accent|1 suite]
+
+   [accent|pending specs]
+      [plain|this is the first pending spec.. ][warn|pending]
+      [plain|and a second pending spec.. ][warn|pending]
+      [accent|sub group]
+         [plain|finally a third pending spec.. ][warn|pending]
+
+[accent|->] reporting [warn|3 pending specs]
+
+[warn|1:    ][accent|pending specs ][plain|this is the first pending spec]
+[warn|2:    ][accent|pending specs ][plain|and a second pending spec]
+[warn|3:    ][accent|pending specs sub group ][plain|finally a third pending spec]
+
+[plain|-> ][warning|0 tests], left [warning|3 pending] ({TIME_INT})
+
+
+[32mDone, without errors.[39m

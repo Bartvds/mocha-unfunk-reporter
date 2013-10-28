@@ -18,9 +18,6 @@
     {
       "type": "MIT",
       "url": "https://github.com/Bartvds/mocha-unfunk-reporter/blob/master/LICENSE-MIT"
-    },
-    {
-      "type": "BSD"
     }
   ],
   "keywords": [
@@ -35,24 +32,33 @@
   "scripts": {
     "test": "grunt test"
   },
-  "dependencies": {},
+  "dependencies": {
+    "jsesc": "0.4.3",
+    "diff": "~1.0.7"
+  },
   "devDependencies": {
-    "underscore": "1.4.4",
-    "grunt": "0.4.1",
+    "grunt": "git://github.com/gruntjs/grunt/#0a4e6e38867cde1c396eb99820436027dccf8023",
     "grunt-cli": "0.1.9",
-    "grunt-typescript": "0.1.6",
     "grunt-contrib-clean": "0.4.1",
     "jshint-path-reporter": "~0.1.0",
     "grunt-mocha-test": "~0.4.0",
-    "mocha": "1.11.0",
+    "mocha": "~1.13.0",
     "grunt-shell": "0.3.0",
-    "chai": "~1.7.2",
+    "chai": "git://github.com/Bartvds/chai",
     "proclaim": "1.4.0",
-    "source-map-support": "0.1.8",
+    "source-map-support": "0.2.3",
     "grunt-bump": "0.0.11",
     "grunt-mocha": "0.4.1",
     "grunt-contrib-jshint": "~0.6.3",
     "grunt-continue": "0.0.1",
-    "grunt-fileindex": "~0.1.0"
+    "grunt-fileindex": "~0.1.0",
+    "tslint-path-formatter": "0.1.0",
+    "grunt-tslint": "~0.3.2",
+    "grunt-run-grunt": "0.1.2",
+    "gruntfile-gtx": "0.0.7",
+    "ansidiff": "~1.0.0",
+    "grunt-concurrent": "~0.4.1",
+    "chai-fs": "0.0.3",
+    "grunt-typescript": "~0.2.4"
   }
 }

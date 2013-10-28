@@ -2,59 +2,46 @@
 /// <reference path="../typings/DefinitelyTyped/mocha/mocha.d.ts" />
 /// <reference path="../typings/DefinitelyTyped/chai/chai-assert.d.ts" />
 /// <reference path="../typings/DefinitelyTyped/proclaim/proclaim.d.ts" />
-/// <reference path="../typings/DefinitelyTyped/underscore/underscore.d.ts" />
 
 /// <reference path="_helper.ts" />
 
 
 declare var window:Window;
-declare interface Window {
-	chai:chai;
-	proclaim:any;
+interface Window {
+	chai:Chai.ChaiStatic;
+	proclaim:Proclaim.Assert;
 	expect:any;
 	objectDiff:any;
 	jsDiff:any;
 }
+var chai:Chai.ChaiStatic;
+var objectDiff;
 
-//ugly TypeScript hacks (this needs revision)
-
-declare var chai:any;
-declare var proclaim:any;
-
-declare var objectDiff;
-declare var jsDiff;
+// ugly TypeScript mash
 
 if (typeof require === "function" && typeof exports === "object" && typeof module === "object") {
-	// NodeJS
-	var chai = require('chai');
-	chai.Assertion.includeStack = true;
-	var proclaim = require('proclaim');
+	// nodeJS
+	chai = (<Chai.ChaiStatic> require('chai'));
+	proclaim = (<Proclaim.Assert> require('proclaim'));
 
-	var objectDiff = require('../lib/objectDiff');
-	var jsDiff = require('../lib/jsDiff');
+	objectDiff = require('../../../../lib/objectDiff');
 
-	require('source-map-support').install();
+	// DON't use this as it will mess-up diffs
+	// require('source-map-support').install();
 }
 else {
-	// Other environment (usually <script> tag): plug in to global chai instance directly.
-	var chai = window.chai;
-	var proclaim = window.proclaim;
-
-	var jsDiff = window.jsDiff;
-	var objectDiff = window.objectDiff;
+	// browser
+	chai = window.chai;
+	proclaim = window.proclaim;
 }
-var assert = chai.assert;
 
 if (!chai) {
 	throw new Error('missing chai');
 }
+
+chai.Assertion.includeStack = true;
+var assert = chai.assert;
+
 if (!proclaim) {
 	throw new Error('missing proclaim');
-}
-
-if (!jsDiff) {
-	throw new Error('missing jsDiff');
-}
-if (!objectDiff) {
-	throw new Error('missing objectDiff');
 }

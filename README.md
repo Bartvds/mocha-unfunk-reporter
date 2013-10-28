@@ -7,7 +7,7 @@
 
 This is a `Spec`-style console reporter for [mocha](http://visionmedia.github.io/mocha/) that doesn't confuse lesser console environments with funky display modes, cursor tricks or weird control characters.
 
-Main use-case is running mocha's in basic console views embedded in IDE's or setups with text buffered output. The default config uses only some ANSI console colour codes and writes with console.log() but has option to be tuned up or down for your specific unfunky use-case.
+Main use-case is running mocha's in basic console views embedded in IDE's or setups with text buffered output (like travis-ci). The default config uses only some ANSI console colour codes and writes with console.log() but has option to be tuned up or down for your specific unfunky use-case.
 
 ### Notes
 
@@ -18,11 +18,11 @@ Main use-case is running mocha's in basic console views embedded in IDE's or set
 
 * There is a diff report with custom display that works even on plain-text display.
 * String-diff algorithm is [jsDiff](https://github.com/kpdecker/jsdiff). 
-* Object-diff algorithm is [objectDiff](https://github.com/NV/objectDiff.js) with nested string-diff. May currently be even stricter then your assertions!
+* Object-diff algorithm is [objectDiff](https://github.com/NV/objectDiff.js) with nested string-diff. May be stricter then your assertions!
 
-### Options
+## Options
 
-There are multiple ways to pass globals:
+There are multiple ways to set global options:
 
 ````js
 //on module using .option() method
@@ -36,8 +36,9 @@ process.env['mocha-unfunk-<option_name>'] = <option_value>;
 
 //env also work Bash-style: upper-cased and underscores instead of dashes
 process.env['MOCHA_UNFUNK_<OPTION_NAME>'] = <option_value>;
+
 ````
-For example these are ll equivalent:
+For example these are equivalent:
 ````
 process.env['MOCHA_UNFUNK_REPORTPENDING'] = true;
 process.env['mocha-unfunk-reportPending'] = true;
@@ -46,12 +47,32 @@ require('mocha-unfunk-reporter').option('reportPending', true);
 require('mocha-unfunk-reporter').option({reportPending: true});
 ````
 
+The package also expose a grunt task `mocha_unfunk` to set reporter options.
+
+````
+grunt.initConfig({
+	mocha_unfunk: {
+		myStyle: {
+			options: {
+				style: 'plain'
+			}
+		},
+	}
+	//...
+}
+````
+
+
+### Values
+
 Report styling: `style`
 
 * `'ansi'` - plain with ansi color codes (default)
 * `'plain'` - plain text
+* `'none'` - even plainer text
 * `'html'` - html span's with css colors
 * `'css'` - html span's with css classes
+* `'dev'` - style development codes
 
 Output mode: `writer` 
 
@@ -66,12 +87,11 @@ Report details about pending specs, alongside failures: `reportPending`
 
 Use custom stream: `stream` 
 
-* any standard `WritableStream`
+* any standard `WritableStream` (only usable via `require()`)
 
 Filter internals from stack: `stackFilter` 
 
 * `true` (default) or `false`
-
 
 ## Usage
 Install from npm:
@@ -100,11 +120,12 @@ grunt.initConfig({
 
 ## Examples
 
-Something like this:
+Something like this: ([full version](https://raw.github.com/Bartvds/mocha-unfunk-reporter/master/media/mocha-unfunk-02.png))
 
 ![ansi](https://raw.github.com/Bartvds/mocha-unfunk-reporter/master/media/mocha-unfunk-04.png)
 
 If you got development install you can use `$ grunt demo` to get a quick demo overview.
+
 
 ## Compatibility
 
@@ -166,6 +187,7 @@ See the `Gruntfile` for additional commands, including many mocha runners.
 
 ## Versions
 
+* 0.3.0 - improved diffs (speed, linebreaks, escape with [jsesc](https://github.com/mathiasbynens/jsesc)), added output testing, grunt task, updated project
 * 0.2.3 - support bash style uppercased+underscore-style ENV options, don't diff excessively lengthy objects (strings/arrays/arguments/buffers) 
 * 0.2.2 - fixed regular Error (stack) reporting, added `chai-as-promised` & `mocha-as-promised` to stack filter, updated screenshot
 * 0.2.1 - tweaked display, added pending test report (by @geekdave)

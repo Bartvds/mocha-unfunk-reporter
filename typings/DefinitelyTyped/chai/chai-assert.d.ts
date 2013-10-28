@@ -1,16 +1,29 @@
-// Type definitions for chai v1.6.0 assert style
+// Type definitions for chai v1.7.0 assert style
 // Project: http://chaijs.com/
 // Definitions by: Bart van der Schoor <https://github.com/Bartvds>
 // Definitions: https://github.com/borisyankov/DefinitelyTyped
 
-declare module chai
+declare module Chai
 {
-	interface Assert
+	export interface ChaiStatic
+	{
+		use(plugin:any):void;
+		Assertion:ChaiAssertion;
+		assert:Assert;
+	}
+	export interface ChaiAssertion
+	{
+		includeStack:boolean;
+	}
+
+	export interface Assert
 	{
 		(express:any, msg?:string);
 
 		fail(actual?:any, expected?:any, msg?:string, operator?:string);
+
 		ok(val:any, msg?:string);
+		notOk(val:any, msg?:string);
 
 		equal(act:any, exp:any, msg?:string);
 		notEqual(act:any, exp:any, msg?:string);
@@ -75,7 +88,6 @@ declare module chai
 		deepPropertyNotVal(obj:Object, prop:string, val:any, msg?:string);
 
 		lengthOf(exp:any, len:number, msg?:string);
-
 		//alias frenzy
 		throw(fn:Function, msg?:string);
 		throw(fn:Function, regExp:RegExp);
@@ -105,16 +117,7 @@ declare module chai
 
 		ifError(val:any, msg?:string);
 	}
-	interface AssertionConstr {
-		includeStack:bool;
-	}
-
-	//node module
-	declare var assert:Assert;
-	declare var Assertion:AssertionConstr;
-	declare function use(...paras:any[]);
-	declare function expect(...paras:any[]):any;
-	declare function should():any;
 }
-//browser global
-declare var assert:chai.Assert;
+declare module "chai" {
+export = Chai;
+}
