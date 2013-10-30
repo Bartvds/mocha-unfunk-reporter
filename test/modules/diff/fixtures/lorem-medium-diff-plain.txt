@@ -1,34 +1,34 @@
-- Lorem ipsum dolor sit amet, consectetur adipiscing elit.\r\n
-  ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
-+ Lorem ipsum dolor sit amet, consectetur adipiscing elit.\r\n
+- Lorem ipsum dolor sit amet, consectetur adipiscing elit.\n
+  ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
++ Lorem ipsum dolor sit amet, consectetur adipiscing elit.\n
 
-  \r\n
-  ||||
-  \r\n
+  \n
+  ||
+  \n
 
     Suspendisse im  pe   rd iet      vel veli t     sit  a  met vari us . Interd
   ++-----------|-|++-|+++-|+---|+++++---|---|+-|++++---|+|++-------|+||+-|---|--
   Ut             mal esua da    magna       id  nunc    fauc       ibus,     e  
 
-  um   et male  s uada fames  ac ante ipsum primis  i n faucibus   .\r\n
-  |-|++|----||++|+|-------|-|+--------|-||-------||+|+|-----|--|+++|||||
-  u  sce    lerisqu       e  r        i su       s dign     i  ssim.\r\n
+  um   et male  s uada fames  ac ante ipsum primis  i n faucibus   .\n
+  |-|++|----||++|+|-------|-|+--------|-||-------||+|+|-----|--|+++|||
+  u  sce    lerisqu       e  r        i su       s dign     i  ssim.\n
 
-  \r\n
-  ||||
-  \r\n
+  \n
+  ||
+  \n
 
            In vitae     gravida   ips    um.      Se     d  ne c    ve    n     
   +++++++++--||---|+|+++---|--|++-|-|++++--||+++++-|+++++-|+-|+-|+++-|++++|+++++
   Phasellus   v   el con   v  all i s est  . Nam t empus,  s em  at  elementum f
 
-  e   natis ipsum,  nec            adipis c     ing  leo.\r\n
-  |+++|-|------||||+-||+++|++++++++-----|+|+++++---|+-|------
-  ermen t      um, l ectus nunc con     sectetur    s e      
+  e   natis ipsum,  nec            adipis c     ing  leo.\n
+  |+++|-|------||||+-||+++|++++++++-----|+|+++++---|+-|----
+  ermen t      um, l ectus nunc con     sectetur    s e    
 
-  \r\n
-  ----
-      
+  \n
+  --
+    
 
   Aliquam  convallis orci nibh, vitae    da pibus  s apien  conva  llis eget    
   ------|+|||||||||||-----------|---|+++--|+-|--||+|+-----|+----|++--||||--|++++
