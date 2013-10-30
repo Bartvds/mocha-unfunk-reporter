@@ -1,6 +1,6 @@
 {
   "name": "mocha-unfunk-reporter",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "description": "Mocha reporter without console funkyness",
   "author": {
     "name": "Bart van der Schoor",
