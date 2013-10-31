@@ -33,15 +33,8 @@ module unfunk {
 
 				var diff:StringDiffChange[] = stringDiff.diffChars(expected, actual);
 
-				var dataLength = maxWidth - padLength;
-
-				if (padLength >= maxWidth) {
-					return '<no space for padded diff>';
-				}
-
 				var blocks = [];
 				var value;
-
 				var sep = '\n';
 
 				var padPreTop = this.diff.style.error(this.diff.markRemov);
@@ -59,8 +52,13 @@ module unfunk {
 
 					padLength += this.diff.markAdded.length;
 				}
+				var dataLength = maxWidth - padLength;
+				if (padLength >= maxWidth) {
+					return '<no space for padded diff: "' + (padLength + ' >= ' + maxWidth) + '">';
+				}
+
 				var rowPad = repeatStr(' ', padLength);
-				var counter = padLength - 1; //wtf?
+				var counter = padLength - 1; //wtf -1? beeeh
 
 				var charSame = this.diff.style.warning('|');
 				var charAdded = this.diff.style.success('+');
@@ -92,7 +90,6 @@ module unfunk {
 						var blockCount = 0;
 						var line:string = jsesc(match[0]);
 						var len = line.length;
-
 						//per char
 						for (var j = 0; j < len; j++) {
 							value = line[j];
@@ -121,7 +118,7 @@ module unfunk {
 						}
 					}
 				}
-				if (counter > 0) {
+				if (counter > padLength) {
 					flushLine();
 				}
 
@@ -202,7 +199,7 @@ module unfunk {
 						}
 					}
 				}
-				if (counter > 0) {
+				if (counter > padLength) {
 					flushLine();
 				}
 

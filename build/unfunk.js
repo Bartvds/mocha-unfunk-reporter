@@ -525,15 +525,8 @@ var unfunk;
                 if (typeof leadSymbols === "undefined") { leadSymbols = false; }
                 var diff = stringDiff.diffChars(expected, actual);
 
-                var dataLength = maxWidth - padLength;
-
-                if (padLength >= maxWidth) {
-                    return '<no space for padded diff>';
-                }
-
                 var blocks = [];
                 var value;
-
                 var sep = '\n';
 
                 var padPreTop = this.diff.style.error(this.diff.markRemov);
@@ -551,6 +544,11 @@ var unfunk;
 
                     padLength += this.diff.markAdded.length;
                 }
+                var dataLength = maxWidth - padLength;
+                if (padLength >= maxWidth) {
+                    return '<no space for padded diff: "' + (padLength + ' >= ' + maxWidth) + '">';
+                }
+
                 var rowPad = repeatStr(' ', padLength);
                 var counter = padLength - 1;
 
@@ -607,7 +605,7 @@ var unfunk;
                         }
                     }
                 }
-                if (counter > 0) {
+                if (counter > padLength) {
                     flushLine();
                 }
 
@@ -685,7 +683,7 @@ var unfunk;
                         }
                     }
                 }
-                if (counter > 0) {
+                if (counter > padLength) {
                     flushLine();
                 }
 
