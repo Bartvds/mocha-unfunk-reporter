@@ -72,6 +72,7 @@ module unfunk {
 							break;
 						case 'equal':
 							properties.push(indent + jsesc(key) + ': ' + this.inspect('', diff[key].value, changed));
+							break;
 						case 'removed':
 							properties.push(indent + this.getNameRemoved(key) + this.inspect('', diff[key].value, changed));
 							break;
