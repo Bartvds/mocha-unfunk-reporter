@@ -1,0 +1,15 @@
+[31m- name[39m:    someA
+|     : [32m+[39m[32m+[39m[32m+[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[33m|[39m
+[32m+ name[39m: bad    A
+[31m- propA[39m: value A
+|      : [33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[32m+[39m[31m-[39m
+[32m+ propA[39m: valueB 
+[33m? subA[39m: 
+  [31m- nestA[39m: child A
+  |      : [33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[32m+[39m[31m-[39m
+  [32m+ nestA[39m: childB 
+  [33m? subA[39m: 
+    [31m- nestA[39m: child A
+    |      : [33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[32m+[39m[31m-[39m
+    [32m+ nestA[39m: childB 
+    [32m+ nestB[39m: valueA  

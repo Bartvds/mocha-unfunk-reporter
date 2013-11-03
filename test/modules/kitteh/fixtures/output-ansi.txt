@@ -30,9 +30,9 @@
          at Function.assert.equal ({PATH}node_modules/chai/lib/chai/interface/assert.js:{Y}:{X})
          at Context.<anonymous> ({PATH}test/modules/kitteh/tmp/_tmp.test.js:{Y}:{X})
 
-      [31m- [39mabcd fgh j  klm  expect   ed
-        [33m|[39m[33m|[39m[33m|[39m[33m|[39m[32m+[39m[33m|[39m[33m|[39m[33m|[39m[32m+[39m[33m|[39m[32m+[39m[32m+[39m[31m-[39m[33m|[39m[33m|[39m[33m|[39m[32m+[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[33m|[39m[33m|[39m[32m+[39m[32m+[39m[32m+[39m[31m-[39m[31m-[39m
-      [32m+ [39mabcdefghijde lm a    ctual  
+      [31m- [39m abcd fgh j  klm  expect   ed 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[32m+[39m[33m|[39m[33m|[39m[33m|[39m[32m+[39m[33m|[39m[32m+[39m[32m+[39m[31m-[39m[33m|[39m[33m|[39m[33m|[39m[32m+[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[33m|[39m[33m|[39m[32m+[39m[32m+[39m[32m+[39m[31m-[39m[31m-[39m"
+      [32m+ [39m abcdefghijde lm a    ctual   
 
 [31m2:    [39m[36mkitteh can has no [39mcomputer skills
 
@@ -54,26 +54,26 @@
          at Function.assert.deepEqual ({PATH}node_modules/chai/lib/chai/interface/assert.js:{Y}:{X})
          at Context.<anonymous> ({PATH}test/modules/kitteh/tmp/_tmp.test.js:{Y}:{X})
 
-      [31m- aa: [39mmeow me    ow
-      |   : [33m|[39m[33m|[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[33m|[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[33m|[39m[33m|[39m
-      [32m+ aa: [39mme    eeeiiow
-      [33m? bb: [39m
-        [31m- one: [39m1
-        [32m+ one: [39m33
-        [31m- two: [39m2
-        [32m+ two: [39m22
-        [31m- three: [39maab c dd  df eg ehi j k lmnnop   
+      [31m- aa[39m:  meow me    ow 
+      |   : "[33m|[39m[33m|[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[33m|[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[33m|[39m[33m|[39m"
+      [32m+ aa[39m:  me    eeeiiow 
+      [33m? bb[39m: 
+        [31m- one[39m: 1
+        [32m+ one[39m: 33
+        [31m- two[39m: 2
+        [32m+ two[39m: 22
+        [31m- three[39m: aab c dd  df eg ehi j k lmnnop   
         |      : [33m|[39m[33m|[39m[33m|[39m[32m+[39m[33m|[39m[32m+[39m[33m|[39m[33m|[39m[32m+[39m[32m+[39m[31m-[39m[33m|[39m[32m+[39m[31m-[39m[33m|[39m[32m+[39m[31m-[39m[33m|[39m[33m|[39m[32m+[39m[33m|[39m[32m+[39m[33m|[39m[32m+[39m[33m|[39m[33m|[39m[33m|[39m[31m-[39m[33m|[39m[33m|[39m[32m+[39m[32m+[39m[32m+[39m
-        [32m+ three: [39maabbccddee ff gg hiijjkklmn oprst      
-      [32m+ ff: [39m"purrrrrrr"
-      [33m? cc: [39m
-        [31m- 0: [39m1
-        [32m+ 0: [39m111
-        [31m- 1: [39m2
-        [32m+ 1: [39m222
-        [31m- 2: [39m3
-        [32m+ 2: [39m555      
-      [31m- dd: [39m"hisss"      
+        [32m+ three[39m: aabbccddee ff gg hiijjkklmn oprst      
+      [32m+ ff[39m: purrrrrrr
+      [33m? cc[39m: 
+        [31m- 0[39m: 1
+        [32m+ 0[39m: 111
+        [31m- 1[39m: 2
+        [32m+ 1[39m: 222
+        [31m- 2[39m: 3
+        [32m+ 2[39m: 555      
+      [31m- dd[39m: hisss      
 
 -> [31mfailed 3[39m and [33mpassed 3[39m of [36m6 tests[39m, left [33m1 pending[39m ({TIME_INT})
 

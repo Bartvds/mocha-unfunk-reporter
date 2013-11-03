@@ -39,46 +39,58 @@ module unfunk {
 			public getWrappingDiff(changes):string {
 				var properties:string[] = [];
 
+				var diff = changes.value
+
 				//this.addIndent(1);
-				var diff = changes.value;
-				if (changes.changed == 'equal') {
-					return this.inspect('', changes, changes.changed);
-				}
 				var indent = this.getIndent();
 
-				for (var key in diff) {
-					var changed = diff[key].changed;
-					switch (changed) {
-						case 'object change':
-							properties.push(indent + this.getNameChanged(key) + '\n' + this.addIndent(1) + this.getWrappingDiff(diff[key]));
-							break;
-						case 'primitive change':
-							if (typeof diff[key].added === 'string' && typeof diff[key].removed === 'string') {
-								var plain = this.getNameEmpty(key);
-								var preLen = plain.length;
-								var prepend = [
-									indent + this.getNameRemoved(key),
-									indent + plain, //'| ' + repeatStr(' ', preLen - 2),
-									indent + this.getNameAdded(key)
-								];
-								properties.push(this.diff.getStringDiff(diff[key].removed, diff[key].added, indent.length + preLen, prepend));
-							}
-							else {
-								properties.push(
-									indent + this.getNameRemoved(key) + this.inspect('', diff[key].added, 'removed') + '\n' +
-										indent + this.getNameAdded(key) + this.inspect('', diff[key].removed, 'added') + ''
-								);
-							}
-							break;
-						case 'equal':
-							properties.push(indent + jsesc(key) + ': ' + this.inspect('', diff[key].value, changed));
-							break;
-						case 'removed':
-							properties.push(indent + this.getNameRemoved(key) + this.inspect('', diff[key].value, changed));
-							break;
-						case 'added':
-							properties.push(indent + this.getNameAdded(key) + this.inspect('', diff[key].value, changed));
-							break;
+				if (changes.changed == 'equal') {
+					for (var prop in diff) {
+						var res = diff[prop];
+						properties.push(indent + this.getNameEqual(prop) + this.inspect('', res, 'equal'));
+					}
+				}
+				else {
+					for (var prop in diff) {
+						var res = diff[prop];
+						var changed = res.changed;
+						switch (changed) {
+							case 'object change':
+								properties.push(indent + this.getNameChanged(prop) + '\n' + this.addIndent(1) + this.getWrappingDiff(res));
+								break;
+							case 'primitive change':
+								if (typeof res.added === 'string' && typeof res.removed === 'string') {
+									if (this.diff.inDiffLengthLimit(res.removed) && this.diff.inDiffLengthLimit(res.added)) {
+										var plain = this.getNameEmpty(prop);
+										var preLen = plain.length;
+										var prepend = [
+											indent + this.getNameRemoved(prop),
+											indent + plain, //'| ' + repeatStr(' ', preLen - 2),
+											indent + this.getNameAdded(prop)
+										];
+										properties.push(this.diff.getStringDiff(res.removed, res.added, indent.length + preLen, prepend));
+									}
+									else {
+										properties.push(this.diff.printDiffLengthLimit(res.removed, res.added, indent));
+									}
+								}
+								else {
+									properties.push(
+										indent + this.getNameRemoved(prop) + this.inspect('', res.added, 'removed') + '\n' +
+											indent + this.getNameAdded(prop) + this.inspect('', res.removed, 'added') + ''
+									);
+								}
+								break;
+							case 'removed':
+								properties.push(indent + this.getNameRemoved(prop) + this.inspect('', res.value, 'removed'));
+								break;
+							case 'added':
+								properties.push(indent + this.getNameAdded(prop) + this.inspect('', res.value, 'added'));
+								break;
+							case 'equal':
+								properties.push(indent + this.getNameEqual(prop) + this.inspect('', res.value, 'equal'));
+								break;
+						}
 					}
 				}
 				return properties.join('\n') + this.addIndent(-1) + this.getIndent() + this.diff.markSpace;
@@ -92,27 +104,45 @@ module unfunk {
 				return id + this.prefix + ret.join('');
 			}
 
-			private getNameAdded(key) {
-				return this.diff.style.success(this.diff.markAdded + jsesc(key) + ': ');
+			private encodeName(prop:string):string {
+				if (!diff.identAnyExp.test(prop)) {
+					return jsesc(prop, diff.identEscWrap);
+				}
+				return prop;
 			}
 
-			private getNameRemoved(key) {
-				return this.diff.style.error(this.diff.markRemov + jsesc(key) + ': ');
+			private encodeString(prop:string):string {
+				if (!diff.identAnyExp.test(prop)) {
+					return jsesc(prop, diff.identEscWrap);
+				}
+				return prop;
 			}
 
-			private getNameChanged(key) {
-				return this.diff.style.warning(this.diff.markChang + jsesc(key) + ': ');
+			private getNameAdded(prop:string):string {
+				return this.diff.style.success(this.diff.markAdded + this.encodeName(prop)) + ': ';
 			}
 
-			private getNameEmpty(key) {
-				return this.diff.markColum + repeatStr(' ', jsesc(key).length) + ': ';
+			private getNameRemoved(prop:string):string {
+				return this.diff.style.error(this.diff.markRemov + this.encodeName(prop)) + ': ';
 			}
 
-			private getName(key, change) {
-				var name:string = jsesc(key);
+			private getNameChanged(prop:string):string {
+				return this.diff.style.warning(this.diff.markChang + this.encodeName(prop)) + ': ';
+			}
+
+			private getNameEmpty(prop:string):string {
+				return this.diff.markColum + repeatStr(' ', this.encodeName(prop).length) + ': ';
+			}
+
+			private getNameEqual(prop:string):string {
+				return this.diff.markEqual + this.encodeName(prop) + ': ';
+			}
+
+			private getName(prop, change) {
+				var name:string = jsesc(prop);
 				switch (change) {
 					case 'added':
-						return this.getNameRemoved(name);
+						return this.getNameAdded(name);
 					case 'removed':
 						return this.getNameRemoved(name);
 					case 'object change':
@@ -121,12 +151,8 @@ module unfunk {
 						return this.getNameEmpty(name);
 					case 'plain':
 					default:
-						return this.diff.markEqual + name + ': ';
+						return this.diff.markEqual + this.encodeName(prop) + ': ';
 				}
-			}
-
-			private stringifyObjectKey(key) {
-				return jsesc(key);
 			}
 
 			private inspect(accumulator, obj, change) {
@@ -136,16 +162,16 @@ module unfunk {
 							accumulator += 'null';
 							break;
 						}
-						var keys = Object.keys(obj);
-						var length = keys.length;
+						var props = Object.keys(obj);
+						var length = props.length;
 						if (length === 0) {
 							accumulator += '{}';
 						} else {
 							accumulator += '\n';
 							for (var i = 0; i < length; i++) {
-								var key = keys[i];
+								var prop = props[i];
 								this.addIndent(1)
-								accumulator = this.inspect(accumulator + this.getIndent() + this.getName(key, change), obj[key], change);
+								accumulator = this.inspect(accumulator + this.getIndent() + this.getName(prop, change), obj[prop], change);
 								if (i < length - 1) {
 									accumulator += '\n';
 								}
@@ -154,22 +180,19 @@ module unfunk {
 						}
 						break;
 					case 'function':
-						if (!obj) {
-							accumulator += 'null';
-							break;
-						}
 						accumulator += 'function()';
 						break;
-					case 'string':
-						accumulator += JSON.stringify(obj);
-						break;
-
 					case 'undefined':
 						accumulator += 'undefined';
 						break;
-
-					default:
+					case 'string':
+						accumulator += this.encodeString(obj);
+						break;
+					case 'number':
 						accumulator += String(obj);
+						break;
+					default:
+						accumulator += this.encodeString(String(obj));
 						break;
 				}
 				return accumulator;

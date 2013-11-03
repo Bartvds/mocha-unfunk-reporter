@@ -523,11 +523,14 @@ var unfunk;
             }
             StringDiffer.prototype.getWrappingLines = function (actual, expected, maxWidth, padLength, padFirst, leadSymbols) {
                 if (typeof leadSymbols === "undefined") { leadSymbols = false; }
-                var diff = stringDiff.diffChars(expected, actual);
+                var changes = stringDiff.diffChars(expected, actual);
 
                 var blocks = [];
                 var value;
                 var sep = '\n';
+
+                var delim = (!diff.identAnyExp.test(actual) || !diff.identAnyExp.test(expected)) ? diff.stringQuote : '';
+                var delimEmpty = repeatStr(' ', delim.length);
 
                 var padPreTop = this.diff.style.error(this.diff.markRemov);
                 var padPreMid = this.diff.style.plain(this.diff.markEmpty);
@@ -544,8 +547,9 @@ var unfunk;
 
                     padLength += this.diff.markAdded.length;
                 }
+
                 var dataLength = maxWidth - padLength;
-                if (padLength >= maxWidth) {
+                if (padLength + delim.length * 2 >= maxWidth) {
                     return '<no space for padded diff: "' + (padLength + ' >= ' + maxWidth) + '">';
                 }
 
@@ -557,7 +561,16 @@ var unfunk;
                 var charMissing = this.diff.style.error('-');
                 var match;
 
+                var delimLine = function () {
+                    top += delimEmpty;
+                    middle += delim;
+                    bottom += delimEmpty;
+                    counter += delim.length;
+                };
+                delimLine();
+
                 var flushLine = function () {
+                    delimLine();
                     if (blockCount > 0) {
                         blocks.push(top + sep + middle + sep + bottom);
                     } else {
@@ -568,16 +581,17 @@ var unfunk;
                     middle = rowPad;
                     bottom = rowPad;
                     counter = padLength;
+                    delimLine();
                 };
 
-                for (var i = 0, ii = diff.length; i < ii; i++) {
-                    var change = diff[i];
+                for (var i = 0, ii = changes.length; i < ii; i++) {
+                    var change = changes[i];
 
                     lineExtractExp.lastIndex = 0;
                     while ((match = lineExtractExp.exec(change.value))) {
                         lineExtractExp.lastIndex = match.index + (match[0].length || 1);
                         var blockCount = 0;
-                        var line = jsesc(match[0]);
+                        var line = jsesc(match[0], diff.stringEsc);
                         var len = line.length;
 
                         for (var j = 0; j < len; j++) {
@@ -605,7 +619,8 @@ var unfunk;
                         }
                     }
                 }
-                if (counter > padLength) {
+
+                if (counter > padLength + delim.length) {
                     flushLine();
                 }
 
@@ -683,6 +698,7 @@ var unfunk;
                         }
                     }
                 }
+
                 if (counter > padLength) {
                     flushLine();
                 }
@@ -731,40 +747,50 @@ var unfunk;
                 var properties = [];
 
                 var diff = changes.value;
-                if (changes.changed == 'equal') {
-                    return this.inspect('', changes, changes.changed);
-                }
+
                 var indent = this.getIndent();
 
-                for (var key in diff) {
-                    var changed = diff[key].changed;
-                    switch (changed) {
-                        case 'object change':
-                            properties.push(indent + this.getNameChanged(key) + '\n' + this.addIndent(1) + this.getWrappingDiff(diff[key]));
-                            break;
-                        case 'primitive change':
-                            if (typeof diff[key].added === 'string' && typeof diff[key].removed === 'string') {
-                                var plain = this.getNameEmpty(key);
-                                var preLen = plain.length;
-                                var prepend = [
-                                    indent + this.getNameRemoved(key),
-                                    indent + plain,
-                                    indent + this.getNameAdded(key)
-                                ];
-                                properties.push(this.diff.getStringDiff(diff[key].removed, diff[key].added, indent.length + preLen, prepend));
-                            } else {
-                                properties.push(indent + this.getNameRemoved(key) + this.inspect('', diff[key].added, 'removed') + '\n' + indent + this.getNameAdded(key) + this.inspect('', diff[key].removed, 'added') + '');
-                            }
-                            break;
-                        case 'equal':
-                            properties.push(indent + jsesc(key) + ': ' + this.inspect('', diff[key].value, changed));
-                            break;
-                        case 'removed':
-                            properties.push(indent + this.getNameRemoved(key) + this.inspect('', diff[key].value, changed));
-                            break;
-                        case 'added':
-                            properties.push(indent + this.getNameAdded(key) + this.inspect('', diff[key].value, changed));
-                            break;
+                if (changes.changed == 'equal') {
+                    for (var prop in diff) {
+                        var res = diff[prop];
+                        properties.push(indent + this.getNameEqual(prop) + this.inspect('', res, 'equal'));
+                    }
+                } else {
+                    for (var prop in diff) {
+                        var res = diff[prop];
+                        var changed = res.changed;
+                        switch (changed) {
+                            case 'object change':
+                                properties.push(indent + this.getNameChanged(prop) + '\n' + this.addIndent(1) + this.getWrappingDiff(res));
+                                break;
+                            case 'primitive change':
+                                if (typeof res.added === 'string' && typeof res.removed === 'string') {
+                                    if (this.diff.inDiffLengthLimit(res.removed) && this.diff.inDiffLengthLimit(res.added)) {
+                                        var plain = this.getNameEmpty(prop);
+                                        var preLen = plain.length;
+                                        var prepend = [
+                                            indent + this.getNameRemoved(prop),
+                                            indent + plain,
+                                            indent + this.getNameAdded(prop)
+                                        ];
+                                        properties.push(this.diff.getStringDiff(res.removed, res.added, indent.length + preLen, prepend));
+                                    } else {
+                                        properties.push(this.diff.printDiffLengthLimit(res.removed, res.added, indent));
+                                    }
+                                } else {
+                                    properties.push(indent + this.getNameRemoved(prop) + this.inspect('', res.added, 'removed') + '\n' + indent + this.getNameAdded(prop) + this.inspect('', res.removed, 'added') + '');
+                                }
+                                break;
+                            case 'removed':
+                                properties.push(indent + this.getNameRemoved(prop) + this.inspect('', res.value, 'removed'));
+                                break;
+                            case 'added':
+                                properties.push(indent + this.getNameAdded(prop) + this.inspect('', res.value, 'added'));
+                                break;
+                            case 'equal':
+                                properties.push(indent + this.getNameEqual(prop) + this.inspect('', res.value, 'equal'));
+                                break;
+                        }
                     }
                 }
                 return properties.join('\n') + this.addIndent(-1) + this.getIndent() + this.diff.markSpace;
@@ -779,27 +805,45 @@ var unfunk;
                 return id + this.prefix + ret.join('');
             };
 
-            ObjectDiffer.prototype.getNameAdded = function (key) {
-                return this.diff.style.success(this.diff.markAdded + jsesc(key) + ': ');
+            ObjectDiffer.prototype.encodeName = function (prop) {
+                if (!unfunk.diff.identAnyExp.test(prop)) {
+                    return jsesc(prop, unfunk.diff.identEscWrap);
+                }
+                return prop;
             };
 
-            ObjectDiffer.prototype.getNameRemoved = function (key) {
-                return this.diff.style.error(this.diff.markRemov + jsesc(key) + ': ');
+            ObjectDiffer.prototype.encodeString = function (prop) {
+                if (!unfunk.diff.identAnyExp.test(prop)) {
+                    return jsesc(prop, unfunk.diff.identEscWrap);
+                }
+                return prop;
             };
 
-            ObjectDiffer.prototype.getNameChanged = function (key) {
-                return this.diff.style.warning(this.diff.markChang + jsesc(key) + ': ');
+            ObjectDiffer.prototype.getNameAdded = function (prop) {
+                return this.diff.style.success(this.diff.markAdded + this.encodeName(prop)) + ': ';
             };
 
-            ObjectDiffer.prototype.getNameEmpty = function (key) {
-                return this.diff.markColum + repeatStr(' ', jsesc(key).length) + ': ';
+            ObjectDiffer.prototype.getNameRemoved = function (prop) {
+                return this.diff.style.error(this.diff.markRemov + this.encodeName(prop)) + ': ';
             };
 
-            ObjectDiffer.prototype.getName = function (key, change) {
-                var name = jsesc(key);
+            ObjectDiffer.prototype.getNameChanged = function (prop) {
+                return this.diff.style.warning(this.diff.markChang + this.encodeName(prop)) + ': ';
+            };
+
+            ObjectDiffer.prototype.getNameEmpty = function (prop) {
+                return this.diff.markColum + repeatStr(' ', this.encodeName(prop).length) + ': ';
+            };
+
+            ObjectDiffer.prototype.getNameEqual = function (prop) {
+                return this.diff.markEqual + this.encodeName(prop) + ': ';
+            };
+
+            ObjectDiffer.prototype.getName = function (prop, change) {
+                var name = jsesc(prop);
                 switch (change) {
                     case 'added':
-                        return this.getNameRemoved(name);
+                        return this.getNameAdded(name);
                     case 'removed':
                         return this.getNameRemoved(name);
                     case 'object change':
@@ -808,12 +852,8 @@ var unfunk;
                         return this.getNameEmpty(name);
                     case 'plain':
                     default:
-                        return this.diff.markEqual + name + ': ';
+                        return this.diff.markEqual + this.encodeName(prop) + ': ';
                 }
-            };
-
-            ObjectDiffer.prototype.stringifyObjectKey = function (key) {
-                return jsesc(key);
             };
 
             ObjectDiffer.prototype.inspect = function (accumulator, obj, change) {
@@ -823,16 +863,16 @@ var unfunk;
                             accumulator += 'null';
                             break;
                         }
-                        var keys = Object.keys(obj);
-                        var length = keys.length;
+                        var props = Object.keys(obj);
+                        var length = props.length;
                         if (length === 0) {
                             accumulator += '{}';
                         } else {
                             accumulator += '\n';
                             for (var i = 0; i < length; i++) {
-                                var key = keys[i];
+                                var prop = props[i];
                                 this.addIndent(1);
-                                accumulator = this.inspect(accumulator + this.getIndent() + this.getName(key, change), obj[key], change);
+                                accumulator = this.inspect(accumulator + this.getIndent() + this.getName(prop, change), obj[prop], change);
                                 if (i < length - 1) {
                                     accumulator += '\n';
                                 }
@@ -841,22 +881,19 @@ var unfunk;
                         }
                         break;
                     case 'function':
-                        if (!obj) {
-                            accumulator += 'null';
-                            break;
-                        }
                         accumulator += 'function()';
                         break;
-                    case 'string':
-                        accumulator += JSON.stringify(obj);
-                        break;
-
                     case 'undefined':
                         accumulator += 'undefined';
                         break;
-
-                    default:
+                    case 'string':
+                        accumulator += this.encodeString(obj);
+                        break;
+                    case 'number':
                         accumulator += String(obj);
+                        break;
+                    default:
+                        accumulator += this.encodeString(String(obj));
                         break;
                 }
                 return accumulator;
@@ -873,7 +910,26 @@ var unfunk;
     var jsesc = require('jsesc');
 
     (function (diff) {
-        var objectNameExp = /(^\[object )|(\]$)/gi;
+        diff.objectNameExp = /(^\[object )|(\]$)/gi;
+
+        diff.stringExp = /^[a-z](?:[a-z0-9_\-]*?[a-z0-9])?$/i;
+
+        diff.stringEsc = {
+            quotes: 'double'
+        };
+        diff.stringEscWrap = {
+            quotes: 'double',
+            wrap: true
+        };
+        diff.stringQuote = '"';
+
+        diff.identExp = /^[a-z](?:[a-z0-9_\-]*?[a-z0-9])?$/i;
+        diff.identAnyExp = /^[a-z0-9](?:[a-z0-9_\-]*?[a-z0-9])?$/i;
+        diff.identEscWrap = {
+            quotes: 'double',
+            wrap: true
+        };
+        diff.intExp = /^\d+$/;
 
         var DiffFormatter = (function () {
             function DiffFormatter(style, maxWidth) {
@@ -901,25 +957,44 @@ var unfunk;
                 return false;
             };
 
-            DiffFormatter.prototype.isOverlyLengthyObject = function (obj) {
+            DiffFormatter.prototype.inDiffLengthLimit = function (obj, limit) {
+                if (typeof limit === "undefined") { limit = 0; }
                 switch (typeof obj) {
                     case 'string':
-                        return (obj.length > this.stringMaxLength);
+                        return (obj.length < (limit ? limit : this.stringMaxLength));
                     case 'object':
                         switch (this.getObjectType(obj)) {
                             case 'array':
                             case 'arguments':
-                                return (obj.length > this.arrayMaxLength);
+                                return (obj.length < (limit ? limit : this.arrayMaxLength));
                             case 'buffer':
-                                return (obj.length > this.bufferMaxLength);
+                                return (obj.length < (limit ? limit : this.bufferMaxLength));
+                            case 'object':
+                                return (Object.keys(obj).length < (limit ? limit : this.arrayMaxLength));
                         }
                     default:
                         return false;
                 }
             };
 
+            DiffFormatter.prototype.printDiffLengthLimit = function (actual, expected, prepend, limit) {
+                if (typeof prepend === "undefined") { prepend = ''; }
+                if (typeof limit === "undefined") { limit = 0; }
+                var len = [];
+                if (!this.inDiffLengthLimit(actual, limit)) {
+                    len.push(prepend + this.style.warning('<actual too lengthy for diff: ' + actual.length + '>'));
+                }
+                if (!this.inDiffLengthLimit(expected, limit)) {
+                    len.push(prepend + this.style.warning('<expected too lengthy for diff: ' + expected.length + '>'));
+                }
+                if (len.length > 0) {
+                    return len.join('\n');
+                }
+                return '';
+            };
+
             DiffFormatter.prototype.getObjectType = function (obj) {
-                return Object.prototype.toString.call(obj).replace(objectNameExp, '').toLowerCase();
+                return Object.prototype.toString.call(obj).replace(diff.objectNameExp, '').toLowerCase();
             };
 
             DiffFormatter.prototype.getStyledDiff = function (actual, expected, prepend) {
@@ -928,17 +1003,9 @@ var unfunk;
                     return '';
                 }
                 var ret = '';
-                var diff;
 
-                var len = [];
-                if (this.isOverlyLengthyObject(actual)) {
-                    len.push(prepend + '<actual too lengthy for diff: ' + actual.length + '>');
-                }
-                if (this.isOverlyLengthyObject(expected)) {
-                    len.push(prepend + '<expected too lengthy for diff: ' + expected.length + '>');
-                }
-                if (len.length > 0) {
-                    return len.join('\n');
+                if (!this.inDiffLengthLimit(actual) || !this.inDiffLengthLimit(expected)) {
+                    return this.printDiffLengthLimit(actual, expected, prepend);
                 }
 
                 if (typeof actual === 'object' && typeof expected === 'object') {
@@ -949,7 +1016,8 @@ var unfunk;
                 return ret;
             };
 
-            DiffFormatter.prototype.getObjectDiff = function (actual, expected, prepend) {
+            DiffFormatter.prototype.getObjectDiff = function (actual, expected, prepend, diffLimit) {
+                if (typeof diffLimit === "undefined") { diffLimit = 0; }
                 return new unfunk.diff.ObjectDiffer(this).getWrapping(actual, expected, prepend);
             };
 

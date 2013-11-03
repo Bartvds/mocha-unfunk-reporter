@@ -59,6 +59,7 @@
     "ansidiff": "~1.0.0",
     "grunt-concurrent": "~0.4.1",
     "chai-fs": "0.0.3",
-    "grunt-typescript": "~0.2.4"
+    "grunt-typescript": "~0.2.4",
+    "mkdirp": "~0.3.5"
   }
 }

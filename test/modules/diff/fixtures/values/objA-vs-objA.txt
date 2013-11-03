@@ -1,0 +1,3 @@
+. name: objA
+. propA: "\xFC\tspecial\\A \n\xA9\u2665"
+. escA: "x\\x\xFC"

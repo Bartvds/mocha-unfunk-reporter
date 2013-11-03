@@ -1,0 +1,39 @@
+-  Lorem ipsum dolor sit amet, consectetur adipiscing elit.\n 
+  "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||"
++  Lorem ipsum dolor sit amet, consectetur adipiscing elit.\n 
+
+   \n 
+  "||"
+   \n 
+
+     Suspendisse im  pe   rd iet      vel veli t     sit  a  met vari us . Int 
+  "++-----------|-|++-|+++-|+---|+++++---|---|+-|++++---|+|++-------|+||+-|---"
+   Ut             mal esua da    magna       id  nunc    fauc       ibus,      
+
+   erdum   et male  s uada fames  ac ante ipsum primis  i n faucibus   .\n 
+  "|--|-|++|----||++|+|-------|-|+--------|-||-------||+|+|-----|--|+++|||"
+   e  u  sce    lerisqu       e  r        i su       s dign     i  ssim.\n 
+
+   \n 
+  "||"
+   \n 
+
+            In vitae     gravida   ips    um.      Se     d  ne c    ve    n   
+  "+++++++++--||---|+|+++---|--|++-|-|++++--||+++++-|+++++-|+-|+-|+++-|++++|++"
+   Phasellus   v   el con   v  all i s est  . Nam t empus,  s em  at  elementu 
+
+      e   natis ipsum,  nec            adipis c     ing  leo.\n 
+  "+++|+++|-|------||||+-||+++|++++++++-----|+|+++++---|+-|----"
+   m fermen t      um, l ectus nunc con     sectetur    s e     
+
+   \n 
+  "--"
+      
+
+   Aliquam  convallis orci nibh, vitae    da pibus  s apien  conva  llis eget  
+  "------|+|||||||||||-----------|---|+++--|+-|--||+|+-----|+----|++--||||--|+"
+         m, convallis            v   enen  at i  s est      m    aur  is e  t  
+
+         . 
+  "++++++|"
+   turpis. 

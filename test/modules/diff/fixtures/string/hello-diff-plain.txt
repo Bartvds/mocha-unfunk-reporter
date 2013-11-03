@@ -1,0 +1,3 @@
+-  Hello        world today 
+  "||||||+++++++|||||------"
++  Hello lovely world       

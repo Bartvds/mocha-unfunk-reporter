@@ -1,0 +1,15 @@
+. name: all
+. propA: valueA
+. propB: valueB
+. subA: 
+  . nestA: childA
+  . nestB: childB
+  . subA: 
+    . nestA: childA
+    . nestB: childB
+. subB: 
+  . nestA: childA
+  . nestB: childB
+  . subA: 
+    . nestA: childA
+    . nestB: childB

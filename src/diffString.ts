@@ -7,7 +7,7 @@ module unfunk {
 	var stringDiff = require('diff');
 	var jsesc = require('jsesc');
 
-	function repeatStr(str:string, amount:number) {
+	function repeatStr(str:string, amount:number):string {
 		var ret = '';
 		for (var i = 0; i < amount; i++) {
 			ret += str;
@@ -31,11 +31,14 @@ module unfunk {
 
 			public getWrappingLines(actual:string, expected:string, maxWidth:number, padLength:number, padFirst:string[], leadSymbols:boolean = false):string {
 
-				var diff:StringDiffChange[] = stringDiff.diffChars(expected, actual);
+				var changes:StringDiffChange[] = stringDiff.diffChars(expected, actual);
 
 				var blocks = [];
 				var value;
 				var sep = '\n';
+
+				var delim:string = (!diff.identAnyExp.test(actual) || !diff.identAnyExp.test(expected)) ? stringQuote : '';
+				var delimEmpty = repeatStr(' ', delim.length);
 
 				var padPreTop = this.diff.style.error(this.diff.markRemov);
 				var padPreMid = this.diff.style.plain(this.diff.markEmpty);
@@ -52,8 +55,9 @@ module unfunk {
 
 					padLength += this.diff.markAdded.length;
 				}
+
 				var dataLength = maxWidth - padLength;
-				if (padLength >= maxWidth) {
+				if (padLength + delim.length * 2 >= maxWidth) {
 					return '<no space for padded diff: "' + (padLength + ' >= ' + maxWidth) + '">';
 				}
 
@@ -65,7 +69,16 @@ module unfunk {
 				var charMissing = this.diff.style.error('-');
 				var match;
 
+				var delimLine = function () {
+					top += delimEmpty;
+					middle += delim;
+					bottom += delimEmpty;
+					counter += delim.length;
+				};
+				delimLine();
+
 				var flushLine = function () {
+					delimLine();
 					if (blockCount > 0) {
 						blocks.push(top + sep + middle + sep + bottom);
 					} else {
@@ -76,11 +89,12 @@ module unfunk {
 					middle = rowPad;
 					bottom = rowPad;
 					counter = padLength;
+					delimLine();
 				};
 
 				//tight loop diffs
-				for (var i = 0, ii = diff.length; i < ii; i++) {
-					var change = diff[i];
+				for (var i = 0, ii = changes.length; i < ii; i++) {
+					var change = changes[i];
 
 					//loop lines
 					lineExtractExp.lastIndex = 0;
@@ -88,8 +102,9 @@ module unfunk {
 						//make sure to advance at least 1
 						lineExtractExp.lastIndex = match.index + (match[0].length || 1);
 						var blockCount = 0;
-						var line:string = jsesc(match[0]);
+						var line:string = jsesc(match[0], diff.stringEsc);
 						var len = line.length;
+
 						//per char
 						for (var j = 0; j < len; j++) {
 							value = line[j];
@@ -118,7 +133,9 @@ module unfunk {
 						}
 					}
 				}
-				if (counter > padLength) {
+
+
+				if (counter > padLength + delim.length) {
 					flushLine();
 				}
 
@@ -199,6 +216,7 @@ module unfunk {
 						}
 					}
 				}
+
 				if (counter > padLength) {
 					flushLine();
 				}

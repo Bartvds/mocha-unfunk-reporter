@@ -20,7 +20,26 @@ module unfunk {
 
 		 diff output algorithm based on objectDiff HTML printer
 		 */
-		var objectNameExp = /(^\[object )|(\]$)/gi;
+		export var objectNameExp = /(^\[object )|(\]$)/gi;
+
+		export var stringExp = /^[a-z](?:[a-z0-9_\-]*?[a-z0-9])?$/i;
+
+		export var stringEsc = {
+			quotes: 'double'
+		};
+		export var stringEscWrap = {
+			quotes: 'double',
+			wrap:true
+		};
+		export var stringQuote = '"';
+
+		export var identExp = /^[a-z](?:[a-z0-9_\-]*?[a-z0-9])?$/i;
+		export var identAnyExp = /^[a-z0-9](?:[a-z0-9_\-]*?[a-z0-9])?$/i;
+		export var identEscWrap = {
+			quotes: 'double',
+			wrap:true
+		};
+		export var intExp = /^\d+$/;
 
 		export class DiffFormatter {
 
@@ -52,21 +71,37 @@ module unfunk {
 				return false;
 			}
 
-			public isOverlyLengthyObject(obj:any):boolean {
+			public inDiffLengthLimit(obj:any, limit:number = 0):boolean {
 				switch (typeof obj) {
 					case 'string':
-						return (obj.length > this.stringMaxLength);
+						return (obj.length < (limit ? limit : this.stringMaxLength));
 					case 'object':
 						switch (this.getObjectType(obj)) {
 							case 'array':
 							case 'arguments':
-								return (obj.length > this.arrayMaxLength);
+								return (obj.length < (limit ? limit : this.arrayMaxLength));
 							case 'buffer':
-								return (obj.length > this.bufferMaxLength);
+								return (obj.length < (limit ? limit : this.bufferMaxLength));
+							case 'object':
+								return (Object.keys(obj).length < (limit ? limit : this.arrayMaxLength));
 						}
 					default:
 						return false;
 				}
+			}
+
+			public printDiffLengthLimit(actual:any, expected:any, prepend:string = '', limit:number = 0):string {
+				var len = [];
+				if (!this.inDiffLengthLimit(actual, limit)) {
+					len.push(prepend + this.style.warning('<actual too lengthy for diff: ' + actual.length + '>'));
+				}
+				if (!this.inDiffLengthLimit(expected, limit)) {
+					len.push(prepend + this.style.warning('<expected too lengthy for diff: ' + expected.length + '>'));
+				}
+				if (len.length > 0) {
+					return len.join('\n');
+				}
+				return '';
 			}
 
 			public getObjectType(obj:any):string {
@@ -78,17 +113,9 @@ module unfunk {
 					return '';
 				}
 				var ret:string = '';
-				var diff;
 
-				var len = [];
-				if (this.isOverlyLengthyObject(actual)) {
-					len.push(prepend + '<actual too lengthy for diff: ' + actual.length + '>');
-				}
-				if (this.isOverlyLengthyObject(expected)) {
-					len.push(prepend + '<expected too lengthy for diff: ' + expected.length + '>');
-				}
-				if (len.length > 0) {
-					return len.join('\n');
+				if (!this.inDiffLengthLimit(actual) || !this.inDiffLengthLimit(expected)) {
+					return this.printDiffLengthLimit(actual, expected, prepend);
 				}
 
 				//TODO rewrite to improve diffs for buffers etc
@@ -102,7 +129,7 @@ module unfunk {
 				return ret;
 			}
 
-			public getObjectDiff(actual:any, expected:any, prepend:string):string {
+			public getObjectDiff(actual:any, expected:any, prepend:string, diffLimit:number = 0):string {
 				return new unfunk.diff.ObjectDiffer(this).getWrapping(actual, expected, prepend);
 			}
 
