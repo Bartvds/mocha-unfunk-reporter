@@ -947,6 +947,9 @@ var unfunk;
                 this.stringMaxLength = 2000;
                 this.bufferMaxLength = 100;
                 this.arrayMaxLength = 100;
+                if (maxWidth === 0) {
+                    this.maxWidth = 100;
+                }
             }
             DiffFormatter.prototype.forcedDiff = function (actual, expected) {
                 if (typeof actual === 'string' && typeof expected === 'string') {

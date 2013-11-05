@@ -11,6 +11,10 @@ describe('DiffFormatter', () => {
 	function assertStringDiff(nameA:string, nameB:string, name:string, style, debug:boolean = true) {
 		var stringA = fs.readFileSync('../../fixtures/' + nameA + '.txt', 'utf8');
 		var stringB = fs.readFileSync('../../fixtures/' + nameB + '.txt', 'utf8');
+		assertStringValueDiff(stringA, stringB, name, style, debug);
+	}
+
+	function assertStringValueDiff(stringA:string, stringB:string, name:string, style, debug:boolean = true) {
 
 		var diff = new unfunk.diff.DiffFormatter(style);
 		var actual = diff.getStyledDiff(stringA, stringB);
@@ -52,7 +56,7 @@ describe('DiffFormatter', () => {
 	function testObjDiff(prefix:string, label:string, objA, objB, debug:boolean = true) {
 		label = label.replace(/ /g, '-');
 		describe(prefix + ' ' + label, () => {
-			it('should diff '+ prefix + ' / ' + label + '', () => {
+			it('should diff ' + prefix + ' / ' + label + '', () => {
 
 				assertObjDiff(prefix, label, objA, objB, new unfunk.styler.ANSIStyler(), debug);
 			});
@@ -70,6 +74,20 @@ describe('DiffFormatter', () => {
 
 		it('should diff medium a/b', () => {
 			assertStringDiff('lorem-medium-a', 'lorem-medium-b', 'lorem-medium-diff-plain', new unfunk.styler.PlainStyler());
+		});
+	});
+
+	describe('bad values', () => {
+		it('should return on bad values', () => {
+			var diff = new unfunk.diff.DiffFormatter(new unfunk.styler.PlainStyler());
+			assert.strictEqual(diff.getStyledDiff(null, null), '', 'null-null');
+			assert.strictEqual(diff.getStyledDiff(null, 'aaa'), '', 'null-aaa');
+			assert.strictEqual(diff.getStyledDiff('aaa', null), '', 'aaa-null');
+
+			assert.strictEqual(diff.getStyledDiff({}, 'aaa'), '', 'obj-aaa');
+			assert.strictEqual(diff.getStyledDiff('aaa', {}), '', 'aaa-obj');
+			assert.strictEqual(diff.getStyledDiff('aaa', function() {}), '', 'aaa-func');
+			assert.strictEqual(diff.getStyledDiff(function() {}, function() {}), '', 'func-func');
 		});
 	});
 

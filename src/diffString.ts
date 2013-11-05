@@ -30,14 +30,14 @@ module unfunk {
 			}
 
 			public getWrappingLines(actual:string, expected:string, maxWidth:number, padLength:number, padFirst:string[], leadSymbols:boolean = false):string {
-
 				var changes:StringDiffChange[] = stringDiff.diffChars(expected, actual);
 
 				var blocks = [];
 				var value;
 				var sep = '\n';
 
-				var delim:string = (!diff.identAnyExp.test(actual) || !diff.identAnyExp.test(expected)) ? stringQuote : '';
+				var isSimple:boolean = (!diff.identAnyExp.test(actual) || !diff.identAnyExp.test(expected));
+				var delim:string = (isSimple ? stringQuote : '');
 				var delimEmpty = repeatStr(' ', delim.length);
 
 				var padPreTop = this.diff.style.error(this.diff.markRemov);
@@ -64,6 +64,7 @@ module unfunk {
 				var rowPad = repeatStr(' ', padLength);
 				var counter = padLength - 1; //wtf -1? beeeh
 
+				//TODO instead of pre-styling per-char use an accumulator
 				var charSame = this.diff.style.warning('|');
 				var charAdded = this.diff.style.success('+');
 				var charMissing = this.diff.style.error('-');
@@ -73,6 +74,7 @@ module unfunk {
 					top += delimEmpty;
 					middle += delim;
 					bottom += delimEmpty;
+
 					counter += delim.length;
 				};
 				delimLine();
@@ -85,9 +87,11 @@ module unfunk {
 						blocks.push(top + sep + middle + sep + bottom);
 					}
 					blockCount += 1;
+
 					top = rowPad;
 					middle = rowPad;
 					bottom = rowPad;
+
 					counter = padLength;
 					delimLine();
 				};
@@ -133,7 +137,6 @@ module unfunk {
 						}
 					}
 				}
-
 
 				if (counter > padLength + delim.length) {
 					flushLine();

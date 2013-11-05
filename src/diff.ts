@@ -29,7 +29,7 @@ module unfunk {
 		};
 		export var stringEscWrap = {
 			quotes: 'double',
-			wrap:true
+			wrap: true
 		};
 		export var stringQuote = '"';
 
@@ -37,7 +37,7 @@ module unfunk {
 		export var identAnyExp = /^[a-z0-9](?:[a-z0-9_\-]*?[a-z0-9])?$/i;
 		export var identEscWrap = {
 			quotes: 'double',
-			wrap:true
+			wrap: true
 		};
 		export var intExp = /^\d+$/;
 
@@ -57,7 +57,9 @@ module unfunk {
 			arrayMaxLength:number = 100;
 
 			constructor(public style:Styler, public maxWidth:number = 80) {
-
+				if (maxWidth === 0) {
+					this.maxWidth = 100;
+				}
 			}
 
 			public forcedDiff(actual:any, expected:any):boolean {
@@ -83,7 +85,7 @@ module unfunk {
 							case 'buffer':
 								return (obj.length < (limit ? limit : this.bufferMaxLength));
 							case 'object':
-								return (Object.keys(obj).length < (limit ? limit : this.arrayMaxLength));
+								return (obj && (Object.keys(obj).length < (limit ? limit : this.arrayMaxLength)));
 						}
 					default:
 						return false;
@@ -92,10 +94,10 @@ module unfunk {
 
 			public printDiffLengthLimit(actual:any, expected:any, prepend:string = '', limit:number = 0):string {
 				var len = [];
-				if (!this.inDiffLengthLimit(actual, limit)) {
+				if (actual && !this.inDiffLengthLimit(actual, limit)) {
 					len.push(prepend + this.style.warning('<actual too lengthy for diff: ' + actual.length + '>'));
 				}
-				if (!this.inDiffLengthLimit(expected, limit)) {
+				if (expected && !this.inDiffLengthLimit(expected, limit)) {
 					len.push(prepend + this.style.warning('<expected too lengthy for diff: ' + expected.length + '>'));
 				}
 				if (len.length > 0) {
@@ -108,25 +110,35 @@ module unfunk {
 				return Object.prototype.toString.call(obj).replace(objectNameExp, '').toLowerCase();
 			}
 
+			public validType(value:any):boolean {
+				var type = typeof value;
+				if (type === 'string') {
+					return true;
+				}
+				if (type === 'object') {
+					//null
+					return !!value;
+				}
+				return false;
+			}
+
 			public getStyledDiff(actual:any, expected:any, prepend:string = ''):string {
-				if (typeof actual === 'undefined' || typeof expected === 'undefined') {
+				if ((this.getObjectType(actual) !== this.getObjectType(expected) || !this.validType(actual) || !this.validType(expected))) {
+					//empty
 					return '';
 				}
-				var ret:string = '';
-
 				if (!this.inDiffLengthLimit(actual) || !this.inDiffLengthLimit(expected)) {
 					return this.printDiffLengthLimit(actual, expected, prepend);
 				}
 
 				//TODO rewrite to improve diffs for buffers etc
-
 				if (typeof actual === 'object' && typeof expected === 'object') {
-					ret = this.getObjectDiff(actual, expected, prepend);
+					return this.getObjectDiff(actual, expected, prepend);
 				}
 				else if (typeof actual === 'string' && typeof expected === 'string') {
-					ret = this.getStringDiff(actual, expected, prepend.length, [prepend, prepend, prepend], true);
+					return this.getStringDiff(actual, expected, prepend.length, [prepend, prepend, prepend], true);
 				}
-				return ret;
+				return '';
 			}
 
 			public getObjectDiff(actual:any, expected:any, prepend:string, diffLimit:number = 0):string {
