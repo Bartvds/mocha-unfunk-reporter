@@ -306,7 +306,7 @@ module.exports = function (grunt) {
 	});
 
 	//editor ui shortcuts/buttons
-	gtx.alias('edit_01', ['gtx:diff']);
+	gtx.alias('edit_01', ['build', 'gtx:diff']);
 	gtx.alias('edit_02', ['demo']);
 
 	gtx.alias('dev', ['demo']);

@@ -529,7 +529,8 @@ var unfunk;
                 var value;
                 var sep = '\n';
 
-                var delim = (!diff.identAnyExp.test(actual) || !diff.identAnyExp.test(expected)) ? diff.stringQuote : '';
+                var isSimple = (!diff.identAnyExp.test(actual) || !diff.identAnyExp.test(expected));
+                var delim = (isSimple ? diff.stringQuote : '');
                 var delimEmpty = repeatStr(' ', delim.length);
 
                 var padPreTop = this.diff.style.error(this.diff.markRemov);
@@ -565,6 +566,7 @@ var unfunk;
                     top += delimEmpty;
                     middle += delim;
                     bottom += delimEmpty;
+
                     counter += delim.length;
                 };
                 delimLine();
@@ -577,9 +579,11 @@ var unfunk;
                         blocks.push(top + sep + middle + sep + bottom);
                     }
                     blockCount += 1;
+
                     top = rowPad;
                     middle = rowPad;
                     bottom = rowPad;
+
                     counter = padLength;
                     delimLine();
                 };
@@ -973,7 +977,7 @@ var unfunk;
                             case 'buffer':
                                 return (obj.length < (limit ? limit : this.bufferMaxLength));
                             case 'object':
-                                return (Object.keys(obj).length < (limit ? limit : this.arrayMaxLength));
+                                return (obj && (Object.keys(obj).length < (limit ? limit : this.arrayMaxLength)));
                         }
                     default:
                         return false;
@@ -984,10 +988,10 @@ var unfunk;
                 if (typeof prepend === "undefined") { prepend = ''; }
                 if (typeof limit === "undefined") { limit = 0; }
                 var len = [];
-                if (!this.inDiffLengthLimit(actual, limit)) {
+                if (actual && !this.inDiffLengthLimit(actual, limit)) {
                     len.push(prepend + this.style.warning('<actual too lengthy for diff: ' + actual.length + '>'));
                 }
-                if (!this.inDiffLengthLimit(expected, limit)) {
+                if (expected && !this.inDiffLengthLimit(expected, limit)) {
                     len.push(prepend + this.style.warning('<expected too lengthy for diff: ' + expected.length + '>'));
                 }
                 if (len.length > 0) {
@@ -1000,23 +1004,32 @@ var unfunk;
                 return Object.prototype.toString.call(obj).replace(diff.objectNameExp, '').toLowerCase();
             };
 
+            DiffFormatter.prototype.validType = function (value) {
+                var type = typeof value;
+                if (type === 'string') {
+                    return true;
+                }
+                if (type === 'object') {
+                    return !!value;
+                }
+                return false;
+            };
+
             DiffFormatter.prototype.getStyledDiff = function (actual, expected, prepend) {
                 if (typeof prepend === "undefined") { prepend = ''; }
-                if (typeof actual === 'undefined' || typeof expected === 'undefined') {
+                if ((this.getObjectType(actual) !== this.getObjectType(expected) || !this.validType(actual) || !this.validType(expected))) {
                     return '';
                 }
-                var ret = '';
-
                 if (!this.inDiffLengthLimit(actual) || !this.inDiffLengthLimit(expected)) {
                     return this.printDiffLengthLimit(actual, expected, prepend);
                 }
 
                 if (typeof actual === 'object' && typeof expected === 'object') {
-                    ret = this.getObjectDiff(actual, expected, prepend);
+                    return this.getObjectDiff(actual, expected, prepend);
                 } else if (typeof actual === 'string' && typeof expected === 'string') {
-                    ret = this.getStringDiff(actual, expected, prepend.length, [prepend, prepend, prepend], true);
+                    return this.getStringDiff(actual, expected, prepend.length, [prepend, prepend, prepend], true);
                 }
-                return ret;
+                return '';
             };
 
             DiffFormatter.prototype.getObjectDiff = function (actual, expected, prepend, diffLimit) {
@@ -1284,6 +1297,9 @@ var unfunk;
     var assertType = /^AssertionError/;
 
     function headlessStack(error) {
+        if (!error) {
+            return '';
+        }
         if (error.stack) {
             var match = error.stack.match(extract);
             if (match && match.length > 2) {
@@ -1294,6 +1310,9 @@ var unfunk;
     }
 
     function getErrorPrefix(error) {
+        if (!error) {
+            return '';
+        }
         var str = error.stack || ('' + error);
         var match = str.match(errorType);
         if (match && match.length > 0) {
@@ -1306,8 +1325,11 @@ var unfunk;
 
     function getErrorMessage(error) {
         var msg = '';
+        if (!error) {
+            return '<undefined error>';
+        }
         if (error.message) {
-            msg = error.message;
+            msg = String(error.message);
         } else if (error.operator) {
             msg += toDebug(error.actual, 50) + ' ' + error.operator + ' ' + toDebug(error.expected, 50) + '';
         }
@@ -1315,7 +1337,7 @@ var unfunk;
         if (!msg) {
             msg = ('' + error);
             if (msg === '[object Object]') {
-                msg = error.message || '';
+                msg = String(error.message || '');
                 if (!msg) {
                     if (error.stack) {
                         var match = error.stack.match(extract);

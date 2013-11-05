@@ -92,7 +92,8 @@ module unfunk {
 					}
 				}
 			}
-		} else if (arguments.length === 2) {
+		}
+		else if (arguments.length === 2) {
 			if (typeof value !== 'undefined' && typeof nameOrHash === 'string') {
 
 				//allow case-in-sensitive options (from Bash etc)
@@ -170,6 +171,9 @@ module unfunk {
 	var assertType = /^AssertionError/;
 
 	function headlessStack(error:TestError):string {
+		if (!error) {
+			return '';
+		}
 		if (error.stack) {
 			var match = error.stack.match(extract);
 			if (match && match.length > 2) {
@@ -180,6 +184,9 @@ module unfunk {
 	}
 
 	function getErrorPrefix(error:TestError):string {
+		if (!error) {
+			return '';
+		}
 		var str = error.stack || ('' + error);
 		var match = str.match(errorType);
 		if (match && match.length > 0) {
@@ -193,8 +200,11 @@ module unfunk {
 
 	function getErrorMessage(error:TestError):string {
 		var msg = '';
+		if (!error) {
+			return '<undefined error>';
+		}
 		if (error.message) {
-			msg = error.message;
+			msg = String(error.message);
 		}
 		else if (error.operator) {
 			msg += toDebug(error.actual, 50) + ' ' + error.operator + ' ' + toDebug(error.expected, 50) + '';
@@ -203,7 +213,7 @@ module unfunk {
 		if (!msg) {
 			msg = ('' + error);
 			if (msg === '[object Object]') {
-				msg = error.message || '';
+				msg = String(error.message || '');
 				if (!msg) {
 					if (error.stack) {
 						var match = error.stack.match(extract);
