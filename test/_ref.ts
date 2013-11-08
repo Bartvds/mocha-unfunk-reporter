@@ -26,6 +26,7 @@ if (typeof require === "function" && typeof exports === "object" && typeof modul
 	proclaim = (<Proclaim.Assert> require('proclaim'));
 
 	objectDiff = require('../../../../lib/objectDiff');
+	chai.use(require('chai-json-schema'));
 
 	// DON't use this as it will mess-up diffs
 	// require('source-map-support').install();

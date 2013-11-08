@@ -7,7 +7,7 @@
 
 This is a `Spec`-style console reporter for [mocha](http://visionmedia.github.io/mocha/) that doesn't confuse lesser console environments with funky display modes, cursor tricks or weird control characters.
 
-Main use-case is running mocha's in basic console views embedded in IDE's or setups with text buffered output (like travis-ci). The default config uses only some ANSI console colour codes and writes with console.log() but has option to be tuned up or down for your specific unfunky use-case.
+Use-case is running mocha's in basic console views embedded in IDE's or setups with text buffered output (like travis-ci). The default config uses only some ANSI console colour codes and writes with console.log() but has option to be tuned up or down for your specific unfunky use-case.
 
 ### Notes
 
@@ -17,8 +17,35 @@ Main use-case is running mocha's in basic console views embedded in IDE's or set
 ### Diffs
 
 * There is a diff report with custom display that works even on plain-text display.
-* String-diff algorithm is [jsDiff](https://github.com/kpdecker/jsdiff). 
-* Object-diff algorithm is [objectDiff](https://github.com/NV/objectDiff.js) with nested string-diff. May be stricter then your assertions!
+	* Object-diff algorithm is [objectDiff](https://github.com/NV/objectDiff.js) with nested string-diff. May be stricter then your assertions!
+	* String-diff algorithm is [jsDiff](https://github.com/kpdecker/jsdiff). 
+
+
+## Usage
+
+Install from npm:
+
+````
+$ npm install mocha-unfunk-reporter --save-dev
+```` 
+
+Then use `'mocha-unfunk-reporter'` as `reporter` parameter in your favourite mocha runner. 
+
+For example in `grunt-mocha-test`:
+
+````js
+grunt.initConfig({
+	// ...
+	mochaTest: {
+		options: {
+			reporter: 'mocha-unfunk-reporter'
+		},
+		any: {
+			src: ['test/**/*.test.js']
+		}
+	}
+});
+````
 
 ## Options
 
@@ -27,19 +54,15 @@ There are multiple ways to set global options:
 ````js
 //on module using .option() method
 require('mocha-unfunk-reporter').option('<option_name>', <option_value>);
-
-//also in bulk
-require('mocha-unfunk-reporter').option({<name>: <value>, <name>: <value>});
-
 //or on env with prefixed name
 process.env['mocha-unfunk-<option_name>'] = <option_value>;
-
 //env also work Bash-style: upper-cased and underscores instead of dashes
 process.env['MOCHA_UNFUNK_<OPTION_NAME>'] = <option_value>;
+````
 
-````
-For example these are equivalent:
-````
+These are equivalent:
+
+````js
 process.env['MOCHA_UNFUNK_REPORTPENDING'] = true;
 process.env['mocha-unfunk-reportPending'] = true;
 
@@ -49,16 +72,15 @@ require('mocha-unfunk-reporter').option({reportPending: true});
 
 The package also expose a grunt task `mocha_unfunk` to set reporter options.
 
-````
+````js
 grunt.initConfig({
 	mocha_unfunk: {
 		myStyle: {
 			options: {
 				style: 'plain'
 			}
-		},
+		}
 	}
-	//...
 }
 ````
 
@@ -92,31 +114,6 @@ Use custom stream: `stream`
 Filter internals from stack: `stackFilter` 
 
 * `true` (default) or `false`
-
-## Usage
-Install from npm:
-
-````
-$ npm install mocha-unfunk-reporter
-```` 
-
-Then use `'mocha-unfunk-reporter'` as `reporter` parameter in your favourite mocha runner. 
-
-For example in `grunt-mocha-test`:
-
-````js
-grunt.initConfig({
-	// ...
-	mochaTest: {
-		options: {
-			reporter: 'mocha-unfunk-reporter'
-		},
-		any: {
-			src: ['test/**/*.test.js']
-		}
-	}
-});
-````
 
 ## Examples
 
@@ -162,7 +159,7 @@ Create an issue if you got a tip or request for more.
 
 ## Build
 
-Unfunk-reporter is written in [TypeScript](http://typescript.com) and built using [grunt](http://gruntjs.com).
+Unfunk-reporter is written in [TypeScript](http://typescript.com) and built using [grunt](http://gruntjs.com) and powered by [gruntfile-gtx](https://github.com/Bartvds/gruntfile-gtx).
 
 Install development dependencies in your git checkout:
 ````
@@ -176,19 +173,26 @@ $ npm install grunt-cli -g
 
 Build and run tests:
 ````
-// self test
+// build & display demo (handy for development)
+$ grunt -h
+
+// build & full test
 $ grunt
 
-// show some failing tests
-$ grunt dev
+// show gtx alias
+$ grunt -h
+
+// run test sub module
+$ grunt gtx:diff
 ````
 
-See the `Gruntfile` for additional commands, including many mocha runners.
+See the `Gruntfile` for additional commands.
 
 ## Versions
 
-* 0.3.0 - improved diffs (speed, linebreaks, escape with [jsesc](https://github.com/mathiasbynens/jsesc)), added output testing, grunt task, updated project
-* 0.2.3 - support bash style uppercased+underscore-style ENV options, don't diff excessively lengthy objects (strings/arrays/arguments/buffers) 
+* 0.3.6 - relaxed string encoding, cleaned stack code, support Q longStack, support multi-line messages, fixed bugs & hardened output, added `q` and `node.js` to stack filter.
+* 0.3.0 - improved diffs (speed, linebreaks, escape with [jsesc](https://github.com/mathiasbynens/jsesc)), added output testing, added grunt task to set options, updated project
+* 0.2.3 - support bash style uppercased+underscore-style ENV options (tip by @reydelamirienda), skip diff excessively lengthy objects (strings/arrays/arguments/buffers) 
 * 0.2.2 - fixed regular Error (stack) reporting, added `chai-as-promised` & `mocha-as-promised` to stack filter, updated screenshot
 * 0.2.1 - tweaked display, added pending test report (by @geekdave)
 * 0.2.0 - added string diff, more assertions and runner compatibility, changed default to `style='ansi'`

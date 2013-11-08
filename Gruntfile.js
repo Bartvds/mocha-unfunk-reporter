@@ -284,6 +284,7 @@ module.exports = function (grunt) {
 	gtx.alias('demo-run', ['continueOn', 'run_grunt:demo', 'continueOff']);
 
 	gtx.create('core', 'moduleTest', {
+		tasks: ['default'],
 		assert: true,
 		log: true
 	});
@@ -305,7 +306,7 @@ module.exports = function (grunt) {
 		assert: false
 	});
 	gtx.create('dev', 'moduleTest', {
-		tasks: ['default'],
+		tasks: ['default', 'phantom'],
 		log: true,
 		ignore: true
 	});

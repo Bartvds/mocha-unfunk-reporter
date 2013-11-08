@@ -988,7 +988,7 @@ var unfunk;
                 if (this.isAssertion) {
                     return prepend + this.message;
                 }
-                return prepend + this.name + ': ' + this.message;
+                return prepend + (this.name ? this.name + ': ' : '') + this.message;
             };
 
             ParsedError.prototype.getHeaderSingle = function (prepend) {
@@ -996,7 +996,7 @@ var unfunk;
                 if (this.isAssertion) {
                     return prepend + (this.message.match(/^.*$/m)[0]);
                 }
-                return prepend + this.name + ': ' + (this.message.match(/^.*$/m)[0]);
+                return prepend + (this.name ? this.name + ': ' : '') + (this.message.match(/^.*$/m)[0]);
             };
 
             ParsedError.prototype.getHeadlessStack = function (prepend, indent) {
@@ -1020,7 +1020,7 @@ var unfunk;
                 if (this.isAssertion) {
                     return this.message;
                 }
-                return this.name + ': ' + this.message;
+                return (this.name ? this.name + ': ' : '<no name>') + this.message;
             };
             return ParsedError;
         })();

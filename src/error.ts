@@ -48,14 +48,14 @@ module unfunk {
 				if (this.isAssertion) {
 					return prepend + this.message;
 				}
-				return prepend + this.name + ': ' + this.message;
+				return prepend + (this.name ? this.name + ': ' : '') + this.message;
 			}
 
 			getHeaderSingle(prepend:string = ''):string {
 				if (this.isAssertion) {
 					return prepend + (this.message.match(/^.*$/m)[0]);
 				}
-				return prepend + this.name + ': ' + (this.message.match(/^.*$/m)[0]);
+				return prepend + (this.name ? this.name + ': ' : '') + (this.message.match(/^.*$/m)[0]);
 			}
 
 			getHeadlessStack(prepend:string = '', indent:string = ''):string {
@@ -78,7 +78,7 @@ module unfunk {
 				if (this.isAssertion) {
 					return this.message;
 				}
-				return this.name + ': ' + this.message;
+				return (this.name ? this.name + ': ' : '<no name>') + this.message;
 			}
 		}
 
