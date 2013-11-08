@@ -504,9 +504,7 @@ var unfunk;
 var unfunk;
 (function (unfunk) {
     var lineExtractExp = /(.*?)(\n|\r\n|\r|$)/g;
-
     var stringDiff = require('diff');
-    var jsesc = require('jsesc');
 
     function repeatStr(str, amount) {
         var ret = '';
@@ -525,12 +523,14 @@ var unfunk;
                 if (typeof leadSymbols === "undefined") { leadSymbols = false; }
                 var changes = stringDiff.diffChars(expected, actual);
 
+                var escape = unfunk.escape;
+                ;
                 var blocks = [];
                 var value;
                 var sep = '\n';
 
                 var isSimple = (!diff.identAnyExp.test(actual) || !diff.identAnyExp.test(expected));
-                var delim = (isSimple ? diff.stringQuote : '');
+                var delim = (isSimple ? '"' : '');
                 var delimEmpty = repeatStr(' ', delim.length);
 
                 var padPreTop = this.diff.style.error(this.diff.markRemov);
@@ -595,7 +595,7 @@ var unfunk;
                     while ((match = lineExtractExp.exec(change.value))) {
                         lineExtractExp.lastIndex = match.index + (match[0].length || 1);
                         var blockCount = 0;
-                        var line = jsesc(match[0], diff.stringEsc);
+                        var line = escape(match[0]);
                         var len = line.length;
 
                         for (var j = 0; j < len; j++) {
@@ -630,85 +630,6 @@ var unfunk;
 
                 return blocks.join('\n\n');
             };
-
-            StringDiffer.prototype.getWrapping = function (actual, expected, maxWidth, padLength, padFirst, leadSymbols) {
-                if (typeof leadSymbols === "undefined") { leadSymbols = false; }
-                var diff = stringDiff.diffChars(expected, actual);
-                var dataLength = maxWidth - padLength;
-
-                if (padLength >= maxWidth) {
-                    return '<no space for padded diff>';
-                }
-
-                var counter = 0;
-                var blocks = [];
-                var value;
-                var blockCount = 0;
-
-                var sep = '\n';
-
-                var top = padFirst[0];
-                var middle = padFirst[1];
-                var bottom = padFirst[2];
-
-                if (leadSymbols) {
-                    top += this.diff.style.error(this.diff.markRemov);
-                    middle += this.diff.style.plain(this.diff.markEmpty);
-                    bottom += this.diff.style.success(this.diff.markAdded);
-                    padLength += this.diff.markAdded.length;
-                }
-                var rowPad = repeatStr(' ', padLength);
-
-                var charSame = this.diff.style.warning('|');
-                var charAdded = this.diff.style.success('+');
-                var charMissing = this.diff.style.error('-');
-
-                var flushLine = function () {
-                    if (blockCount > 0) {
-                        blocks.push(top + sep + middle + sep + bottom);
-                    } else {
-                        blocks.push(top + sep + middle + sep + bottom);
-                    }
-                    blockCount += 1;
-                    counter = 0;
-                    top = rowPad;
-                    middle = rowPad;
-                    bottom = rowPad;
-                };
-
-                for (var i = 0, ii = diff.length; i < ii; i++) {
-                    var change = diff[i];
-                    var word = jsesc(change.value);
-                    var len = word.length;
-
-                    for (var j = 0; j < len; j++) {
-                        value = word[j];
-                        counter += 1;
-                        if (counter > dataLength) {
-                            flushLine();
-                        }
-                        if (change.added) {
-                            top += ' ';
-                            middle += charAdded;
-                            bottom += value;
-                        } else if (change.removed) {
-                            top += value;
-                            middle += charMissing;
-                            bottom += ' ';
-                        } else if (!change.added && !change.removed) {
-                            top += value;
-                            middle += charSame;
-                            bottom += value;
-                        }
-                    }
-                }
-
-                if (counter > padLength) {
-                    flushLine();
-                }
-
-                return blocks.join('\n\n');
-            };
             return StringDiffer;
         })();
         diff.StringDiffer = StringDiffer;
@@ -717,8 +638,6 @@ var unfunk;
 })(unfunk || (unfunk = {}));
 var unfunk;
 (function (unfunk) {
-    var jsesc = require('jsesc');
-
     function repeatStr(str, amount) {
         var ret = '';
         for (var i = 0; i < amount; i++) {
@@ -811,14 +730,13 @@ var unfunk;
 
             ObjectDiffer.prototype.encodeName = function (prop) {
                 if (!unfunk.diff.identAnyExp.test(prop)) {
-                    return jsesc(prop, unfunk.diff.identEscWrap);
+                    return '"' + unfunk.escape(prop) + '"';
                 }
                 return prop;
             };
-
             ObjectDiffer.prototype.encodeString = function (prop) {
                 if (!unfunk.diff.identAnyExp.test(prop)) {
-                    return jsesc(prop, unfunk.diff.identEscWrap);
+                    return '"' + unfunk.escape(prop) + '"';
                 }
                 return prop;
             };
@@ -844,16 +762,15 @@ var unfunk;
             };
 
             ObjectDiffer.prototype.getName = function (prop, change) {
-                var name = jsesc(prop);
                 switch (change) {
                     case 'added':
-                        return this.getNameAdded(name);
+                        return this.getNameAdded(prop);
                     case 'removed':
-                        return this.getNameRemoved(name);
+                        return this.getNameRemoved(prop);
                     case 'object change':
-                        return this.getNameChanged(name);
+                        return this.getNameChanged(prop);
                     case 'empty':
-                        return this.getNameEmpty(name);
+                        return this.getNameEmpty(prop);
                     case 'plain':
                     default:
                         return this.diff.markEqual + this.encodeName(prop) + ': ';
@@ -910,30 +827,10 @@ var unfunk;
 })(unfunk || (unfunk = {}));
 var unfunk;
 (function (unfunk) {
-    var stringDiff = require('diff');
-    var jsesc = require('jsesc');
-
     (function (diff) {
         diff.objectNameExp = /(^\[object )|(\]$)/gi;
-
-        diff.stringExp = /^[a-z](?:[a-z0-9_\-]*?[a-z0-9])?$/i;
-
-        diff.stringEsc = {
-            quotes: 'double'
-        };
-        diff.stringEscWrap = {
-            quotes: 'double',
-            wrap: true
-        };
-        diff.stringQuote = '"';
-
         diff.identExp = /^[a-z](?:[a-z0-9_\-]*?[a-z0-9])?$/i;
         diff.identAnyExp = /^[a-z0-9](?:[a-z0-9_\-]*?[a-z0-9])?$/i;
-        diff.identEscWrap = {
-            quotes: 'double',
-            wrap: true
-        };
-        diff.intExp = /^\d+$/;
 
         var DiffFormatter = (function () {
             function DiffFormatter(style, maxWidth) {
@@ -1049,20 +946,137 @@ var unfunk;
 })(unfunk || (unfunk = {}));
 var unfunk;
 (function (unfunk) {
-    (function (stack) {
+    (function (error) {
         var splitLine = /[\r\n]+/g;
 
-        stack.moduleFilters = ['mocha', 'chai', 'proclaim', 'assert', 'expect', 'should', 'chai-as-promised', 'mocha-as-promised'];
-        stack.nodeFilters = [];
-        stack.webFilters = ['mocha.js', 'chai.js', 'assert.js', 'proclaim.js'];
+        error.moduleFilters = ['mocha', 'chai', 'proclaim', 'assert', 'expect', 'should', 'chai-as-promised', 'q', 'mocha-as-promised'];
+        error.nodeFilters = ['node.js'];
+        error.webFilters = ['mocha.js', 'chai.js', 'assert.js', 'proclaim.js'];
 
-        var trim = /(^[ \t]*)|([ \t]*$)/;
+        var assertType = /^AssertionError/;
+        var anyLinExp = /^ *(.*) *$/gm;
+        var stackLineExp = /^    at (.+)$/;
+        var anyLinExp = /^ *(.*) *$/gm;
+
+        var StackElement = (function () {
+            function StackElement(text, lineRef) {
+                this.text = text;
+                this.lineRef = lineRef;
+            }
+            return StackElement;
+        })();
+        error.StackElement = StackElement;
+
+        var ParsedError = (function () {
+            function ParsedError(error) {
+                this.name = '';
+                this.message = '<no message>';
+                this.stack = [];
+                this.isAssertion = false;
+                this.error = error;
+            }
+            ParsedError.prototype.getStandard = function (prepend, indent) {
+                if (typeof prepend === "undefined") { prepend = ''; }
+                if (typeof indent === "undefined") { indent = ''; }
+                var ret = this.getHeader(prepend);
+                ret += '\n' + this.getHeadlessStack(prepend, indent);
+                return ret;
+            };
+
+            ParsedError.prototype.getHeader = function (prepend) {
+                if (typeof prepend === "undefined") { prepend = ''; }
+                if (this.isAssertion) {
+                    return prepend + this.message;
+                }
+                return prepend + this.name + ': ' + this.message;
+            };
+
+            ParsedError.prototype.getHeaderSingle = function (prepend) {
+                if (typeof prepend === "undefined") { prepend = ''; }
+                if (this.isAssertion) {
+                    return prepend + (this.message.match(/^.*$/m)[0]);
+                }
+                return prepend + this.name + ': ' + (this.message.match(/^.*$/m)[0]);
+            };
+
+            ParsedError.prototype.getHeadlessStack = function (prepend, indent) {
+                if (typeof prepend === "undefined") { prepend = ''; }
+                if (typeof indent === "undefined") { indent = ''; }
+                return this.stack.reduce(function (lines, element) {
+                    if (element.lineRef) {
+                        lines.push(prepend + indent + 'at ' + element.text);
+                    } else {
+                        lines.push(prepend + element.text);
+                    }
+                    return lines;
+                }, []).join('\n');
+            };
+
+            ParsedError.prototype.hasStack = function () {
+                return this.stack.length > 0;
+            };
+
+            ParsedError.prototype.toString = function () {
+                if (this.isAssertion) {
+                    return this.message;
+                }
+                return this.name + ': ' + this.message;
+            };
+            return ParsedError;
+        })();
+        error.ParsedError = ParsedError;
 
         var StackFilter = (function () {
             function StackFilter(style) {
                 this.style = style;
                 this.filters = [];
             }
+            StackFilter.prototype.parse = function (error, stackFilter) {
+                var parsed = new ParsedError(error);
+                if (!error) {
+                    parsed.name = '<undefined error>';
+                    return parsed;
+                }
+                parsed.name = error.name;
+                parsed.isAssertion = assertType.test(parsed.name);
+                if (error.message) {
+                    parsed.message = error.message;
+                } else if (error.operator) {
+                    parsed.message = unfunk.toDebug(error.actual, 50) + ' ' + this.style.accent(error.operator) + ' ' + unfunk.toDebug(error.expected, 50) + '';
+                }
+
+                if (error.stack) {
+                    var stack = error.stack;
+                    var seenAt = false;
+                    var lineMatch;
+                    var stackLineMatch;
+
+                    anyLinExp.lastIndex = 0;
+
+                    while ((lineMatch = anyLinExp.exec(stack))) {
+                        anyLinExp.lastIndex = lineMatch.index + (lineMatch[0].length || 1);
+                        if (!lineMatch[1]) {
+                            continue;
+                        }
+                        stackLineExp.lastIndex = 0;
+                        stackLineMatch = stackLineExp.exec(lineMatch[0]);
+                        if (stackLineMatch) {
+                            parsed.stack.push(new StackElement(stackLineMatch[1], true));
+                            seenAt = true;
+                            continue;
+                        } else if (seenAt) {
+                            parsed.stack.push(new StackElement(lineMatch[1], false));
+                        }
+                    }
+                    if (stackFilter) {
+                        parsed.stack = this.filter(parsed.stack);
+                    }
+                } else {
+                    parsed.stack.push(new StackElement('<no error.stack>', false));
+                }
+                return parsed;
+            };
+
             StackFilter.prototype.addModuleFilters = function (filters) {
                 var _this = this;
                 filters.forEach(function (filter) {
@@ -1080,48 +1094,39 @@ var unfunk;
                 }, this);
             };
 
-            StackFilter.prototype.filter = function (stack) {
-                if (!stack || /^\s+$/.test(stack)) {
-                    return '<no stack>';
+            StackFilter.prototype.filter = function (lines) {
+                if (lines.length === 0) {
+                    return [new StackElement('<no lines in stack>', false)];
                 }
                 if (this.filters.length === 0) {
-                    return stack;
+                    return lines;
                 }
-                var allLines = stack.split(splitLine);
-                var lines = allLines.slice(0);
                 var cut = -1;
                 var i, line;
 
                 for (i = lines.length - 1; i >= 0; i--) {
-                    line = lines[i].replace(trim, '');
-                    if (line.length == 0) {
-                        cut = i;
-                    } else if (this.filters.some(function (filter) {
-                        return filter.test(line);
+                    line = lines[i];
+                    if (this.filters.some(function (filter) {
+                        return filter.test(line.text);
                     })) {
                         cut = i;
-                    } else {
-                        if (cut > -1) {
-                            break;
-                        }
+                    } else if (cut > -1) {
+                        break;
                     }
                 }
                 if (cut > 0) {
                     lines = lines.splice(0, cut);
                 }
-                if (allLines.length === 0) {
-                    return '<no lines in stack>';
-                }
                 if (lines.length === 0) {
-                    return '<no unfiltered calls in stack>';
+                    return [new StackElement('<no unfiltered calls in stack>', false)];
                 }
-                return lines.join('\n');
+                return lines;
             };
             return StackFilter;
         })();
-        stack.StackFilter = StackFilter;
-    })(unfunk.stack || (unfunk.stack = {}));
-    var stack = unfunk.stack;
+        error.StackFilter = StackFilter;
+    })(unfunk.error || (unfunk.error = {}));
+    var error = unfunk.error;
 })(unfunk || (unfunk = {}));
 var unfunk;
 (function (unfunk) {
@@ -1260,10 +1265,45 @@ var unfunk;
         }
     }
 
+    var jsesc = require('jsesc');
+
+    var escapableExp = /[\\\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;
+    var meta = {
+        '\b': '\\b',
+        '\t': '\\t',
+        '\n': '\\n',
+        '\f': '\\f',
+        '\r': '\\r',
+        '"': '\\"',
+        '\\': '\\\\'
+    };
+    var jsonNW = {
+        json: true,
+        wrap: false,
+        quotes: 'double'
+    };
+
+    function escape(str) {
+        escapableExp.lastIndex = 0;
+        if (escapableExp.test(str)) {
+            return str.replace(escapableExp, function (a) {
+                var c = meta[a];
+                if (typeof c === 'string') {
+                    return c;
+                }
+
+                return jsesc(a, jsonNW);
+            });
+        }
+        return str;
+    }
+    unfunk.escape = escape;
+
     function stringTrueish(str) {
         str = ('' + str).toLowerCase();
         return str != '' && str != 'false' && str != '0' && str != 'null' && str != 'undefined';
     }
+    unfunk.stringTrueish = stringTrueish;
 
     function toDebug(value, cutoff) {
         if (typeof cutoff === "undefined") { cutoff = 20; }
@@ -1285,79 +1325,13 @@ var unfunk;
         }
         if (t === 'string') {
             if (value.length > cutoff) {
-                return JSON.stringify(value.substr(0, cutoff)) + '...';
+                return '"' + escape(value.substr(0, cutoff)) + '"' + '...';
             }
-            return JSON.stringify(value);
+            return '"' + escape(value) + '"';
         }
         return '' + value;
     }
-
-    var extract = /^[A-Z][\w_]*:[ \t]*([\s\S]+?)([\r\n]+[ \t]*at[\s\S]*)$/;
-    var errorType = /^([A-Z][\w_]*)/;
-    var assertType = /^AssertionError/;
-
-    function headlessStack(error) {
-        if (!error) {
-            return '';
-        }
-        if (error.stack) {
-            var match = error.stack.match(extract);
-            if (match && match.length > 2) {
-                return match[2].replace(/(^\s+)|(\s+$)/g, '');
-            }
-        }
-        return '';
-    }
-
-    function getErrorPrefix(error) {
-        if (!error) {
-            return '';
-        }
-        var str = error.stack || ('' + error);
-        var match = str.match(errorType);
-        if (match && match.length > 0) {
-            if (!assertType.test(match[1])) {
-                return match[1] + ': ';
-            }
-        }
-        return '';
-    }
-
-    function getErrorMessage(error) {
-        var msg = '';
-        if (!error) {
-            return '<undefined error>';
-        }
-        if (error.message) {
-            msg = String(error.message);
-        } else if (error.operator) {
-            msg += toDebug(error.actual, 50) + ' ' + error.operator + ' ' + toDebug(error.expected, 50) + '';
-        }
-
-        if (!msg) {
-            msg = ('' + error);
-            if (msg === '[object Object]') {
-                msg = String(error.message || '');
-                if (!msg) {
-                    if (error.stack) {
-                        var match = error.stack.match(extract);
-                        if (match && match.length > 1) {
-                            msg = match[1];
-                        }
-                    }
-                }
-            }
-            msg = cleanErrorMessage(msg);
-        }
-        if (msg) {
-            return getErrorPrefix(error) + msg.replace(/(\s+$)/g, '');
-        }
-        return getErrorPrefix(error) + '<no error message>';
-    }
-
-    function cleanErrorMessage(msg) {
-        return msg.replace(/^([A-Z][\w_]*:[ \t]*)/, '');
-    }
+    unfunk.toDebug = toDebug;
 
     function padLeft(str, len, char) {
         str = String(str);
@@ -1413,6 +1387,12 @@ var unfunk;
         return new unfunk.writer.ConsoleLineWriter();
     }
 
+    function pluralize(word, amount, plurl) {
+        if (typeof plurl === "undefined") { plurl = 's'; }
+        return amount + ' ' + (1 == amount ? word : word + plurl);
+    }
+    unfunk.pluralize = pluralize;
+
     var Unfunk = (function () {
         function Unfunk(runner) {
             this.init(runner);
@@ -1425,11 +1405,11 @@ var unfunk;
             var style = getStyler();
 
             var diffFormat = new unfunk.diff.DiffFormatter(style, getViewWidth());
-            var stackFilter = new unfunk.stack.StackFilter(style);
+            var stackFilter = new unfunk.error.StackFilter(style);
             if (options.stackFilter) {
-                stackFilter.addFilters(unfunk.stack.nodeFilters);
-                stackFilter.addFilters(unfunk.stack.webFilters);
-                stackFilter.addModuleFilters(unfunk.stack.moduleFilters);
+                stackFilter.addFilters(unfunk.error.nodeFilters);
+                stackFilter.addFilters(unfunk.error.webFilters);
+                stackFilter.addModuleFilters(unfunk.error.moduleFilters);
             }
 
             runner.stats = stats;
@@ -1448,10 +1428,6 @@ var unfunk;
             var indentLen = function (amount) {
                 if (typeof amount === "undefined") { amount = 1; }
                 return amount * indenter.length;
-            };
-            var pluralize = function (word, amount, plurl) {
-                if (typeof plurl === "undefined") { plurl = 's'; }
-                return amount + ' ' + (1 == amount ? word : word + plurl);
             };
             var start;
 
@@ -1513,9 +1489,9 @@ var unfunk;
                 test.speed = test.duration > test.slow() ? 'slow' : (test.duration > medium ? 'medium' : 'fast');
 
                 if (test.speed === 'slow') {
-                    out.writeln(style.fail(test.speed) + style.error(' (' + test.duration + 'ms)'));
+                    out.writeln(style.ok(test.speed) + style.error(' (' + test.duration + 'ms)'));
                 } else if (test.speed === 'medium') {
-                    out.writeln(style.warn(test.speed) + style.warning(' (' + test.duration + 'ms)'));
+                    out.writeln(style.ok(test.speed) + style.warning(' (' + test.duration + 'ms)'));
                 } else {
                     out.writeln(style.ok('ok'));
                 }
@@ -1524,11 +1500,12 @@ var unfunk;
             runner.on('fail', function (test, err) {
                 stats.failures++;
                 out.writeln(style.fail('fail'));
-                var msg = cleanErrorMessage(getErrorMessage(err));
-                if (msg) {
-                    out.writeln(style.error(padRight(stats.failures + ': ', indentLen(indents + 1), ' ')) + '' + style.warning(msg));
-                }
+
                 test.err = err;
+                test.parsed = stackFilter.parse(err, options.stackFilter);
+
+                out.writeln(style.error(padRight(stats.failures + ': ', indentLen(indents + 1), ' ')) + style.warning(test.parsed.getHeaderSingle()));
+
                 failures.push(test);
             });
 
@@ -1586,17 +1563,16 @@ var unfunk;
                         var title = style.accent(tmp.substring(0, ind)) + style.plain(tmp.substring(ind));
 
                         var err = test.err;
-                        var msg = getErrorMessage(err);
-                        var stack = headlessStack(err);
+                        var parsed = test.parsed;
+                        var msg = parsed.getHeader();
 
                         out.writeln(style.error(padRight((num + 1) + ': ', indentLen(2), ' ')) + title);
                         out.writeln();
                         out.writeln(indent(2) + style.warning(msg));
                         out.writeln();
 
-                        stack = stackFilter.filter(stack);
-                        if (stack) {
-                            out.writeln(stack.replace(/^[ \t]*/gm, indent(3)));
+                        if (parsed.hasStack()) {
+                            out.writeln(parsed.getHeadlessStack(indent(2), indenter));
                             out.writeln();
                         }
 

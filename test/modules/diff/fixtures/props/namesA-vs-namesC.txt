@@ -1,7 +1,7 @@
 [31m- name[39m: names C
 |     : [33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[32m+[39m[31m-[39m
 [32m+ name[39m: namesA 
-[32m+ "\xFC\tspecial \n\xA9\\\u2665"[39m: 
+[32m+ "ü\tspecial \n©\\♥"[39m: 
   [32m+ 0[39m: xxx
 [32m+ "space out"[39m: 
   [32m+ 0[39m: xxx

@@ -1,5 +1,5 @@
 . name: namesA
-. "\xFC\tspecial \n\xA9\\\u2665": 
+. "ü\tspecial \n©\\♥": 
   . 0: xxx
 . "space out": 
   . 0: xxx

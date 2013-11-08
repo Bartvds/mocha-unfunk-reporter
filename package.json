@@ -37,7 +37,7 @@
     "diff": "~1.0.7"
   },
   "devDependencies": {
-    "grunt": "git://github.com/gruntjs/grunt/#0a4e6e38867cde1c396eb99820436027dccf8023",
+    "grunt": "git://github.com/gruntjs/grunt/#d7f4bf671e8d551f9c9b3efe90af844bd51b5393",
     "grunt-cli": "0.1.9",
     "grunt-contrib-clean": "0.4.1",
     "jshint-path-reporter": "~0.1.0",
@@ -60,6 +60,8 @@
     "grunt-concurrent": "~0.4.1",
     "chai-fs": "0.0.3",
     "grunt-typescript": "~0.2.4",
-    "mkdirp": "~0.3.5"
+    "mkdirp": "~0.3.5",
+    "chai-json-schema": "~1.0.5",
+    "q": "~0.9.7"
   }
 }

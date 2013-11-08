@@ -165,7 +165,7 @@ describe('DiffFormatter', () => {
 
 	});
 
-	describe('props with special characters ', () => {
+	describe('props with special characters', () => {
 
 		var namesA = {
 			name: 'namesA',

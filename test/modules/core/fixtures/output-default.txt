@@ -2,7 +2,7 @@
 
 [4mRunning "mochaTest:base" (mochaTest) task[24m
 
--> running 4 suites
+-> running 6 suites
 
    async tests
       first passes.. OK
@@ -14,24 +14,32 @@
       medium slow.. MEDIUM ({TIME_INT})
       very slow.. SLOW ({TIME_INT})
 
+   chai-json-schema
+      fruit failure.. FAIL
+2:       expected value to match json-schema '{"type":"object","properties":...' -> '{"intKey":3,"stringKey":false}'
+
    diffs
       long strings
          should show big diffs.. PENDING
          should bail on long diffs.. FAIL
-2:          expected 'Lorem ipsum dolor sit amet, consectetur'...(2717) to equal 'Lorem ipsum dolor sit amet, consectetur'...(2855)
+3:          expected 'Lorem ipsum dolor sit amet, consectetur'...(2717) to equal 'Lorem ipsum dolor sit amet, consectetur'...(2855)
 
    errors
       sync fails.. FAIL
-3:       MyError
+4:       Error: MyError
       async error.. FAIL
-4:       MyError
+5:       Error: MyError
+
+   q long stack
+      async error.. FAIL
+6:       Error: Q Error
 
    slow test
       normal.. OK
       medium.. MEDIUM ({TIME_INT})
       slow.. SLOW ({TIME_INT})
 
--> reporting 4 failures
+-> reporting 6 failures
 
 1:    async tests second fails
 
@@ -43,7 +51,20 @@
          at null._onTimeout ({PATH}test/modules/core/tmp/_tmp.test.js:{Y}:{X})
          at Timer.listOnTimeout [as ontimeout] (timers.js:{Y}:{X})
 
-2:    diffs long strings should bail on long diffs
+2:    chai-json-schema fruit failure
+
+      expected value to match json-schema '{"type":"object","properties":...' -> '{"intKey":3,"stringKey":false}'
+      invalid type: boolean (expected string)
+          field:  /stringKey
+          value:  boolean -> false
+          schema: string -> /properties/stringKey/type
+
+         at Assertion.<anonymous> ({PATH}node_modules/chai-json-schema/index.js:{Y}:{X})
+         at Assertion.ctx.(anonymous function) [as jsonSchema] ({PATH}node_modules/chai/lib/chai/utils/addMethod.js:{Y}:{X})
+         at Function.assert.jsonSchema ({PATH}node_modules/chai-json-schema/index.js:{Y}:{X})
+         at Context.<anonymous> ({PATH}test/modules/core/tmp/_tmp.test.js:{Y}:{X})
+
+3:    diffs long strings should bail on long diffs
 
       expected 'Lorem ipsum dolor sit amet, consectetur'...(2717) to equal 'Lorem ipsum dolor sit amet, consectetur'...(2855)
 
@@ -55,20 +76,37 @@
       <actual too lengthy for diff: 2708>
       <expected too lengthy for diff: 2846>
 
-3:    errors sync fails
+4:    errors sync fails
 
       Error: MyError
 
          at Context.<anonymous> ({PATH}test/modules/core/tmp/_tmp.test.js:{Y}:{X})
 
-4:    errors async error
+5:    errors async error
 
       Error: MyError
 
          at null._onTimeout ({PATH}test/modules/core/tmp/_tmp.test.js:{Y}:{X})
          at Timer.listOnTimeout [as ontimeout] (timers.js:{Y}:{X})
 
--> failed 4 and passed 8 of 12 tests, left 2 pending ({TIME_INT})
+6:    q long stack async error
+
+      Error: Q Error
+
+         at {PATH}test/modules/core/tmp/_tmp.test.js:{Y}:{X}
+      From previous event:
+         at three ({PATH}test/modules/core/tmp/_tmp.test.js:{Y}:{X})
+         at {PATH}test/modules/core/tmp/_tmp.test.js:{Y}:{X}
+      From previous event:
+         at two ({PATH}test/modules/core/tmp/_tmp.test.js:{Y}:{X})
+         at {PATH}test/modules/core/tmp/_tmp.test.js:{Y}:{X}
+      From previous event:
+         at one ({PATH}test/modules/core/tmp/_tmp.test.js:{Y}:{X})
+         at {PATH}test/modules/core/tmp/_tmp.test.js:{Y}:{X}
+      From previous event:
+         at Context.<anonymous> ({PATH}test/modules/core/tmp/_tmp.test.js:{Y}:{X})
+
+-> failed 6 and passed 8 of 14 tests, left 2 pending ({TIME_INT})
 
 [33mWarning: Task "mochaTest:base" failed. Use --force to continue.[39m
 

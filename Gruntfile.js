@@ -304,6 +304,11 @@ module.exports = function (grunt) {
 		log: true,
 		assert: false
 	});
+	gtx.create('dev', 'moduleTest', {
+		tasks: ['default'],
+		log: true,
+		ignore: true
+	});
 
 	//editor ui shortcuts/buttons
 	gtx.alias('edit_01', ['build', 'gtx:diff']);

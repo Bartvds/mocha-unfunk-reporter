@@ -4,10 +4,6 @@
 
 module unfunk {
 
-	//var objectDiff = require('../lib/objectDiff');
-	var stringDiff = require('diff');
-	var jsesc = require('jsesc');
-
 	export module diff {
 		/*
 		 depends on stringDiff by 'Nikita Vasilyev'
@@ -21,25 +17,8 @@ module unfunk {
 		 diff output algorithm based on objectDiff HTML printer
 		 */
 		export var objectNameExp = /(^\[object )|(\]$)/gi;
-
-		export var stringExp = /^[a-z](?:[a-z0-9_\-]*?[a-z0-9])?$/i;
-
-		export var stringEsc = {
-			quotes: 'double'
-		};
-		export var stringEscWrap = {
-			quotes: 'double',
-			wrap: true
-		};
-		export var stringQuote = '"';
-
 		export var identExp = /^[a-z](?:[a-z0-9_\-]*?[a-z0-9])?$/i;
 		export var identAnyExp = /^[a-z0-9](?:[a-z0-9_\-]*?[a-z0-9])?$/i;
-		export var identEscWrap = {
-			quotes: 'double',
-			wrap: true
-		};
-		export var intExp = /^\d+$/;
 
 		export class DiffFormatter {
 

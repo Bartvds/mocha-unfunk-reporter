@@ -1,0 +1,779 @@
+[4mRunning "mocha_unfunk:ansi" (mocha_unfunk) task[24m
+
+[4mRunning "mochaTest:base" (mochaTest) task[24m
+
+[36m->[39m running [36m1 suite[39m
+
+   [36mDiffFormatter[39m
+      [36mstrings[39m
+---
+-  Hello        world today 
+  "||||||+++++++|||||------"
++  Hello lovely world       
+---
+         should diff hello a/b.. [32mok[39m
+---
+-  Lorem ipsum dolor sit amet, consectetur adipiscing elit.\n 
+  "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||"
++  Lorem ipsum dolor sit amet, consectetur adipiscing elit.\n 
+
+   Lorem dolor sit amet elit.\n 
+  "||||||-------|--------------"
+   Lorem        i               
+
+   Lorem ipsum dolor  elit.\n 
+  "-------|||||||||||+--||---"
+          psum dolor s  it    
+
+   Lorem  ipsum   adipiscing elit.\n 
+  "-----|+----|++|||||||||||||||||||"
+         a    met adipiscing elit.\n 
+
+   Lorem ipsum dolor sit amet adipiscing elit.\n 
+  "||||||||||||----------|-----|||||||||||||||||"
+   Lorem ipsum           a     dipiscing elit.\n 
+
+   Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+  "||||||||||||||||||||||||||||||||||||||||||||||||||||||||"
+   Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+---
+         should diff lines a/b.. [32mok[39m
+---
+-  Lorem ipsum dolor sit amet, consectetur adipiscing elit.\n 
+  "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||"
++  Lorem ipsum dolor sit amet, consectetur adipiscing elit.\n 
+
+   \n 
+  "||"
+   \n 
+
+     Suspendisse im  pe   rd iet      vel veli t     sit  a  met vari us . Int 
+  "++-----------|-|++-|+++-|+---|+++++---|---|+-|++++---|+|++-------|+||+-|---"
+   Ut             mal esua da    magna       id  nunc    fauc       ibus,      
+
+   erdum   et male  s uada fames  ac ante ipsum primis  i n faucibus   .\n 
+  "|--|-|++|----||++|+|-------|-|+--------|-||-------||+|+|-----|--|+++|||"
+   e  u  sce    lerisqu       e  r        i su       s dign     i  ssim.\n 
+
+   \n 
+  "||"
+   \n 
+
+            In vitae     gravida   ips    um.      Se     d  ne c    ve    n   
+  "+++++++++--||---|+|+++---|--|++-|-|++++--||+++++-|+++++-|+-|+-|+++-|++++|++"
+   Phasellus   v   el con   v  all i s est  . Nam t empus,  s em  at  elementu 
+
+      e   natis ipsum,  nec            adipis c     ing  leo.\n 
+  "+++|+++|-|------||||+-||+++|++++++++-----|+|+++++---|+-|----"
+   m fermen t      um, l ectus nunc con     sectetur    s e     
+
+   \n 
+  "--"
+      
+
+   Aliquam  convallis orci nibh, vitae    da pibus  s apien  conva  llis eget  
+  "------|+|||||||||||-----------|---|+++--|+-|--||+|+-----|+----|++--||||--|+"
+         m, convallis            v   enen  at i  s est      m    aur  is e  t  
+
+         . 
+  "++++++|"
+   turpis. 
+---
+         should diff medium a/b.. [32mslow[39m[31m ({TIME_INT})[39m
+      [36mbad values[39m
+         should return on bad values.. [32mok[39m
+      [36mnested string[39m
+---
+? nested: 
+  - aa: abaa 
+  |   : |-||+
+  + aa: a aab
+- lines:  Lorem ipsum dolor sit amet, consectetur adipiscing elit.\n 
+|      : "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||"
++ lines:  Lorem ipsum dolor sit amet, consectetur adipiscing elit.\n 
+
+          Lorem dolor sit amet elit.\n 
+         "||||||-------|--------------"
+          Lorem        i               
+
+          Lorem ipsum dolor  elit.\n 
+         "-------|||||||||||+--||---"
+                 psum dolor s  it    
+
+          Lorem  ipsum   adipiscing elit.\n 
+         "-----|+----|++|||||||||||||||||||"
+                a    met adipiscing elit.\n 
+
+          Lorem ipsum dolor sit amet adipiscing elit.\n 
+         "||||||||||||----------|-----|||||||||||||||||"
+          Lorem ipsum           a     dipiscing elit.\n 
+
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+         "||||||||||||||||||||||||||||||||||||||||||||||||||||||||"
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+---
+         should diff nested multiline a/b.. [32mok[39m
+      [36mvariations[39m
+         [36mbasic all[39m
+---
+. name: all
+. propA: valueA
+. propB: valueB
+. subA: 
+  . nestA: childA
+  . nestB: childB
+  . subA: 
+    . nestA: childA
+    . nestB: childB
+. subB: 
+  . nestA: childA
+  . nestB: childB
+  . subA: 
+    . nestA: childA
+    . nestB: childB
+---
+            should diff basic / all.. [32mok[39m
+         [36mbasic someA-vs-all[39m
+---
+[31m- name[39m:      all
+|     : [32m+[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[31m-[39m[31m-[39m[31m-[39m
+[32m+ name[39m: someA   
+. propA: valueA
+[33m? subA[39m: 
+  . nestA: childA
+  [33m? subA[39m: 
+    . nestA: childA
+    [31m- nestB[39m: childB  
+  [31m- nestB[39m: childB
+[31m- propB[39m: valueB
+[31m- subB[39m: 
+  [31m- nestA[39m: childA
+  [31m- nestB[39m: childB
+  [31m- subA[39m: 
+    [31m- nestA[39m: childA
+    [31m- nestB[39m: childB
+---
+            should diff basic / someA-vs-all.. [32mok[39m
+         [36mbasic all-vs-someA[39m
+---
+[31m- name[39m:    someA
+|     : [32m+[39m[32m+[39m[32m+[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m
+[32m+ name[39m: all     
+. propA: valueA
+[32m+ propB[39m: valueB
+[33m? subA[39m: 
+  . nestA: childA
+  [32m+ nestB[39m: childB
+  [33m? subA[39m: 
+    . nestA: childA
+    [32m+ nestB[39m: childB  
+[32m+ subB[39m: 
+  [32m+ nestA[39m: childA
+  [32m+ nestB[39m: childB
+  [32m+ subA[39m: 
+    [32m+ nestA[39m: childA
+    [32m+ nestB[39m: childB
+---
+            should diff basic / all-vs-someA.. [32mok[39m
+         [36mbasic someA-vs-badA[39m
+---
+[31m- name[39m:     badA
+|     : [32m+[39m[32m+[39m[32m+[39m[32m+[39m[31m-[39m[31m-[39m[31m-[39m[33m|[39m
+[32m+ name[39m: some   A
+[31m- propA[39m: value B
+|      : [33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[32m+[39m[31m-[39m
+[32m+ propA[39m: valueA 
+[33m? subA[39m: 
+  [31m- nestA[39m: child B
+  |      : [33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[32m+[39m[31m-[39m
+  [32m+ nestA[39m: childA 
+  [33m? subA[39m: 
+    [31m- nestA[39m: child B
+    |      : [33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[32m+[39m[31m-[39m
+    [32m+ nestA[39m: childA 
+    [31m- nestB[39m: valueA  
+---
+            should diff basic / someA-vs-badA.. [32mok[39m
+         [36mbasic badA-vs-someA[39m
+---
+[31m- name[39m:    someA
+|     : [32m+[39m[32m+[39m[32m+[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[33m|[39m
+[32m+ name[39m: bad    A
+[31m- propA[39m: value A
+|      : [33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[32m+[39m[31m-[39m
+[32m+ propA[39m: valueB 
+[33m? subA[39m: 
+  [31m- nestA[39m: child A
+  |      : [33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[32m+[39m[31m-[39m
+  [32m+ nestA[39m: childB 
+  [33m? subA[39m: 
+    [31m- nestA[39m: child A
+    |      : [33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[32m+[39m[31m-[39m
+    [32m+ nestA[39m: childB 
+    [32m+ nestB[39m: valueA  
+---
+            should diff basic / badA-vs-someA.. [32mok[39m
+      [36mprops with special characters [39m
+         [36mprops namesA-vs-namesA[39m
+---
+. name: namesA
+. "ü\tspecial \n©\\♥": 
+  . 0: xxx
+. "space out": 
+  . 0: xxx
+---
+            should diff props / namesA-vs-namesA.. [31mfail[39m
+[31m1:             [39m[33mexpected '. name: namesA\n. "ü\\tspecial \\n©\\\\'...(86) to equal '. name: namesA\n. "\\xFC\\tspecial \\n\'...(100)[39m
+         [36mprops namesA-vs-namesB[39m
+---
+[31m- name[39m: names B
+|     : [33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[32m+[39m[31m-[39m
+[32m+ name[39m: namesA 
+[33m? "ü\tspecial \n©\\♥"[39m: 
+  [31m- 0[39m:    zzz
+  |  : [32m+[39m[32m+[39m[32m+[39m[31m-[39m[31m-[39m[31m-[39m
+  [32m+ 0[39m: xxx   
+[33m? "space out"[39m: 
+  [31m- 0[39m:    zzz
+  |  : [32m+[39m[32m+[39m[32m+[39m[31m-[39m[31m-[39m[31m-[39m
+  [32m+ 0[39m: xxx   
+---
+            should diff props / namesA-vs-namesB.. [31mfail[39m
+[31m2:             [39m[33mexpected '\u001b[31m- name\u001b[39m: names B\n| '...(727) to equal '\u001b[31m- name\u001b[39m: names B\n| '...(741)[39m
+         [36mprops namesB-vs-namesA[39m
+---
+[31m- name[39m: names A
+|     : [33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[32m+[39m[31m-[39m
+[32m+ name[39m: namesB 
+[33m? "ü\tspecial \n©\\♥"[39m: 
+  [31m- 0[39m:    xxx
+  |  : [32m+[39m[32m+[39m[32m+[39m[31m-[39m[31m-[39m[31m-[39m
+  [32m+ 0[39m: zzz   
+[33m? "space out"[39m: 
+  [31m- 0[39m:    xxx
+  |  : [32m+[39m[32m+[39m[32m+[39m[31m-[39m[31m-[39m[31m-[39m
+  [32m+ 0[39m: zzz   
+---
+            should diff props / namesB-vs-namesA.. [31mfail[39m
+[31m3:             [39m[33mexpected '\u001b[31m- name\u001b[39m: names A\n| '...(727) to equal '\u001b[31m- name\u001b[39m: names A\n| '...(741)[39m
+         [36mprops namesA-vs-namesC[39m
+---
+[31m- name[39m: names C
+|     : [33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[32m+[39m[31m-[39m
+[32m+ name[39m: namesA 
+[32m+ "ü\tspecial \n©\\♥"[39m: 
+  [32m+ 0[39m: xxx
+[32m+ "space out"[39m: 
+  [32m+ 0[39m: xxx
+---
+            should diff props / namesA-vs-namesC.. [31mfail[39m
+[31m4:             [39m[33mexpected '\u001b[31m- name\u001b[39m: names C\n| '...(381) to equal '\u001b[31m- name\u001b[39m: names C\n| '...(395)[39m
+         [36mprops namesC-vs-namesA[39m
+---
+[31m- name[39m: names A
+|     : [33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[32m+[39m[31m-[39m
+[32m+ name[39m: namesC 
+[31m- "ü\tspecial \n©\\♥"[39m: 
+  [31m- 0[39m: xxx
+[31m- "space out"[39m: 
+  [31m- 0[39m: xxx
+---
+            should diff props / namesC-vs-namesA.. [31mfail[39m
+[31m5:             [39m[33mexpected '\u001b[31m- name\u001b[39m: names A\n| '...(381) to equal '\u001b[31m- name\u001b[39m: names A\n| '...(395)[39m
+      [36mvalues with special characters[39m
+         [36mvalues objA-vs-objA[39m
+---
+. name: objA
+. propA: "ü\tspecial\\A \n©♥"
+. escA: "x\\xü"
+---
+            should diff values / objA-vs-objA.. [31mfail[39m
+[31m6:             [39m[33mexpected '. name: objA\n. propA: "ü\\tspecial\\\\'...(68) to equal '. name: objA\n. propA: "\\xFC\\tspecial'...(86)[39m
+         [36mvalues objA-vs-objB[39m
+---
+[31m- name[39m: obj B
+|     : [33m|[39m[33m|[39m[33m|[39m[32m+[39m[31m-[39m
+[32m+ name[39m: objA 
+[31m- propA[39m:  ü\tspecial\\ B \n 
+|      : "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[32m+[39m[31m-[39m[33m|[39m[33m|[39m[33m|[39m"
+[32m+ propA[39m:  ü\tspecial\\A  \n 
+
+          ©♥ 
+         "[33m|[39m[33m|[39m"
+          ©♥ 
+. escA: "x\\xü"
+---
+            should diff values / objA-vs-objB.. [31mfail[39m
+[31m7:             [39m[33mexpected '\u001b[31m- name\u001b[39m: obj B\n|   '...(769) to equal '\u001b[31m- name\u001b[39m: obj B\n|   '...(1032)[39m
+         [36mvalues objB-vs-objA[39m
+---
+[31m- name[39m: obj A
+|     : [33m|[39m[33m|[39m[33m|[39m[32m+[39m[31m-[39m
+[32m+ name[39m: objB 
+[31m- propA[39m:  ü\tspecial\\ A \n 
+|      : "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[32m+[39m[31m-[39m[33m|[39m[33m|[39m[33m|[39m"
+[32m+ propA[39m:  ü\tspecial\\B  \n 
+
+          ©♥ 
+         "[33m|[39m[33m|[39m"
+          ©♥ 
+. escA: "x\\xü"
+---
+            should diff values / objB-vs-objA.. [31mfail[39m
+[31m8:             [39m[33mexpected '\u001b[31m- name\u001b[39m: obj A\n|   '...(769) to equal '\u001b[31m- name\u001b[39m: obj A\n|   '...(1032)[39m
+         [36mvalues objA-vs-objC[39m
+---
+[31m- name[39m: obj C
+|     : [33m|[39m[33m|[39m[33m|[39m[32m+[39m[31m-[39m
+[32m+ name[39m: objA 
+[32m+ propA[39m: "ü\tspecial\\A \n©♥"
+[32m+ escA[39m: "x\\xü"
+---
+            should diff values / objA-vs-objC.. [31mfail[39m
+[31m9:             [39m[33mexpected '\u001b[31m- name\u001b[39m: obj C\n|   '...(279) to equal '\u001b[31m- name\u001b[39m: obj C\n|   '...(297)[39m
+         [36mvalues objC-vs-objA[39m
+---
+[31m- name[39m: obj A
+|     : [33m|[39m[33m|[39m[33m|[39m[32m+[39m[31m-[39m
+[32m+ name[39m: objC 
+[31m- propA[39m: "ü\tspecial\\A \n©♥"
+[31m- escA[39m: "x\\xü"
+---
+            should diff values / objC-vs-objA.. [31mfail[39m
+[31m10:            [39m[33mexpected '\u001b[31m- name\u001b[39m: obj A\n|   '...(279) to equal '\u001b[31m- name\u001b[39m: obj A\n|   '...(297)[39m
+
+[36m->[39m reporting [31m10 failures[39m
+
+[31m1:    [39m[36mDiffFormatter props with special characters  props namesA-vs-namesA [39mshould diff props / namesA-vs-namesA
+
+      [33mexpected '. name: namesA\n. "ü\\tspecial \\n©\\\\'...(86) to equal '. name: namesA\n. "\\xFC\\tspecial \\n\'...(100)[39m
+
+         at Assertion.assertEqual ({PATH}node_modules/chai/lib/chai/core/assertions.js:{Y}:{X})
+         at Assertion.ctx.(anonymous function) [as equal] ({PATH}node_modules/chai/lib/chai/utils/addMethod.js:{Y}:{X})
+         at Function.assert.strictEqual ({PATH}node_modules/chai/lib/chai/interface/assert.js:{Y}:{X})
+         at assertObjDiff ({PATH}test/modules/diff/tmp/_tmp.test.js:{Y}:{X})
+         at Context.<anonymous> ({PATH}test/modules/diff/tmp/_tmp.test.js:{Y}:{X})
+
+      [31m- [39m . name: namesA\n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+      [32m+ [39m . name: namesA\n 
+
+         . \"    \\xFC\\tspecial \\n    \\xA9\\      \\\\u2665\": \n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[33m|[39m[33m|[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[33m|[39m[33m|[39m[31m-[39m[31m-[39m[31m-[39m[33m|[39m[33m|[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+         . \"\xFC\\     tspecial \\n\xA9\\   \\\u2665         \": \n 
+
+           . 0: xxx\n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+           . 0: xxx\n 
+
+         . \"space out\": \n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+         . \"space out\": \n 
+
+           . 0: xxx 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+           . 0: xxx 
+
+[31m2:    [39m[36mDiffFormatter props with special characters  props namesA-vs-namesB [39mshould diff props / namesA-vs-namesB
+
+      [33mexpected '\u001b[31m- name\u001b[39m: names B\n| '...(727) to equal '\u001b[31m- name\u001b[39m: names B\n| '...(741)[39m
+
+         at Assertion.assertEqual ({PATH}node_modules/chai/lib/chai/core/assertions.js:{Y}:{X})
+         at Assertion.ctx.(anonymous function) [as equal] ({PATH}node_modules/chai/lib/chai/utils/addMethod.js:{Y}:{X})
+         at Function.assert.strictEqual ({PATH}node_modules/chai/lib/chai/interface/assert.js:{Y}:{X})
+         at assertObjDiff ({PATH}test/modules/diff/tmp/_tmp.test.js:{Y}:{X})
+         at Context.<anonymous> ({PATH}test/modules/diff/tmp/_tmp.test.js:{Y}:{X})
+
+      [31m- [39m \x1B[31m- name\x1B[39m: names B\n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+      [32m+ [39m \x1B[31m- name\x1B[39m: names B\n 
+
+         |     : \x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[32m+\x1B[39m\x1B[31m-\x1B[39m\n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+         |     : \x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[32m+\x1B[39m\x1B[31m-\x1B[39m\n 
+
+         \x1B[32m+ name\x1B[39m: namesA \n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+         \x1B[32m+ name\x1B[39m: namesA \n 
+
+         \x1B[33m? \"    \\xFC\\tspecial \\n    \\xA9\\      \\\\u2665\"\x1B[39m: \n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[33m|[39m[33m|[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[33m|[39m[33m|[39m[31m-[39m[31m-[39m[31m-[39m[33m|[39m[33m|[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+         \x1B[33m? \"\xFC\\     tspecial \\n\xA9\\   \\\u2665         \"\x1B[39m: \n 
+
+           \x1B[31m- 0\x1B[39m:    zzz\n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+           \x1B[31m- 0\x1B[39m:    zzz\n 
+
+           |  : \x1B[32m+\x1B[39m\x1B[32m+\x1B[39m\x1B[32m+\x1B[39m\x1B[31m-\x1B[39m\x1B[31m-\x1B[39m\x1B[31m-\x1B[39m\n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+           |  : \x1B[32m+\x1B[39m\x1B[32m+\x1B[39m\x1B[32m+\x1B[39m\x1B[31m-\x1B[39m\x1B[31m-\x1B[39m\x1B[31m-\x1B[39m\n 
+
+           \x1B[32m+ 0\x1B[39m: xxx   \n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+           \x1B[32m+ 0\x1B[39m: xxx   \n 
+
+         \x1B[33m? \"space out\"\x1B[39m: \n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+         \x1B[33m? \"space out\"\x1B[39m: \n 
+
+           \x1B[31m- 0\x1B[39m:    zzz\n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+           \x1B[31m- 0\x1B[39m:    zzz\n 
+
+           |  : \x1B[32m+\x1B[39m\x1B[32m+\x1B[39m\x1B[32m+\x1B[39m\x1B[31m-\x1B[39m\x1B[31m-\x1B[39m\x1B[31m-\x1B[39m\n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+           |  : \x1B[32m+\x1B[39m\x1B[32m+\x1B[39m\x1B[32m+\x1B[39m\x1B[31m-\x1B[39m\x1B[31m-\x1B[39m\x1B[31m-\x1B[39m\n 
+
+           \x1B[32m+ 0\x1B[39m: xxx    
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+           \x1B[32m+ 0\x1B[39m: xxx    
+
+[31m3:    [39m[36mDiffFormatter props with special characters  props namesB-vs-namesA [39mshould diff props / namesB-vs-namesA
+
+      [33mexpected '\u001b[31m- name\u001b[39m: names A\n| '...(727) to equal '\u001b[31m- name\u001b[39m: names A\n| '...(741)[39m
+
+         at Assertion.assertEqual ({PATH}node_modules/chai/lib/chai/core/assertions.js:{Y}:{X})
+         at Assertion.ctx.(anonymous function) [as equal] ({PATH}node_modules/chai/lib/chai/utils/addMethod.js:{Y}:{X})
+         at Function.assert.strictEqual ({PATH}node_modules/chai/lib/chai/interface/assert.js:{Y}:{X})
+         at assertObjDiff ({PATH}test/modules/diff/tmp/_tmp.test.js:{Y}:{X})
+         at Context.<anonymous> ({PATH}test/modules/diff/tmp/_tmp.test.js:{Y}:{X})
+
+      [31m- [39m \x1B[31m- name\x1B[39m: names A\n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+      [32m+ [39m \x1B[31m- name\x1B[39m: names A\n 
+
+         |     : \x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[32m+\x1B[39m\x1B[31m-\x1B[39m\n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+         |     : \x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[32m+\x1B[39m\x1B[31m-\x1B[39m\n 
+
+         \x1B[32m+ name\x1B[39m: namesB \n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+         \x1B[32m+ name\x1B[39m: namesB \n 
+
+         \x1B[33m? \"    \\xFC\\tspecial \\n    \\xA9\\      \\\\u2665\"\x1B[39m: \n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[33m|[39m[33m|[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[33m|[39m[33m|[39m[31m-[39m[31m-[39m[31m-[39m[33m|[39m[33m|[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+         \x1B[33m? \"\xFC\\     tspecial \\n\xA9\\   \\\u2665         \"\x1B[39m: \n 
+
+           \x1B[31m- 0\x1B[39m:    xxx\n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+           \x1B[31m- 0\x1B[39m:    xxx\n 
+
+           |  : \x1B[32m+\x1B[39m\x1B[32m+\x1B[39m\x1B[32m+\x1B[39m\x1B[31m-\x1B[39m\x1B[31m-\x1B[39m\x1B[31m-\x1B[39m\n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+           |  : \x1B[32m+\x1B[39m\x1B[32m+\x1B[39m\x1B[32m+\x1B[39m\x1B[31m-\x1B[39m\x1B[31m-\x1B[39m\x1B[31m-\x1B[39m\n 
+
+           \x1B[32m+ 0\x1B[39m: zzz   \n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+           \x1B[32m+ 0\x1B[39m: zzz   \n 
+
+         \x1B[33m? \"space out\"\x1B[39m: \n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+         \x1B[33m? \"space out\"\x1B[39m: \n 
+
+           \x1B[31m- 0\x1B[39m:    xxx\n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+           \x1B[31m- 0\x1B[39m:    xxx\n 
+
+           |  : \x1B[32m+\x1B[39m\x1B[32m+\x1B[39m\x1B[32m+\x1B[39m\x1B[31m-\x1B[39m\x1B[31m-\x1B[39m\x1B[31m-\x1B[39m\n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+           |  : \x1B[32m+\x1B[39m\x1B[32m+\x1B[39m\x1B[32m+\x1B[39m\x1B[31m-\x1B[39m\x1B[31m-\x1B[39m\x1B[31m-\x1B[39m\n 
+
+           \x1B[32m+ 0\x1B[39m: zzz    
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+           \x1B[32m+ 0\x1B[39m: zzz    
+
+[31m4:    [39m[36mDiffFormatter props with special characters  props namesA-vs-namesC [39mshould diff props / namesA-vs-namesC
+
+      [33mexpected '\u001b[31m- name\u001b[39m: names C\n| '...(381) to equal '\u001b[31m- name\u001b[39m: names C\n| '...(395)[39m
+
+         at Assertion.assertEqual ({PATH}node_modules/chai/lib/chai/core/assertions.js:{Y}:{X})
+         at Assertion.ctx.(anonymous function) [as equal] ({PATH}node_modules/chai/lib/chai/utils/addMethod.js:{Y}:{X})
+         at Function.assert.strictEqual ({PATH}node_modules/chai/lib/chai/interface/assert.js:{Y}:{X})
+         at assertObjDiff ({PATH}test/modules/diff/tmp/_tmp.test.js:{Y}:{X})
+         at Context.<anonymous> ({PATH}test/modules/diff/tmp/_tmp.test.js:{Y}:{X})
+
+      [31m- [39m \x1B[31m- name\x1B[39m: names C\n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+      [32m+ [39m \x1B[31m- name\x1B[39m: names C\n 
+
+         |     : \x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[32m+\x1B[39m\x1B[31m-\x1B[39m\n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+         |     : \x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[32m+\x1B[39m\x1B[31m-\x1B[39m\n 
+
+         \x1B[32m+ name\x1B[39m: namesA \n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+         \x1B[32m+ name\x1B[39m: namesA \n 
+
+         \x1B[32m+ \"    \\xFC\\tspecial \\n    \\xA9\\      \\\\u2665\"\x1B[39m: \n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[33m|[39m[33m|[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[33m|[39m[33m|[39m[31m-[39m[31m-[39m[31m-[39m[33m|[39m[33m|[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+         \x1B[32m+ \"\xFC\\     tspecial \\n\xA9\\   \\\u2665         \"\x1B[39m: \n 
+
+           \x1B[32m+ 0\x1B[39m: xxx\n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+           \x1B[32m+ 0\x1B[39m: xxx\n 
+
+         \x1B[32m+ \"space out\"\x1B[39m: \n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+         \x1B[32m+ \"space out\"\x1B[39m: \n 
+
+           \x1B[32m+ 0\x1B[39m: xxx 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+           \x1B[32m+ 0\x1B[39m: xxx 
+
+[31m5:    [39m[36mDiffFormatter props with special characters  props namesC-vs-namesA [39mshould diff props / namesC-vs-namesA
+
+      [33mexpected '\u001b[31m- name\u001b[39m: names A\n| '...(381) to equal '\u001b[31m- name\u001b[39m: names A\n| '...(395)[39m
+
+         at Assertion.assertEqual ({PATH}node_modules/chai/lib/chai/core/assertions.js:{Y}:{X})
+         at Assertion.ctx.(anonymous function) [as equal] ({PATH}node_modules/chai/lib/chai/utils/addMethod.js:{Y}:{X})
+         at Function.assert.strictEqual ({PATH}node_modules/chai/lib/chai/interface/assert.js:{Y}:{X})
+         at assertObjDiff ({PATH}test/modules/diff/tmp/_tmp.test.js:{Y}:{X})
+         at Context.<anonymous> ({PATH}test/modules/diff/tmp/_tmp.test.js:{Y}:{X})
+
+      [31m- [39m \x1B[31m- name\x1B[39m: names A\n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+      [32m+ [39m \x1B[31m- name\x1B[39m: names A\n 
+
+         |     : \x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[32m+\x1B[39m\x1B[31m-\x1B[39m\n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+         |     : \x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[32m+\x1B[39m\x1B[31m-\x1B[39m\n 
+
+         \x1B[32m+ name\x1B[39m: namesC \n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+         \x1B[32m+ name\x1B[39m: namesC \n 
+
+         \x1B[31m- \"    \\xFC\\tspecial \\n    \\xA9\\      \\\\u2665\"\x1B[39m: \n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[33m|[39m[33m|[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[33m|[39m[33m|[39m[31m-[39m[31m-[39m[31m-[39m[33m|[39m[33m|[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+         \x1B[31m- \"\xFC\\     tspecial \\n\xA9\\   \\\u2665         \"\x1B[39m: \n 
+
+           \x1B[31m- 0\x1B[39m: xxx\n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+           \x1B[31m- 0\x1B[39m: xxx\n 
+
+         \x1B[31m- \"space out\"\x1B[39m: \n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+         \x1B[31m- \"space out\"\x1B[39m: \n 
+
+           \x1B[31m- 0\x1B[39m: xxx 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+           \x1B[31m- 0\x1B[39m: xxx 
+
+[31m6:    [39m[36mDiffFormatter values with special characters values objA-vs-objA [39mshould diff values / objA-vs-objA
+
+      [33mexpected '. name: objA\n. propA: "ü\\tspecial\\\\'...(68) to equal '. name: objA\n. propA: "\\xFC\\tspecial'...(86)[39m
+
+         at Assertion.assertEqual ({PATH}node_modules/chai/lib/chai/core/assertions.js:{Y}:{X})
+         at Assertion.ctx.(anonymous function) [as equal] ({PATH}node_modules/chai/lib/chai/utils/addMethod.js:{Y}:{X})
+         at Function.assert.strictEqual ({PATH}node_modules/chai/lib/chai/interface/assert.js:{Y}:{X})
+         at assertObjDiff ({PATH}test/modules/diff/tmp/_tmp.test.js:{Y}:{X})
+         at Context.<anonymous> ({PATH}test/modules/diff/tmp/_tmp.test.js:{Y}:{X})
+
+      [31m- [39m . name: objA\n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+      [32m+ [39m . name: objA\n 
+
+         . propA: \"    \\xFC\\tspecial\\\\A \\n          \\xA9\\u2665\"\n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[33m|[39m[33m|[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+         . propA: \"\xFC\\     tspecial\\\\A \\n\xA9\u2665            \"\n 
+
+         . escA: \"x\\\\x    \\xFC\" 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[33m|[39m[33m|[39m"
+         . escA: \"x\\\\x\xFC     \" 
+
+[31m7:    [39m[36mDiffFormatter values with special characters values objA-vs-objB [39mshould diff values / objA-vs-objB
+
+      [33mexpected '\u001b[31m- name\u001b[39m: obj B\n|   '...(769) to equal '\u001b[31m- name\u001b[39m: obj B\n|   '...(1032)[39m
+
+         at Assertion.assertEqual ({PATH}node_modules/chai/lib/chai/core/assertions.js:{Y}:{X})
+         at Assertion.ctx.(anonymous function) [as equal] ({PATH}node_modules/chai/lib/chai/utils/addMethod.js:{Y}:{X})
+         at Function.assert.strictEqual ({PATH}node_modules/chai/lib/chai/interface/assert.js:{Y}:{X})
+         at assertObjDiff ({PATH}test/modules/diff/tmp/_tmp.test.js:{Y}:{X})
+         at Context.<anonymous> ({PATH}test/modules/diff/tmp/_tmp.test.js:{Y}:{X})
+
+      [31m- [39m \x1B[31m- name\x1B[39m: obj B\n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+      [32m+ [39m \x1B[31m- name\x1B[39m: obj B\n 
+
+         |     : \x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[32m+\x1B[39m\x1B[31m-\x1B[39m\n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+         |     : \x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[32m+\x1B[39m\x1B[31m-\x1B[39m\n 
+
+         \x1B[32m+ name\x1B[39m: objA \n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+         \x1B[32m+ name\x1B[39m: objA \n 
+
+         \x1B[31m- propA\x1B[39m:      \\xFC\\tspecial\\\\ B \\n \n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[33m|[39m[33m|[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+         \x1B[31m- propA\x1B[39m:  \xFC\\     tspecial\\\\ B \\n \n 
+
+         |      : \"\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+         |      : \"\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39 
+
+         m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[32m+\x1B[39m\x1B[31m-\ 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+         m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[3                                                   2m+\x1B[39m\x1B[31m-\ 
+
+         x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\"\n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+         x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\"\n 
+
+         \x1B[32m+ propA\x1B[39m:      \\xFC\\tspecial\\\\A  \\n \n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[33m|[39m[33m|[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+         \x1B[32m+ propA\x1B[39m:  \xFC\\     tspecial\\\\A  \\n \n 
+
+         \n 
+        "[33m|[39m[33m|[39m"
+         \n 
+
+                             \\xA9\\u2665 \n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[33m|[39m[33m|[39m[33m|[39m"
+                   \xA9\u2665             \n 
+
+                  \"\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m"
+                  \"\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m                                                                                                      
+
+         m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\"\n 
+        "[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+                                            \"\n 
+
+                             \\xA9\\u2665 \n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[33m|[39m[33m|[39m[33m|[39m"
+                   \xA9\u2665             \n 
+
+         . escA: \"x\\\\x    \\xFC\" 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[33m|[39m[33m|[39m"
+         . escA: \"x\\\\x\xFC     \" 
+
+[31m8:    [39m[36mDiffFormatter values with special characters values objB-vs-objA [39mshould diff values / objB-vs-objA
+
+      [33mexpected '\u001b[31m- name\u001b[39m: obj A\n|   '...(769) to equal '\u001b[31m- name\u001b[39m: obj A\n|   '...(1032)[39m
+
+         at Assertion.assertEqual ({PATH}node_modules/chai/lib/chai/core/assertions.js:{Y}:{X})
+         at Assertion.ctx.(anonymous function) [as equal] ({PATH}node_modules/chai/lib/chai/utils/addMethod.js:{Y}:{X})
+         at Function.assert.strictEqual ({PATH}node_modules/chai/lib/chai/interface/assert.js:{Y}:{X})
+         at assertObjDiff ({PATH}test/modules/diff/tmp/_tmp.test.js:{Y}:{X})
+         at Context.<anonymous> ({PATH}test/modules/diff/tmp/_tmp.test.js:{Y}:{X})
+
+      [31m- [39m \x1B[31m- name\x1B[39m: obj A\n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+      [32m+ [39m \x1B[31m- name\x1B[39m: obj A\n 
+
+         |     : \x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[32m+\x1B[39m\x1B[31m-\x1B[39m\n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+         |     : \x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[32m+\x1B[39m\x1B[31m-\x1B[39m\n 
+
+         \x1B[32m+ name\x1B[39m: objB \n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+         \x1B[32m+ name\x1B[39m: objB \n 
+
+         \x1B[31m- propA\x1B[39m:      \\xFC\\tspecial\\\\ A \\n \n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[33m|[39m[33m|[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+         \x1B[31m- propA\x1B[39m:  \xFC\\     tspecial\\\\ A \\n \n 
+
+         |      : \"\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+         |      : \"\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39 
+
+         m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[32m+\x1B[39m\x1B[31m-\ 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+         m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[3                                                   2m+\x1B[39m\x1B[31m-\ 
+
+         x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\"\n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+         x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\"\n 
+
+         \x1B[32m+ propA\x1B[39m:      \\xFC\\tspecial\\\\B  \\n \n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[33m|[39m[33m|[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+         \x1B[32m+ propA\x1B[39m:  \xFC\\     tspecial\\\\B  \\n \n 
+
+         \n 
+        "[33m|[39m[33m|[39m"
+         \n 
+
+                             \\xA9\\u2665 \n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[33m|[39m[33m|[39m[33m|[39m"
+                   \xA9\u2665             \n 
+
+                  \"\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m"
+                  \"\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m                                                                                                      
+
+         m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\"\n 
+        "[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+                                            \"\n 
+
+                             \\xA9\\u2665 \n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[33m|[39m[33m|[39m[33m|[39m"
+                   \xA9\u2665             \n 
+
+         . escA: \"x\\\\x    \\xFC\" 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[33m|[39m[33m|[39m"
+         . escA: \"x\\\\x\xFC     \" 
+
+[31m9:    [39m[36mDiffFormatter values with special characters values objA-vs-objC [39mshould diff values / objA-vs-objC
+
+      [33mexpected '\u001b[31m- name\u001b[39m: obj C\n|   '...(279) to equal '\u001b[31m- name\u001b[39m: obj C\n|   '...(297)[39m
+
+         at Assertion.assertEqual ({PATH}node_modules/chai/lib/chai/core/assertions.js:{Y}:{X})
+         at Assertion.ctx.(anonymous function) [as equal] ({PATH}node_modules/chai/lib/chai/utils/addMethod.js:{Y}:{X})
+         at Function.assert.strictEqual ({PATH}node_modules/chai/lib/chai/interface/assert.js:{Y}:{X})
+         at assertObjDiff ({PATH}test/modules/diff/tmp/_tmp.test.js:{Y}:{X})
+         at Context.<anonymous> ({PATH}test/modules/diff/tmp/_tmp.test.js:{Y}:{X})
+
+      [31m- [39m \x1B[31m- name\x1B[39m: obj C\n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+      [32m+ [39m \x1B[31m- name\x1B[39m: obj C\n 
+
+         |     : \x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[32m+\x1B[39m\x1B[31m-\x1B[39m\n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+         |     : \x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[32m+\x1B[39m\x1B[31m-\x1B[39m\n 
+
+         \x1B[32m+ name\x1B[39m: objA \n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+         \x1B[32m+ name\x1B[39m: objA \n 
+
+         \x1B[32m+ propA\x1B[39m: \"    \\xFC\\tspecial\\\\A \\n          \\xA9\\u2665\"\n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[33m|[39m[33m|[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+         \x1B[32m+ propA\x1B[39m: \"\xFC\\     tspecial\\\\A \\n\xA9\u2665            \"\n 
+
+         \x1B[32m+ escA\x1B[39m: \"x\\\\x    \\xFC\" 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[33m|[39m[33m|[39m"
+         \x1B[32m+ escA\x1B[39m: \"x\\\\x\xFC     \" 
+
+[31m10:   [39m[36mDiffFormatter values with special characters values objC-vs-objA [39mshould diff values / objC-vs-objA
+
+      [33mexpected '\u001b[31m- name\u001b[39m: obj A\n|   '...(279) to equal '\u001b[31m- name\u001b[39m: obj A\n|   '...(297)[39m
+
+         at Assertion.assertEqual ({PATH}node_modules/chai/lib/chai/core/assertions.js:{Y}:{X})
+         at Assertion.ctx.(anonymous function) [as equal] ({PATH}node_modules/chai/lib/chai/utils/addMethod.js:{Y}:{X})
+         at Function.assert.strictEqual ({PATH}node_modules/chai/lib/chai/interface/assert.js:{Y}:{X})
+         at assertObjDiff ({PATH}test/modules/diff/tmp/_tmp.test.js:{Y}:{X})
+         at Context.<anonymous> ({PATH}test/modules/diff/tmp/_tmp.test.js:{Y}:{X})
+
+      [31m- [39m \x1B[31m- name\x1B[39m: obj A\n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+      [32m+ [39m \x1B[31m- name\x1B[39m: obj A\n 
+
+         |     : \x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[32m+\x1B[39m\x1B[31m-\x1B[39m\n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+         |     : \x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[33m|\x1B[39m\x1B[32m+\x1B[39m\x1B[31m-\x1B[39m\n 
+
+         \x1B[32m+ name\x1B[39m: objC \n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+         \x1B[32m+ name\x1B[39m: objC \n 
+
+         \x1B[31m- propA\x1B[39m: \"    \\xFC\\tspecial\\\\A \\n          \\xA9\\u2665\"\n 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[33m|[39m[33m|[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m"
+         \x1B[31m- propA\x1B[39m: \"\xFC\\     tspecial\\\\A \\n\xA9\u2665            \"\n 
+
+         \x1B[31m- escA\x1B[39m: \"x\\\\x    \\xFC\" 
+        "[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[33m|[39m[33m|[39m"
+         \x1B[31m- escA\x1B[39m: \"x\\\\x\xFC     \" 
+
+-> [31mfailed 10[39m and [33mpassed 10[39m of [36m20 tests[39m ({TIME_INT})
+
+[33mWarning: Task "mochaTest:base" failed. Use --force to continue.[39m
+
+[31mAborted due to warnings.[39m

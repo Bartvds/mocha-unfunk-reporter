@@ -2,9 +2,6 @@
 
 module unfunk {
 
-	//var objectDiff = require('../lib/objectDiff');
-	var jsesc = require('jsesc');
-
 	function repeatStr(str:string, amount:number) {
 		var ret = '';
 		for (var i = 0; i < amount; i++) {
@@ -106,14 +103,13 @@ module unfunk {
 
 			private encodeName(prop:string):string {
 				if (!diff.identAnyExp.test(prop)) {
-					return jsesc(prop, diff.identEscWrap);
+					return '"' + unfunk.escape(prop) + '"';
 				}
 				return prop;
 			}
-
 			private encodeString(prop:string):string {
 				if (!diff.identAnyExp.test(prop)) {
-					return jsesc(prop, diff.identEscWrap);
+					return '"' + unfunk.escape(prop) + '"';
 				}
 				return prop;
 			}
@@ -139,16 +135,15 @@ module unfunk {
 			}
 
 			private getName(prop, change) {
-				var name:string = jsesc(prop);
 				switch (change) {
 					case 'added':
-						return this.getNameAdded(name);
+						return this.getNameAdded(prop);
 					case 'removed':
-						return this.getNameRemoved(name);
+						return this.getNameRemoved(prop);
 					case 'object change':
-						return this.getNameChanged(name);
+						return this.getNameChanged(prop);
 					case 'empty':
-						return this.getNameEmpty(name);
+						return this.getNameEmpty(prop);
 					case 'plain':
 					default:
 						return this.diff.markEqual + this.encodeName(prop) + ': ';

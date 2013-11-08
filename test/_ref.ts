@@ -1,6 +1,7 @@
 /// <reference path="../typings/DefinitelyTyped/node/node.d.ts" />
 /// <reference path="../typings/DefinitelyTyped/mocha/mocha.d.ts" />
 /// <reference path="../typings/DefinitelyTyped/chai/chai-assert.d.ts" />
+/// <reference path="../typings/DefinitelyTyped/chai/chai-json-schema-assert.d.ts" />
 /// <reference path="../typings/DefinitelyTyped/proclaim/proclaim.d.ts" />
 
 /// <reference path="_helper.ts" />

@@ -1,11 +1,9 @@
 ///<reference path="diff.ts" />
 
 module unfunk {
-	var lineExtractExp = /(.*?)(\n|\r\n|\r|$)/g;
 
-	//var objectDiff = require('../lib/objectDiff');
+	var lineExtractExp = /(.*?)(\n|\r\n|\r|$)/g;
 	var stringDiff = require('diff');
-	var jsesc = require('jsesc');
 
 	function repeatStr(str:string, amount:number):string {
 		var ret = '';
@@ -32,12 +30,13 @@ module unfunk {
 			public getWrappingLines(actual:string, expected:string, maxWidth:number, padLength:number, padFirst:string[], leadSymbols:boolean = false):string {
 				var changes:StringDiffChange[] = stringDiff.diffChars(expected, actual);
 
+				var escape = unfunk.escape;;
 				var blocks = [];
 				var value;
 				var sep = '\n';
 
 				var isSimple:boolean = (!diff.identAnyExp.test(actual) || !diff.identAnyExp.test(expected));
-				var delim:string = (isSimple ? stringQuote : '');
+				var delim:string = (isSimple ? '"' : '');
 				var delimEmpty = repeatStr(' ', delim.length);
 
 				var padPreTop = this.diff.style.error(this.diff.markRemov);
@@ -106,7 +105,7 @@ module unfunk {
 						//make sure to advance at least 1
 						lineExtractExp.lastIndex = match.index + (match[0].length || 1);
 						var blockCount = 0;
-						var line:string = jsesc(match[0], diff.stringEsc);
+						var line:string = escape(match[0]);
 						var len = line.length;
 
 						//per char
@@ -145,87 +144,6 @@ module unfunk {
 				return blocks.join('\n\n');
 			}
 
-			public getWrapping(actual:string, expected:string, maxWidth:number, padLength:number, padFirst:string[], leadSymbols:boolean = false):string {
-
-				var diff:StringDiffChange[] = stringDiff.diffChars(expected, actual);
-				var dataLength = maxWidth - padLength;
-
-				if (padLength >= maxWidth) {
-					return '<no space for padded diff>';
-				}
-
-				var counter = 0;
-				var blocks = [];
-				var value;
-				var blockCount = 0;
-
-				var sep = '\n';
-
-				var top = padFirst[0];
-				var middle = padFirst[1];
-				var bottom = padFirst[2];
-
-				if (leadSymbols) {
-					top += this.diff.style.error(this.diff.markRemov);
-					middle += this.diff.style.plain(this.diff.markEmpty);
-					bottom += this.diff.style.success(this.diff.markAdded);
-					padLength += this.diff.markAdded.length;
-				}
-				var rowPad = repeatStr(' ', padLength);
-
-				var charSame = this.diff.style.warning('|');
-				var charAdded = this.diff.style.success('+');
-				var charMissing = this.diff.style.error('-');
-
-				var flushLine = function () {
-					if (blockCount > 0) {
-						blocks.push(top + sep + middle + sep + bottom);
-					} else {
-						blocks.push(top + sep + middle + sep + bottom);
-					}
-					blockCount += 1;
-					counter = 0;
-					top = rowPad;
-					middle = rowPad;
-					bottom = rowPad;
-				};
-
-				//tight loop
-				for (var i = 0, ii = diff.length; i < ii; i++) {
-					var change = diff[i];
-					var word:string = jsesc(change.value);
-					var len = word.length;
-					//per char
-					for (var j = 0; j < len; j++) {
-						value = word[j];
-						counter += 1;
-						if (counter > dataLength) {
-							flushLine();
-						}
-						if (change.added) {
-							top += ' ';
-							middle += charAdded;
-							bottom += value;
-						}
-						else if (change.removed) {
-							top += value;
-							middle += charMissing;
-							bottom += ' ';
-						}
-						else if (!change.added && !change.removed) {
-							top += value;
-							middle += charSame;
-							bottom += value;
-						}
-					}
-				}
-
-				if (counter > padLength) {
-					flushLine();
-				}
-
-				return blocks.join('\n\n');
-			}
 		}
 	}
 }

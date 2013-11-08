@@ -2,7 +2,7 @@
 ///<reference path="writer.ts" />
 ///<reference path="styler.ts" />
 ///<reference path="diff.ts" />
-///<reference path="stack.ts" />
+///<reference path="error.ts" />
 ///<reference path="stream.ts" />
 
 //declare mocha reporter data typings
@@ -37,6 +37,8 @@ interface Test {
 	err:TestError;
 	slow():number;
 	fullTitle():string;
+
+	parsed:unfunk.error.ParsedError;
 }
 
 module unfunk {
@@ -61,7 +63,7 @@ module unfunk {
 
 	//global options
 	var expose:any;
-	var options:any = {
+	var options = {
 		writer: 'log',
 		style: 'ansi',
 		stream: null,
@@ -78,7 +80,7 @@ module unfunk {
 			return options.width;
 		}
 		if (isatty) {
-			return Math.min(options.width, process.stdout['getWindowSize'] ?  process.stdout['getWindowSize'](1)[0]: tty.getWindowSize()[1]);
+			return Math.min(options.width, process.stdout['getWindowSize'] ? process.stdout['getWindowSize'](1)[0] : tty.getWindowSize()[1]);
 		}
 		return 80;
 	}
@@ -95,7 +97,6 @@ module unfunk {
 		}
 		else if (arguments.length === 2) {
 			if (typeof value !== 'undefined' && typeof nameOrHash === 'string') {
-
 				//allow case-in-sensitive options (from Bash etc)
 				var propLower = nameOrHash.toLowerCase();
 				for (var name in options) {
@@ -134,12 +135,50 @@ module unfunk {
 		}
 	}
 
-	function stringTrueish(str:string):boolean {
+	var jsesc = require('jsesc');
+
+	var escapableExp = /[\\\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;
+	var meta = {
+		'\b': '\\b',
+		'\t': '\\t',
+		'\n': '\\n',
+		'\f': '\\f',
+		'\r': '\\r',
+		'"': '\\"',
+		'\\': '\\\\'
+	};
+	var jsonNW = {
+		json: true,
+		wrap: false,
+		quotes: 'double'
+	};
+
+	// JSON escape: https://github.com/douglascrockford/JSON-js/blob/master/json2.js#L211
+	// If the string contains no control characters, no quote characters, and no
+	// backslash characters, then we can safely slap some quotes around it.
+	// Otherwise we must also replace the offending characters with safe escape
+	// sequences.
+	export function escape(str:string):string {
+		escapableExp.lastIndex = 0;
+		if (escapableExp.test(str)) {
+			return str.replace(escapableExp, function (a) {
+				var c = meta[a];
+				if (typeof c === 'string') {
+					return c;
+				}
+				//return '\\u' + ('0000' + a.charCodeAt(0).toString(16)).slice(-4);
+				return jsesc(a, jsonNW);
+			})
+		}
+		return str;
+	}
+
+	export function stringTrueish(str:string):boolean {
 		str = ('' + str).toLowerCase();
 		return str != '' && str != 'false' && str != '0' && str != 'null' && str != 'undefined';
 	}
 
-	function toDebug(value, cutoff:number = 20) {
+	export function toDebug(value, cutoff:number = 20) {
 
 		var t = typeof value;
 		if (t === 'function') {
@@ -159,81 +198,13 @@ module unfunk {
 		}
 		if (t === 'string') {
 			if (value.length > cutoff) {
-				return JSON.stringify(value.substr(0, cutoff)) + '...';
+				return '"' + escape(value.substr(0, cutoff)) + '"' + '...';
 			}
-			return JSON.stringify(value);
+			return '"' + escape(value) + '"' ;
 		}
 		return '' + value;
 	}
 
-	var extract = /^[A-Z][\w_]*:[ \t]*([\s\S]+?)([\r\n]+[ \t]*at[\s\S]*)$/;
-	var errorType = /^([A-Z][\w_]*)/;
-	var assertType = /^AssertionError/;
-
-	function headlessStack(error:TestError):string {
-		if (!error) {
-			return '';
-		}
-		if (error.stack) {
-			var match = error.stack.match(extract);
-			if (match && match.length > 2) {
-				return match[2].replace(/(^\s+)|(\s+$)/g, '');
-			}
-		}
-		return '';
-	}
-
-	function getErrorPrefix(error:TestError):string {
-		if (!error) {
-			return '';
-		}
-		var str = error.stack || ('' + error);
-		var match = str.match(errorType);
-		if (match && match.length > 0) {
-			//show error type only if not an AssertionError
-			if (!assertType.test(match[1])) {
-				return match[1] + ': ';
-			}
-		}
-		return '';
-	}
-
-	function getErrorMessage(error:TestError):string {
-		var msg = '';
-		if (!error) {
-			return '<undefined error>';
-		}
-		if (error.message) {
-			msg = String(error.message);
-		}
-		else if (error.operator) {
-			msg += toDebug(error.actual, 50) + ' ' + error.operator + ' ' + toDebug(error.expected, 50) + '';
-		}
-
-		if (!msg) {
-			msg = ('' + error);
-			if (msg === '[object Object]') {
-				msg = String(error.message || '');
-				if (!msg) {
-					if (error.stack) {
-						var match = error.stack.match(extract);
-						if (match && match.length > 1) {
-							msg = match[1];
-						}
-					}
-				}
-			}
-			msg = cleanErrorMessage(msg);
-		}
-		if (msg) {
-			return getErrorPrefix(error) + msg.replace(/(\s+$)/g, '');
-		}
-		return getErrorPrefix(error) + '<no error message>';
-	}
-
-	function cleanErrorMessage(msg):string {
-		return msg.replace(/^([A-Z][\w_]*:[ \t]*)/, '');
-	}
 
 	export function padLeft(str, len, char):string {
 		str = String(str);
@@ -287,6 +258,10 @@ module unfunk {
 		return new writer.ConsoleLineWriter();
 	}
 
+	export function pluralize(word:string, amount:number, plurl = 's'):string {
+		return amount + ' ' + (1 == amount ? word : word + plurl);
+	}
+
 	//the reporter
 	export class Unfunk {
 
@@ -305,12 +280,12 @@ module unfunk {
 			var out = getWriter();
 			var style = getStyler();
 
-			var diffFormat = new diff.DiffFormatter(style, getViewWidth());
-			var stackFilter = new stack.StackFilter(style);
+			var diffFormat = new unfunk.diff.DiffFormatter(style, getViewWidth());
+			var stackFilter = new unfunk.error.StackFilter(style);
 			if (options.stackFilter) {
-				stackFilter.addFilters(stack.nodeFilters);
-				stackFilter.addFilters(stack.webFilters);
-				stackFilter.addModuleFilters(stack.moduleFilters);
+				stackFilter.addFilters(unfunk.error.nodeFilters);
+				stackFilter.addFilters(unfunk.error.webFilters);
+				stackFilter.addModuleFilters(unfunk.error.moduleFilters);
 			}
 
 			runner.stats = stats;
@@ -327,9 +302,6 @@ module unfunk {
 			};
 			var indentLen = (amount:number = 1):number => {
 				return amount * indenter.length;
-			};
-			var pluralize = (word:string, amount:number, plurl = 's'):string => {
-				return amount + ' ' + (1 == amount ? word : word + plurl);
 			};
 			var start;
 
@@ -392,10 +364,10 @@ module unfunk {
 				test.speed = test.duration > test.slow() ? 'slow' : (test.duration > medium ? 'medium' : 'fast');
 
 				if (test.speed === 'slow') {
-					out.writeln(style.fail(test.speed) + style.error(' (' + test.duration + 'ms)'));
+					out.writeln(style.ok(test.speed) + style.error(' (' + test.duration + 'ms)'));
 				}
 				else if (test.speed === 'medium') {
-					out.writeln(style.warn(test.speed) + style.warning(' (' + test.duration + 'ms)'));
+					out.writeln(style.ok(test.speed) + style.warning(' (' + test.duration + 'ms)'));
 				}
 				else {
 					out.writeln(style.ok('ok'));
@@ -405,11 +377,12 @@ module unfunk {
 			runner.on('fail', (test:Test, err:TestError) => {
 				stats.failures++;
 				out.writeln(style.fail('fail'));
-				var msg = cleanErrorMessage(getErrorMessage(err));
-				if (msg) {
-					out.writeln(style.error(padRight(stats.failures + ': ', indentLen(indents + 1), ' ')) + '' + style.warning(msg));
-				}
+
 				test.err = err;
+				test.parsed = stackFilter.parse(err, options.stackFilter);
+
+				out.writeln(style.error(padRight(stats.failures + ': ', indentLen(indents + 1), ' ')) + style.warning(test.parsed.getHeaderSingle()));
+
 				failures.push(test);
 			});
 
@@ -475,17 +448,16 @@ module unfunk {
 
 						//error message
 						var err = test.err;
-						var msg = getErrorMessage(err);
-						var stack = headlessStack(err);
+						var parsed = test.parsed;
+						var msg = parsed.getHeader();
 
 						out.writeln(style.error(padRight((num + 1) + ': ', indentLen(2), ' ')) + title);
 						out.writeln();
 						out.writeln(indent(2) + style.warning(msg));
 						out.writeln();
 
-						stack = stackFilter.filter(stack);
-						if (stack) {
-							out.writeln(stack.replace(/^[ \t]*/gm, indent(3)));
+						if (parsed.hasStack()) {
+							out.writeln(parsed.getHeadlessStack(indent(2), indenter));
 							out.writeln();
 						}
 

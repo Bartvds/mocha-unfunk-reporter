@@ -1,3 +1,3 @@
 . name: objA
-. propA: "\xFC\tspecial\\A \n\xA9\u2665"
-. escA: "x\\x\xFC"
+. propA: "ü\tspecial\\A \n©♥"
+. escA: "x\\xü"
