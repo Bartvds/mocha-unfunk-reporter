@@ -735,10 +735,7 @@ var unfunk;
                 return prop;
             };
             ObjectDiffer.prototype.encodeString = function (prop) {
-                if (!unfunk.diff.identAnyExp.test(prop)) {
-                    return '"' + unfunk.escape(prop) + '"';
-                }
-                return prop;
+                return '"' + unfunk.escape(prop) + '"';
             };
 
             ObjectDiffer.prototype.getNameAdded = function (prop) {

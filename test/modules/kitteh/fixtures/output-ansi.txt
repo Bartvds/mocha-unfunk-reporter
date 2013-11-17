@@ -65,7 +65,7 @@
         [31m- three[39m: aab c dd  df eg ehi j k lmnnop   
         |      : [33m|[39m[33m|[39m[33m|[39m[32m+[39m[33m|[39m[32m+[39m[33m|[39m[33m|[39m[32m+[39m[32m+[39m[31m-[39m[33m|[39m[32m+[39m[31m-[39m[33m|[39m[32m+[39m[31m-[39m[33m|[39m[33m|[39m[32m+[39m[33m|[39m[32m+[39m[33m|[39m[32m+[39m[33m|[39m[33m|[39m[33m|[39m[31m-[39m[33m|[39m[33m|[39m[32m+[39m[32m+[39m[32m+[39m
         [32m+ three[39m: aabbccddee ff gg hiijjkklmn oprst      
-      [32m+ ff[39m: purrrrrrr
+      [32m+ ff[39m: "purrrrrrr"
       [33m? cc[39m: 
         [31m- 0[39m: 1
         [32m+ 0[39m: 111
@@ -73,7 +73,7 @@
         [32m+ 1[39m: 222
         [31m- 2[39m: 3
         [32m+ 2[39m: 555      
-      [31m- dd[39m: hisss      
+      [31m- dd[39m: "hisss"      
 
 -> [31mfailed 3[39m and [33mpassed 3[39m of [36m6 tests[39m, left [33m1 pending[39m ({TIME_INT})
 

@@ -65,7 +65,7 @@
         - three: aab c dd  df eg ehi j k lmnnop   
         |      : |||+|+||++-|+-|+-||+|+|+|||-||+++
         + three: aabbccddee ff gg hiijjkklmn oprst      
-      + ff: purrrrrrr
+      + ff: "purrrrrrr"
       ? cc: 
         - 0: 1
         + 0: 111
@@ -73,7 +73,7 @@
         + 1: 222
         - 2: 3
         + 2: 555      
-      - dd: hisss      
+      - dd: "hisss"      
 
 -> failed 3 and passed 3 of 6 tests, left 1 pending ({TIME_INT})
 

@@ -1,17 +1,17 @@
 [31m- name[39m:      all
 |     : [32m+[39m[32m+[39m[32m+[39m[32m+[39m[32m+[39m[31m-[39m[31m-[39m[31m-[39m
 [32m+ name[39m: someA   
-. propA: valueA
+. propA: "valueA"
 [33m? subA[39m: 
-  . nestA: childA
+  . nestA: "childA"
   [33m? subA[39m: 
-    . nestA: childA
-    [31m- nestB[39m: childB  
-  [31m- nestB[39m: childB
-[31m- propB[39m: valueB
+    . nestA: "childA"
+    [31m- nestB[39m: "childB"  
+  [31m- nestB[39m: "childB"
+[31m- propB[39m: "valueB"
 [31m- subB[39m: 
-  [31m- nestA[39m: childA
-  [31m- nestB[39m: childB
+  [31m- nestA[39m: "childA"
+  [31m- nestB[39m: "childB"
   [31m- subA[39m: 
-    [31m- nestA[39m: childA
-    [31m- nestB[39m: childB
+    [31m- nestA[39m: "childA"
+    [31m- nestB[39m: "childB"

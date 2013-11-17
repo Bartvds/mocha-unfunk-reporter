@@ -12,4 +12,4 @@
     [31m- nestA[39m: child B
     |      : [33m|[39m[33m|[39m[33m|[39m[33m|[39m[33m|[39m[32m+[39m[31m-[39m
     [32m+ nestA[39m: childA 
-    [31m- nestB[39m: valueA  
+    [31m- nestB[39m: "valueA"  

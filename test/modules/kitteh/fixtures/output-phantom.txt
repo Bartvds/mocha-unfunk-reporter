@@ -69,7 +69,7 @@ Testing: index.html
         [error|- three]: aab c dd  df eg ehi j k lmnnop   
         |      : [warning||][warning||][warning||][success|+][warning||][success|+][warning||][warning||][success|+][success|+][error|-][warning||][success|+][error|-][warning||][success|+][error|-][warning||][warning||][success|+][warning||][success|+][warning||][success|+][warning||][warning||][warning||][error|-][warning||][warning||][success|+][success|+][success|+]
         [success|+ three]: aabbccddee ff gg hiijjkklmn oprst      
-      [success|+ ff]: purrrrrrr
+      [success|+ ff]: "purrrrrrr"
       [warning|? cc]: 
         [error|- 0]: 1
         [success|+ 0]: 111
@@ -77,7 +77,7 @@ Testing: index.html
         [success|+ 1]: 222
         [error|- 2]: 3
         [success|+ 2]: 555      
-      [error|- dd]: hisss      
+      [error|- dd]: "hisss"      
 
 [plain|-> ][error|failed 3] and [warning|passed 3] of [accent|6 tests], left [warning|1 pending] ({TIME_INT})
 

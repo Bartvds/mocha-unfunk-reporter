@@ -108,10 +108,7 @@ module unfunk {
 				return prop;
 			}
 			private encodeString(prop:string):string {
-				if (!diff.identAnyExp.test(prop)) {
-					return '"' + unfunk.escape(prop) + '"';
-				}
-				return prop;
+				return '"' + unfunk.escape(prop) + '"';
 			}
 
 			private getNameAdded(prop:string):string {
