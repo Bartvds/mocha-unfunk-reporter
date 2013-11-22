@@ -44,7 +44,7 @@
     "grunt-mocha-test": "~0.4.0",
     "mocha": "~1.13.0",
     "grunt-shell": "0.3.0",
-    "chai": "git://github.com/Bartvds/chai/#ec97fb27707253ddf3714cccc9f1f6c3afb20cca",
+    "chai": "git://github.com/Bartvds/chai/#fixes/1.8.x",
     "proclaim": "1.4.0",
     "source-map-support": "0.2.3",
     "grunt-bump": "0.0.11",
