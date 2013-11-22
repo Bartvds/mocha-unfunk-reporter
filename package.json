@@ -37,7 +37,7 @@
     "diff": "~1.0.7"
   },
   "devDependencies": {
-    "grunt": "git://github.com/gruntjs/grunt/#d7f4bf671e8d551f9c9b3efe90af844bd51b5393",
+    "grunt": "~0.4.1",
     "grunt-cli": "0.1.9",
     "grunt-contrib-clean": "0.4.1",
     "jshint-path-reporter": "~0.1.0",
@@ -53,7 +53,7 @@
     "grunt-fileindex": "~0.1.0",
     "tslint-path-formatter": "0.1.0",
     "grunt-tslint": "~0.3.2",
-    "grunt-run-grunt": "0.1.2",
+    "grunt-run-grunt": "~0.1.2",
     "gruntfile-gtx": "0.0.7",
     "ansidiff": "~1.0.0",
     "grunt-concurrent": "~0.4.1",
