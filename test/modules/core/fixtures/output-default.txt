@@ -54,9 +54,9 @@
 
       expected value to match json-schema '{"type":"object","properties":...' -> '{"intKey":3,"stringKey":false}'
       invalid type: boolean (expected string)
-          field:  /stringKey
-          value:  boolean -> false
-          schema: string -> /properties/stringKey/type
+          schema: {"type":"object","properties":{"intKey":{"type":"integer"},"...
+          rule:   /properties/stringKey/type -> "string"
+          field:  /stringKey -> boolean: false
          at Assertion.<anonymous> ({PATH}node_modules/chai-json-schema/index.js:{Y}:{X})
          at Assertion.ctx.(anonymous function) [as jsonSchema] ({PATH}node_modules/chai/lib/chai/utils/addMethod.js:{Y}:{X})
          at Function.assert.jsonSchema ({PATH}node_modules/chai-json-schema/index.js:{Y}:{X})
