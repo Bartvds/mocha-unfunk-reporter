@@ -9,7 +9,13 @@ declare module Chai
 	{
 		use(plugin:any):void;
 		Assertion:ChaiAssertion;
+		AssertionError:AssertionError;
 		assert:Assert;
+	}
+	export interface AssertionError
+	{
+		includeStack:boolean;
+		new (message:any, props:any, ssf:any):any
 	}
 	export interface ChaiAssertion
 	{

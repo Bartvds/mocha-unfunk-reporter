@@ -10,14 +10,14 @@ describe('diffs', () => {
 			var stringA = fs.readFileSync('../../fixtures/lorem-big-a.txt', 'utf8');
 			var stringB = fs.readFileSync('../../fixtures/lorem-big-b.txt', 'utf8');
 
-			assert.strictEqual(stringA, stringB);
+			helper.longAssert(stringA, stringB, 'big');
 		});
 
 		it('should bail on long diffs', () => {
 			var stringA = fs.readFileSync('../../fixtures/lorem-long-a.txt', 'utf8');
 			var stringB = fs.readFileSync('../../fixtures/lorem-long-b.txt', 'utf8');
 
-			assert.strictEqual(stringA, stringB);
+			helper.longAssert(stringA, stringB, 'long');
 		});
 	});
 });

@@ -22,7 +22,7 @@
       long strings
          should show big diffs.. PENDING
          should bail on long diffs.. FAIL
-3:          expected 'Lorem ipsum dolor sit amet, consectetur'...(2717) to equal 'Lorem ipsum dolor sit amet, consectetur'...(2855)
+3:          long:  long string
 
    errors
       sync fails.. FAIL
@@ -44,7 +44,6 @@
 1:    async tests second fails
 
       expected false to be truthy
-
          at Assertion.<anonymous> ({PATH}node_modules/chai/lib/chai/core/assertions.js:{Y}:{X})
          at Assertion.Object.defineProperty.get ({PATH}node_modules/chai/lib/chai/utils/addProperty.js:{Y}:{X})
          at Function.assert.ok ({PATH}node_modules/chai/lib/chai/interface/assert.js:{Y}:{X})
@@ -58,7 +57,6 @@
           field:  /stringKey
           value:  boolean -> false
           schema: string -> /properties/stringKey/type
-
          at Assertion.<anonymous> ({PATH}node_modules/chai-json-schema/index.js:{Y}:{X})
          at Assertion.ctx.(anonymous function) [as jsonSchema] ({PATH}node_modules/chai/lib/chai/utils/addMethod.js:{Y}:{X})
          at Function.assert.jsonSchema ({PATH}node_modules/chai-json-schema/index.js:{Y}:{X})
@@ -66,11 +64,7 @@
 
 3:    diffs long strings should bail on long diffs
 
-      expected 'Lorem ipsum dolor sit amet, consectetur'...(2717) to equal 'Lorem ipsum dolor sit amet, consectetur'...(2855)
-
-         at Assertion.assertEqual ({PATH}node_modules/chai/lib/chai/core/assertions.js:{Y}:{X})
-         at Assertion.ctx.(anonymous function) [as equal] ({PATH}node_modules/chai/lib/chai/utils/addMethod.js:{Y}:{X})
-         at Function.assert.strictEqual ({PATH}node_modules/chai/lib/chai/interface/assert.js:{Y}:{X})
+      long:  long string
          at Context.<anonymous> ({PATH}test/modules/core/tmp/_tmp.test.js:{Y}:{X})
 
       <actual too lengthy for diff: 2708>
@@ -79,20 +73,17 @@
 4:    errors sync fails
 
       Error: MyError
-
          at Context.<anonymous> ({PATH}test/modules/core/tmp/_tmp.test.js:{Y}:{X})
 
 5:    errors async error
 
       Error: MyError
-
          at null._onTimeout ({PATH}test/modules/core/tmp/_tmp.test.js:{Y}:{X})
          at Timer.listOnTimeout [as ontimeout] (timers.js:{Y}:{X})
 
 6:    q long stack async error
 
       Error: Q Error
-
          at {PATH}test/modules/core/tmp/_tmp.test.js:{Y}:{X}
       From previous event:
          at three ({PATH}test/modules/core/tmp/_tmp.test.js:{Y}:{X})
