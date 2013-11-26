@@ -27,7 +27,6 @@ Testing: index.html
 [error|1:    ][accent|kitteh can not ][plain|spell]
 
       [warning|expected 'abcdefghijdelm actual' to equal 'abcdfghjklm expected']
-
          at {PATH}node_modules/chai/chai.js:{Y}
          at {PATH}node_modules/chai/chai.js:{Y}
          at {PATH}test/modules/kitteh/tmp/_tmp.test.js:{Y}
@@ -39,7 +38,6 @@ Testing: index.html
 [error|2:    ][accent|kitteh can has no ][plain|computer skills]
 
       [warning|pretty stack trace is pretty]
-
          at {PATH}node_modules/chai/chai.js:{Y}
          at {PATH}node_modules/chai/chai.js:{Y}
          at chair ({PATH}test/modules/kitteh/tmp/_tmp.test.js:{Y})
@@ -51,7 +49,6 @@ Testing: index.html
 [error|3:    ][accent|kitteh can has some ][plain|fun]
 
       [warning|expected { Object (aa, bb, ...) } to deeply equal { Object (aa, bb, ...) }]
-
          at {PATH}node_modules/chai/chai.js:{Y}
          at assertEql ({PATH}node_modules/chai/chai.js:{Y})
          at {PATH}node_modules/chai/chai.js:{Y}
@@ -69,6 +66,14 @@ Testing: index.html
         [error|- three]: aab c dd  df eg ehi j k lmnnop   
         |      : [warning||][warning||][warning||][success|+][warning||][success|+][warning||][warning||][success|+][success|+][error|-][warning||][success|+][error|-][warning||][success|+][error|-][warning||][warning||][success|+][warning||][success|+][warning||][success|+][warning||][warning||][warning||][error|-][warning||][warning||][success|+][success|+][success|+]
         [success|+ three]: aabbccddee ff gg hiijjkklmn oprst      
+      [warning|? uu]: 
+        [error|- one]: 33
+        [success|+ one]: 1
+        [error|- two]: 22
+        [success|+ two]: 2
+        [error|- three]: aabbccdd  e effgghiijjkklmn oprst
+        |      : [warning||][warning||][warning||][error|-][warning||][error|-][warning||][warning||][success|+][success|+][warning||][success|+][warning||][error|-][error|-][error|-][error|-][warning||][warning||][error|-][warning||][error|-][warning||][error|-][warning||][warning||][warning||][success|+][warning||][warning||][error|-][error|-][error|-]
+        [success|+ three]: aab c dddfege    hi j k lmnnop         
       [success|+ ff]: "purrrrrrr"
       [warning|? cc]: 
         [error|- 0]: 1
@@ -81,6 +86,7 @@ Testing: index.html
 
 [plain|-> ][error|failed 3] and [warning|passed 3] of [accent|6 tests], left [warning|1 pending] ({TIME_INT})
 
-[33mWarning: 3/6 tests failed ({TIME_FLOAT}) Use --force to continue.[39m
+[31m>> [39m3/6 tests failed ({TIME_FLOAT})
+[33mWarning: Task "mocha:base" failed. Use --force to continue.[39m
 
 [31mAborted due to warnings.[39m

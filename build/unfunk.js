@@ -1566,10 +1566,11 @@ var unfunk;
                         out.writeln(style.error(padRight((num + 1) + ': ', indentLen(2), ' ')) + title);
                         out.writeln();
                         out.writeln(indent(2) + style.warning(msg));
-                        out.writeln();
 
                         if (parsed.hasStack()) {
                             out.writeln(parsed.getHeadlessStack(indent(2), indenter));
+                            out.writeln();
+                        } else {
                             out.writeln();
                         }
 

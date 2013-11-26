@@ -47,5 +47,6 @@ module.exports = function (grunt) {
 	grunt.registerTask('dev', ['mocha_unfunk:dev', 'mochaTest:base']);
 	grunt.registerTask('ansi', ['mocha_unfunk:ansi', 'mochaTest:base']);
 	grunt.registerTask('phantom', ['mocha_unfunk:dev', 'mocha:base']);
+	grunt.registerTask('phantom2', ['mocha_unfunk:plain', 'mocha:base']);
 	grunt.registerTask('bin', ['mocha_unfunk:ansi', 'shell:base']);
 };

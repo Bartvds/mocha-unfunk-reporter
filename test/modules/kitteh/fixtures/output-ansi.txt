@@ -26,7 +26,6 @@
 [31m1:    [39m[36mkitteh can not [39mspell
 
       [33mexpected 'abcdefghijdelm actual' to equal 'abcdfghjklm expected'[39m
-
          at Function.assert.equal ({PATH}node_modules/chai/lib/chai/interface/assert.js:{Y}:{X})
          at Context.<anonymous> ({PATH}test/modules/kitteh/tmp/_tmp.test.js:{Y}:{X})
 
@@ -37,7 +36,6 @@
 [31m2:    [39m[36mkitteh can has no [39mcomputer skills
 
       [33mpretty stack trace is pretty[39m
-
          at chai.assert ({PATH}node_modules/chai/lib/chai/interface/assert.js:{Y}:{X})
          at chair ({PATH}test/modules/kitteh/tmp/_tmp.test.js:{Y}:{X})
          at table ({PATH}test/modules/kitteh/tmp/_tmp.test.js:{Y}:{X})
@@ -48,7 +46,6 @@
 [31m3:    [39m[36mkitteh can has some [39mfun
 
       [33mexpected { Object (aa, bb, ...) } to deeply equal { Object (aa, bb, ...) }[39m
-
          at Assertion.assertEql ({PATH}node_modules/chai/lib/chai/core/assertions.js:{Y}:{X})
          at Assertion.ctx.(anonymous function) [as eql] ({PATH}node_modules/chai/lib/chai/utils/addMethod.js:{Y}:{X})
          at Function.assert.deepEqual ({PATH}node_modules/chai/lib/chai/interface/assert.js:{Y}:{X})
@@ -65,6 +62,14 @@
         [31m- three[39m: aab c dd  df eg ehi j k lmnnop   
         |      : [33m|[39m[33m|[39m[33m|[39m[32m+[39m[33m|[39m[32m+[39m[33m|[39m[33m|[39m[32m+[39m[32m+[39m[31m-[39m[33m|[39m[32m+[39m[31m-[39m[33m|[39m[32m+[39m[31m-[39m[33m|[39m[33m|[39m[32m+[39m[33m|[39m[32m+[39m[33m|[39m[32m+[39m[33m|[39m[33m|[39m[33m|[39m[31m-[39m[33m|[39m[33m|[39m[32m+[39m[32m+[39m[32m+[39m
         [32m+ three[39m: aabbccddee ff gg hiijjkklmn oprst      
+      [33m? uu[39m: 
+        [31m- one[39m: 33
+        [32m+ one[39m: 1
+        [31m- two[39m: 22
+        [32m+ two[39m: 2
+        [31m- three[39m: aabbccdd  e effgghiijjkklmn oprst
+        |      : [33m|[39m[33m|[39m[33m|[39m[31m-[39m[33m|[39m[31m-[39m[33m|[39m[33m|[39m[32m+[39m[32m+[39m[33m|[39m[32m+[39m[33m|[39m[31m-[39m[31m-[39m[31m-[39m[31m-[39m[33m|[39m[33m|[39m[31m-[39m[33m|[39m[31m-[39m[33m|[39m[31m-[39m[33m|[39m[33m|[39m[33m|[39m[32m+[39m[33m|[39m[33m|[39m[31m-[39m[31m-[39m[31m-[39m
+        [32m+ three[39m: aab c dddfege    hi j k lmnnop         
       [32m+ ff[39m: "purrrrrrr"
       [33m? cc[39m: 
         [31m- 0[39m: 1

@@ -45,11 +45,13 @@ describe('kitteh', () => {
 					assert.deepEqual({
 							aa: 'meeeeiiow',
 							bb: {one: 33, two: 22, three: 'aabbccddeeffgghiijjkklmnoprst'},
+							uu: {one: 1, two: 2, three: 'aabcdddfegehijklmnnop'},
 							ff: 'purrrrrrr',
 							cc: [111, 222, 555]
 						}, {
 							aa: 'meow meow',
 							bb: {one: 1, two: 2, three: 'aabcdddfegehijklmnnop'},
+							uu: {one: 33, two: 22, three: 'aabbccddeeffgghiijjkklmnoprst'},
 							dd: 'hisss',
 							cc: [1, 2, 3]
 						}
