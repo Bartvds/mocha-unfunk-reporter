@@ -1595,6 +1595,6 @@ var unfunk;
 
     expose = Unfunk;
     expose.option = option;
-    exports = (module).exports = expose;
+    (module).exports = expose;
 })(unfunk || (unfunk = {}));
 //# sourceMappingURL=unfunk.js.map

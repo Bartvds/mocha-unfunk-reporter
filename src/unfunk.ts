@@ -484,5 +484,5 @@ module unfunk {
 	//combine
 	expose = Unfunk;
 	expose.option = option;
-	exports = (module).exports = expose;
+	(module).exports = expose;
 }
