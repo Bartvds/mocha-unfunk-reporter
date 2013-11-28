@@ -5,14 +5,14 @@
 -> running 6 suites
 
    async tests
-      first passes.. OK
+      first passes.. {{PASS}} ({TIME_INT})
       second fails.. FAIL
 1:       expected false to be truthy
-      third errors.. OK
+      third errors.. {{PASS}} ({TIME_INT})
       fourth pending.. PENDING
-      fifth passes.. OK
-      medium slow.. MEDIUM ({TIME_INT})
-      very slow.. SLOW ({TIME_INT})
+      fifth passes.. {{PASS}} ({TIME_INT})
+      medium slow.. {{PASS}} ({TIME_INT})
+      very slow.. {{PASS}} ({TIME_INT})
 
    chai-json-schema
       fruit failure.. FAIL
@@ -35,9 +35,9 @@
 6:       Error: Q Error
 
    slow test
-      normal.. OK
-      medium.. MEDIUM ({TIME_INT})
-      slow.. SLOW ({TIME_INT})
+      normal.. {{PASS}} ({TIME_INT})
+      medium.. {{PASS}} ({TIME_INT})
+      slow.. {{PASS}} ({TIME_INT})
 
 -> reporting 6 failures
 

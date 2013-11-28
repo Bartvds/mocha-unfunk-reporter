@@ -85,6 +85,7 @@ module unfunk {
 								properties.push(indent + this.getNameAdded(prop) + this.inspect('', res.value, 'added'));
 								break;
 							case 'equal':
+							default:
 								properties.push(indent + this.getNameEqual(prop) + this.inspect('', res.value, 'equal'));
 								break;
 						}
@@ -154,20 +155,39 @@ module unfunk {
 							accumulator += 'null';
 							break;
 						}
-						var props = Object.keys(obj);
-						var length = props.length;
-						if (length === 0) {
-							accumulator += '{}';
-						} else {
-							accumulator += '\n';
-							for (var i = 0; i < length; i++) {
-								var prop = props[i];
-								this.addIndent(1)
-								accumulator = this.inspect(accumulator + this.getIndent() + this.getName(prop, change), obj[prop], change);
-								if (i < length - 1) {
-									accumulator += '\n';
+						var length;
+						if (Array.isArray(obj)) {
+							length = obj.length;
+							if (length === 0) {
+								accumulator += '[]';
+							} else {
+								accumulator += '\n';
+								for (var i = 0; i < length; i++) {
+									this.addIndent(1)
+									accumulator = this.inspect(accumulator + this.getIndent() + this.getName(String(i), change), obj[i], change);
+									if (i < length - 1) {
+										accumulator += '\n';
+									}
+									this.addIndent(-1)
 								}
-								this.addIndent(-1)
+							}
+						}
+						else {
+							var props = Object.keys(obj).sort();
+							length = props.length;
+							if (length === 0) {
+								accumulator += '{}';
+							} else {
+								accumulator += '\n';
+								for (var i = 0; i < length; i++) {
+									var prop = props[i];
+									this.addIndent(1)
+									accumulator = this.inspect(accumulator + this.getIndent() + this.getName(prop, change), obj[prop], change);
+									if (i < length - 1) {
+										accumulator += '\n';
+									}
+									this.addIndent(-1)
+								}
 							}
 						}
 						break;
@@ -178,7 +198,7 @@ module unfunk {
 						accumulator += 'undefined';
 						break;
 					case 'string':
-						accumulator += this.encodeString(obj);
+						accumulator += this.encodeName(obj);
 						break;
 					case 'number':
 						accumulator += String(obj);

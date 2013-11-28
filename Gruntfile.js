@@ -215,6 +215,8 @@ module.exports = function (grunt) {
 
 						//grunt-mocha leaks file urls
 						actual = actual.replace(pathExp, '{PATH}');
+						actual = actual.replace(/OK/g, '{{PASS}} ({TIME_INT})');
+						actual = actual.replace(/SLOW|MEDIUM/g, '{{PASS}}');
 
 						actual = actual.replace(/^(.*?)(\{PATH\})(.*)$/gm, function (all, one, two, three) {
 							three = three.replace(/:\d+:\d+(\)?)/g, ':{Y}:{X}$1');
@@ -315,6 +317,7 @@ module.exports = function (grunt) {
 	gtx.alias('edit_01', ['build', 'gtx:diff']);
 	gtx.alias('edit_02', ['demo']);
 	gtx.alias('edit_03', ['gtx:kitteh']);
+	gtx.alias('edit_04', ['gtx:diff']);
 
 	gtx.alias('dev', ['demo']);
 

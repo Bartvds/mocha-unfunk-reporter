@@ -503,7 +503,10 @@ var unfunk;
 })(unfunk || (unfunk = {}));
 var unfunk;
 (function (unfunk) {
-    var lineExtractExp = /(.*?)(\n|\r\n|\r|$)/g;
+    var util = require('util');
+
+    var lineExtractExp = /(.*?)(\n|(\r\n)|\r|$)/g;
+    var lineBreaks = /\n|(\r\n)|\r/g;
     var stringDiff = require('diff');
 
     function repeatStr(str, amount) {
@@ -519,116 +522,207 @@ var unfunk;
             function StringDiffer(diff) {
                 this.diff = diff;
             }
-            StringDiffer.prototype.getWrappingLines = function (actual, expected, maxWidth, padLength, padFirst, leadSymbols) {
+            StringDiffer.prototype.getWrappingLines = function (actual, expected, maxWidth, rowPadLength, padFirst, leadSymbols) {
                 if (typeof leadSymbols === "undefined") { leadSymbols = false; }
                 var changes = stringDiff.diffChars(expected, actual);
 
                 var escape = unfunk.escape;
-                ;
-                var blocks = [];
-                var value;
+                var style = this.diff.style;
                 var sep = '\n';
 
-                var isSimple = (!diff.identAnyExp.test(actual) || !diff.identAnyExp.test(expected));
-                var delim = (isSimple ? '"' : '');
-                var delimEmpty = repeatStr(' ', delim.length);
+                if (changes.length === 0) {
+                    return [
+                        padFirst[0],
+                        padFirst[1] + style.warn('<no diff data>'),
+                        padFirst[1]
+                    ].join(sep);
+                }
 
-                var padPreTop = this.diff.style.error(this.diff.markRemov);
-                var padPreMid = this.diff.style.plain(this.diff.markEmpty);
-                var padPrBot = this.diff.style.success(this.diff.markAdded);
+                var isSimple = (diff.identAnyExp.test(actual) && diff.identAnyExp.test(expected));
+                var delim = (isSimple ? '' : '"');
+                var delimEmpty = repeatStr(' ', delim.length);
 
                 var top = padFirst[0];
                 var middle = padFirst[1];
                 var bottom = padFirst[2];
 
+                var buffer = '';
+
                 if (leadSymbols) {
-                    top += padPreTop;
-                    middle += padPreMid;
-                    bottom += padPrBot;
+                    top += style.error(this.diff.markRemov);
+                    middle += style.plain(this.diff.markEmpty);
+                    bottom += style.success(this.diff.markAdded);
 
-                    padLength += this.diff.markAdded.length;
+                    rowPadLength += this.diff.markAdded.length;
                 }
 
-                var dataLength = maxWidth - padLength;
-                if (padLength + delim.length * 2 >= maxWidth) {
-                    return '<no space for padded diff: "' + (padLength + ' >= ' + maxWidth) + '">';
+                var dataLength = maxWidth - rowPadLength;
+                if (rowPadLength + delim.length * 2 >= maxWidth) {
+                    return '<no space for padded diff: "' + (rowPadLength + ' >= ' + maxWidth) + '">';
                 }
 
-                var rowPad = repeatStr(' ', padLength);
-                var counter = padLength - 1;
+                var rowPad = repeatStr(' ', rowPadLength);
 
-                var charSame = this.diff.style.warning('|');
-                var charAdded = this.diff.style.success('+');
-                var charMissing = this.diff.style.error('-');
-                var match;
+                var blocks = [];
+                var charSame = '|';
+                var charAdded = '+';
+                var charMissing = '-';
 
-                var delimLine = function () {
+                var charCounter = 0;
+
+                function delimLine() {
                     top += delimEmpty;
                     middle += delim;
                     bottom += delimEmpty;
+                }
 
-                    counter += delim.length;
-                };
                 delimLine();
 
-                var flushLine = function () {
+                function flushLine() {
+                    flushStyle();
                     delimLine();
-                    if (blockCount > 0) {
-                        blocks.push(top + sep + middle + sep + bottom);
-                    } else {
-                        blocks.push(top + sep + middle + sep + bottom);
-                    }
-                    blockCount += 1;
+                    blocks.push(top + sep + middle + sep + bottom);
 
                     top = rowPad;
                     middle = rowPad;
                     bottom = rowPad;
-
-                    counter = padLength;
+                    charCounter = 0;
                     delimLine();
-                };
+                }
+
+                function appendAdd(value) {
+                    for (var i = 0; i < value.length; i++) {
+                        top += ' ';
+                        buffer += charAdded;
+                    }
+                    bottom += value;
+                }
+
+                function flushAdd() {
+                    if (buffer.length > 0) {
+                        middle += style.success(buffer);
+                        buffer = '';
+                    }
+                }
+
+                function appendRem(value) {
+                    top += value;
+                    for (var i = 0; i < value.length; i++) {
+                        buffer += charMissing;
+                        bottom += ' ';
+                    }
+                }
+
+                function flushRem() {
+                    if (buffer.length > 0) {
+                        middle += style.error(buffer);
+                        buffer = '';
+                    }
+                }
+
+                function appendSame(value) {
+                    top += value;
+                    for (var i = 0; i < value.length; i++) {
+                        buffer += charSame;
+                    }
+                    bottom += value;
+                }
+
+                function flushSame() {
+                    if (buffer.length > 0) {
+                        middle += style.warning(buffer);
+                        buffer = '';
+                    }
+                }
+
+                function appendPlain(value) {
+                    top += value;
+                    for (var i = 0; i < value.length; i++) {
+                        buffer += ' ';
+                    }
+                    bottom += value;
+                }
+
+                function flushPlainStyle() {
+                    middle += buffer;
+                    buffer = '';
+                }
+
+                var appendStyle = appendPlain;
+                var flushStyle = flushPlainStyle;
+
+                var printLine = (isSimple ? function (line, end) {
+                    appendStyle(line);
+                    charCounter += line.length;
+                    if (end) {
+                        flushLine();
+                    }
+                } : function (line, end) {
+                    for (var j = 0, jj = line.length; j < jj; j++) {
+                        var value = escape(line[j]);
+                        if (charCounter + value.length > dataLength) {
+                            flushLine();
+                        }
+                        appendStyle(value);
+                        charCounter += value.length;
+                    }
+                    if (end) {
+                        flushLine();
+                    }
+                });
 
                 for (var i = 0, ii = changes.length; i < ii; i++) {
                     var change = changes[i];
 
-                    lineExtractExp.lastIndex = 0;
-                    while ((match = lineExtractExp.exec(change.value))) {
-                        lineExtractExp.lastIndex = match.index + (match[0].length || 1);
-                        var blockCount = 0;
-                        var line = escape(match[0]);
-                        var len = line.length;
+                    flushStyle();
 
-                        for (var j = 0; j < len; j++) {
-                            value = line[j];
-                            counter += 1;
-                            if (counter > dataLength) {
-                                flushLine();
-                            }
-                            if (change.added) {
-                                top += ' ';
-                                middle += charAdded;
-                                bottom += value;
-                            } else if (change.removed) {
-                                top += value;
-                                middle += charMissing;
-                                bottom += ' ';
-                            } else if (!change.added && !change.removed) {
-                                top += value;
-                                middle += charSame;
-                                bottom += value;
-                            }
-                        }
-                        if (match[2].length > 0) {
-                            flushLine();
-                        }
+                    if (change.added) {
+                        appendStyle = appendAdd;
+                        flushStyle = flushAdd;
+                    } else if (change.removed) {
+                        appendStyle = appendRem;
+                        flushStyle = flushRem;
+                    } else {
+                        appendStyle = appendSame;
+                        flushStyle = flushSame;
+                    }
+
+                    if (change.value.length === 0) {
+                        printLine('', true);
+                        continue;
+                    }
+
+                    var start = 0;
+                    var match;
+
+                    lineBreaks.lastIndex = 0;
+                    while ((match = lineBreaks.exec(change.value))) {
+                        var line = change.value.substring(start, match.index);
+
+                        start = match.index + match[0].length;
+                        lineBreaks.lastIndex = start;
+
+                        printLine(line + match[0], true);
+                    }
+
+                    if (start < change.value.length) {
+                        printLine(change.value.substr(start), false);
                     }
                 }
 
-                if (counter > padLength + delim.length) {
+                if (charCounter > 0) {
                     flushLine();
                 }
 
-                return blocks.join('\n\n');
+                if (blocks.length === 0) {
+                    return [
+                        padFirst[0],
+                        padFirst[1] + style.warn('<no diff content rendered>'),
+                        padFirst[1]
+                    ].join(sep);
+                }
+
+                return blocks.join(sep + sep);
             };
             return StringDiffer;
         })();
@@ -711,6 +805,7 @@ var unfunk;
                                 properties.push(indent + this.getNameAdded(prop) + this.inspect('', res.value, 'added'));
                                 break;
                             case 'equal':
+                            default:
                                 properties.push(indent + this.getNameEqual(prop) + this.inspect('', res.value, 'equal'));
                                 break;
                         }
@@ -781,20 +876,38 @@ var unfunk;
                             accumulator += 'null';
                             break;
                         }
-                        var props = Object.keys(obj);
-                        var length = props.length;
-                        if (length === 0) {
-                            accumulator += '{}';
-                        } else {
-                            accumulator += '\n';
-                            for (var i = 0; i < length; i++) {
-                                var prop = props[i];
-                                this.addIndent(1);
-                                accumulator = this.inspect(accumulator + this.getIndent() + this.getName(prop, change), obj[prop], change);
-                                if (i < length - 1) {
-                                    accumulator += '\n';
+                        var length;
+                        if (Array.isArray(obj)) {
+                            length = obj.length;
+                            if (length === 0) {
+                                accumulator += '[]';
+                            } else {
+                                accumulator += '\n';
+                                for (var i = 0; i < length; i++) {
+                                    this.addIndent(1);
+                                    accumulator = this.inspect(accumulator + this.getIndent() + this.getName(String(i), change), obj[i], change);
+                                    if (i < length - 1) {
+                                        accumulator += '\n';
+                                    }
+                                    this.addIndent(-1);
                                 }
-                                this.addIndent(-1);
+                            }
+                        } else {
+                            var props = Object.keys(obj).sort();
+                            length = props.length;
+                            if (length === 0) {
+                                accumulator += '{}';
+                            } else {
+                                accumulator += '\n';
+                                for (var i = 0; i < length; i++) {
+                                    var prop = props[i];
+                                    this.addIndent(1);
+                                    accumulator = this.inspect(accumulator + this.getIndent() + this.getName(prop, change), obj[prop], change);
+                                    if (i < length - 1) {
+                                        accumulator += '\n';
+                                    }
+                                    this.addIndent(-1);
+                                }
                             }
                         }
                         break;
@@ -805,7 +918,7 @@ var unfunk;
                         accumulator += 'undefined';
                         break;
                     case 'string':
-                        accumulator += this.encodeString(obj);
+                        accumulator += this.encodeName(obj);
                         break;
                     case 'number':
                         accumulator += String(obj);

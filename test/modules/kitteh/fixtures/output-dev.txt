@@ -30,7 +30,7 @@
          at Context.<anonymous> ({PATH}test/modules/kitteh/tmp/_tmp.test.js:{Y}:{X})
 
       [error|- ] abcd fgh j  klm  expect   ed 
-      [plain|  ]"[warning||][warning||][warning||][warning||][success|+][warning||][warning||][warning||][success|+][warning||][success|+][success|+][error|-][warning||][warning||][warning||][success|+][error|-][error|-][error|-][error|-][warning||][warning||][success|+][success|+][success|+][error|-][error|-]"
+      [plain|  ]"[warning|||||][success|+][warning||||][success|+][warning||][success|++][error|-][warning||||][success|+][error|----][warning|||][success|+++][error|--]"
       [success|+ ] abcdefghijde lm a    ctual   
 
 [error|2:    ][accent|kitteh can has no ][plain|computer skills]
@@ -52,7 +52,7 @@
          at Context.<anonymous> ({PATH}test/modules/kitteh/tmp/_tmp.test.js:{Y}:{X})
 
       [error|- aa]:  meow me    ow 
-      |   : "[warning||][warning||][error|-][error|-][error|-][error|-][warning||][success|+][success|+][success|+][success|+][warning||][warning||]"
+      |   : "[warning|||][error|----][warning||][success|++++][warning|||]"
       [success|+ aa]:  me    eeeiiow 
       [warning|? bb]: 
         [error|- one]: 1
@@ -60,7 +60,7 @@
         [error|- two]: 2
         [success|+ two]: 22
         [error|- three]: aab c dd  df eg ehi j k lmnnop   
-        |      : [warning||][warning||][warning||][success|+][warning||][success|+][warning||][warning||][success|+][success|+][error|-][warning||][success|+][error|-][warning||][success|+][error|-][warning||][warning||][success|+][warning||][success|+][warning||][success|+][warning||][warning||][warning||][error|-][warning||][warning||][success|+][success|+][success|+]
+        |      : [warning||||][success|+][warning||][success|+][warning|||][success|++][error|-][warning||][success|+][error|-][warning||][success|+][error|-][warning|||][success|+][warning||][success|+][warning||][success|+][warning||||][error|-][warning|||][success|+++]
         [success|+ three]: aabbccddee ff gg hiijjkklmn oprst      
       [warning|? uu]: 
         [error|- one]: 33
@@ -68,9 +68,9 @@
         [error|- two]: 22
         [success|+ two]: 2
         [error|- three]: aabbccdd  e effgghiijjkklmn oprst
-        |      : [warning||][warning||][warning||][error|-][warning||][error|-][warning||][warning||][success|+][success|+][warning||][success|+][warning||][error|-][error|-][error|-][error|-][warning||][warning||][error|-][warning||][error|-][warning||][error|-][warning||][warning||][warning||][success|+][warning||][warning||][error|-][error|-][error|-]
+        |      : [warning||||][error|-][warning||][error|-][warning|||][success|++][warning||][success|+][warning||][error|----][warning|||][error|-][warning||][error|-][warning||][error|-][warning||||][success|+][warning|||][error|---]
         [success|+ three]: aab c dddfege    hi j k lmnnop         
-      [success|+ ff]: "purrrrrrr"
+      [success|+ ff]: purrrrrrr
       [warning|? cc]: 
         [error|- 0]: 1
         [success|+ 0]: 111
@@ -78,7 +78,7 @@
         [success|+ 1]: 222
         [error|- 2]: 3
         [success|+ 2]: 555      
-      [error|- dd]: "hisss"      
+      [error|- dd]: hisss      
 
 [plain|-> ][error|failed 3] and [warning|passed 3] of [accent|6 tests], left [warning|1 pending] ({TIME_INT})
 

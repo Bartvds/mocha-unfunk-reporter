@@ -6,13 +6,13 @@
 
    kitteh
       can
-         meow.. OK
+         meow.. {{PASS}} ({TIME_INT})
          not
             spell.. FAIL
 1:             expected 'abcdefghijdelm actual' to equal 'abcdfghjklm expected'
          has
-            milk.. OK
-            cheeseburgers.. OK
+            milk.. {{PASS}} ({TIME_INT})
+            cheeseburgers.. {{PASS}} ({TIME_INT})
             sushi.. PENDING
             no
                computer skills.. FAIL
@@ -70,7 +70,7 @@
         - three: aabbccdd  e effgghiijjkklmn oprst
         |      : |||-|-||++|+|----||-|-|-|||+||---
         + three: aab c dddfege    hi j k lmnnop         
-      + ff: "purrrrrrr"
+      + ff: purrrrrrr
       ? cc: 
         - 0: 1
         + 0: 111
@@ -78,7 +78,7 @@
         + 1: 222
         - 2: 3
         + 2: 555      
-      - dd: "hisss"      
+      - dd: hisss      
 
 -> failed 3 and passed 3 of 6 tests, left 1 pending ({TIME_INT})
 

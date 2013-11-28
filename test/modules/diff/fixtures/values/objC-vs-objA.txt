@@ -1,5 +1,5 @@
-[31m- name[39m: obj A
-|     : [33m|[39m[33m|[39m[33m|[39m[32m+[39m[31m-[39m
-[32m+ name[39m: objC 
-[31m- propA[39m: "ü\tspecial\\A \n©♥"
-[31m- escA[39m: "x\\xü"
+- name: obj A
+|     : |||+-
++ name: objC 
+- propA: "ü\tspecial\\A \n©♥"
+- escA: "x\\xü"

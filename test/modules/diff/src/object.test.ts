@@ -2,51 +2,26 @@
 ///<reference path="../../../../src/diff.ts" />
 ///<reference path="../../../../src/styler.ts" />
 
-describe('DiffFormatter', () => {
+describe('string diff', () => {
 
 	var fs = require('fs');
 	var path = require('path');
 	var mkdirp = require('mkdirp');
 
-	function assertStringDiff(nameA:string, nameB:string, name:string, style, debug:boolean = true) {
-		var stringA = fs.readFileSync('../../fixtures/' + nameA + '.txt', 'utf8');
-		var stringB = fs.readFileSync('../../fixtures/' + nameB + '.txt', 'utf8');
-		assertStringValueDiff(stringA, stringB, name, style, debug);
-	}
-
-	function assertStringValueDiff(stringA:string, stringB:string, name:string, style, debug:boolean = true) {
-
-		var diff = new unfunk.diff.DiffFormatter(style);
-		var actual = diff.getStyledDiff(stringA, stringB);
-
-		var expPath = path.join('.', 'tmp', 'string', name + '.txt');
-		mkdirp.sync(path.dirname(expPath), 0777);
-		fs.writeFileSync(expPath, actual, 'utf8');
-
-		if (debug) {
-			console.log('---');
-			console.log(actual);
-			console.log('---');
-		}
-
-		var expected = fs.readFileSync('./fixtures/string/' + name + '.txt', 'utf8').replace(/\r\n/g, '\n');
-
-		assert.notStrictEqual(stringA, stringB, 'pre test');
-		assert.strictEqual(actual, expected);
-	}
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 	function assertObjDiff(prefix:string, name:string, objA, objB, style:unfunk.Styler, debug:boolean = true) {
 		var diff = new unfunk.diff.DiffFormatter(style);
 		var actual = diff.getStyledDiff(objA, objB);
 
 		var expPath = path.join('.', 'tmp', prefix, name + '.txt');
-		mkdirp.sync(path.dirname(expPath), 0777);
+		mkdirp.sync(path.dirname(expPath), 0744);
 		fs.writeFileSync(expPath, actual, 'utf8');
 
 		if (debug) {
-			console.log('---');
-			console.log(actual);
-			console.log('---');
+			console.log('');
+			console.log(new unfunk.diff.DiffFormatter(new unfunk.styler.ANSIStyler()).getStyledDiff(objA, objB, '            '));
+			console.log('');
 		}
 
 		var expected = fs.readFileSync(path.join('.', 'fixtures', prefix, name + '.txt'), 'utf8').replace(/\r\n/g, '\n');
@@ -58,24 +33,12 @@ describe('DiffFormatter', () => {
 		describe(prefix + ' ' + label, () => {
 			it('should diff ' + prefix + ' / ' + label + '', () => {
 
-				assertObjDiff(prefix, label, objA, objB, new unfunk.styler.ANSIStyler(), debug);
+				assertObjDiff(prefix, label, objA, objB, new unfunk.styler.PlainStyler(), debug);
 			});
 		});
 	}
 
-	describe('strings', () => {
-		it('should diff hello a/b', () => {
-			assertStringDiff('hello-a', 'hello-b', 'hello-diff-plain', new unfunk.styler.PlainStyler());
-		});
-
-		it('should diff lines a/b', () => {
-			assertStringDiff('lines-a', 'lines-b', 'lines-diff-plain', new unfunk.styler.PlainStyler());
-		});
-
-		it('should diff medium a/b', () => {
-			assertStringDiff('lorem-medium-a', 'lorem-medium-b', 'lorem-medium-diff-plain', new unfunk.styler.PlainStyler());
-		});
-	});
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 	describe('bad values', () => {
 		it('should return on bad values', () => {
@@ -108,6 +71,8 @@ describe('DiffFormatter', () => {
 			assertObjDiff('nested', 'multiline-diff-plain', objA, objB, new unfunk.styler.PlainStyler());
 		});
 	});
+
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 	describe('variations', () => {
 		var all = {
@@ -162,8 +127,9 @@ describe('DiffFormatter', () => {
 
 		testObjDiff('basic', 'someA vs badA', someA, badA);
 		testObjDiff('basic', 'badA vs someA', badA, someA);
-
 	});
+
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 	describe('props with special characters', () => {
 
@@ -192,6 +158,8 @@ describe('DiffFormatter', () => {
 		testObjDiff('props', 'namesC vs namesA', namesC, namesA);
 	});
 
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 	describe('values with special characters', () => {
 
 		var objA = {
@@ -219,4 +187,53 @@ describe('DiffFormatter', () => {
 		testObjDiff('values', 'objC vs objA', objC, objA);
 	});
 
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+	describe('array values', () => {
+
+		var objA = [
+			'aa',
+			'bb',
+			'dd'
+		];
+
+		var objB = [
+			'bb',
+			'cc',
+			'dd',
+			'ee'
+		];
+
+		testObjDiff('array', 'objA vs objA', objA, objA);
+
+		testObjDiff('array', 'objA vs objB', objA, objB);
+		testObjDiff('array', 'objB vs objA', objB, objA);
+	});
+
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+	describe('array with empty leading elements', () => {
+
+		var objA = [
+			"",
+			"\n",
+			"b",
+			"\n",
+			"cc"
+		];
+
+		var objB = [
+			"a",
+			"",
+			"bb",
+			"",
+			"ccc",
+			""
+		];
+
+		testObjDiff('array-empty', 'objA vs objA', objA, objA);
+
+		testObjDiff('array-empty', 'objA vs objB', objA, objB);
+		testObjDiff('array-empty', 'objB vs objA', objB, objA);
+	});
 });

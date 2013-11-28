@@ -2,7 +2,11 @@
 
 module unfunk {
 
-	var lineExtractExp = /(.*?)(\n|\r\n|\r|$)/g;
+	var util = require('util');
+
+	//capture text AND linebreaks
+	var lineExtractExp = /(.*?)(\n|(\r\n)|\r|$)/g;
+	var lineBreaks = /\n|(\r\n)|\r/g;
 	var stringDiff = require('diff');
 
 	function repeatStr(str:string, amount:number):string {
@@ -27,123 +31,254 @@ module unfunk {
 
 			}
 
-			public getWrappingLines(actual:string, expected:string, maxWidth:number, padLength:number, padFirst:string[], leadSymbols:boolean = false):string {
+			//print string diff with indent and wrapping
+			public getWrappingLines(actual:string, expected:string, maxWidth:number, rowPadLength:number, padFirst:string[], leadSymbols:boolean = false):string {
 				var changes:StringDiffChange[] = stringDiff.diffChars(expected, actual);
 
-				var escape = unfunk.escape;;
-				var blocks = [];
-				var value;
+				var escape = unfunk.escape;
+				var style = this.diff.style;
 				var sep = '\n';
 
-				var isSimple:boolean = (!diff.identAnyExp.test(actual) || !diff.identAnyExp.test(expected));
-				var delim:string = (isSimple ? '"' : '');
+				// should not happen
+				if (changes.length === 0) {
+					return [
+						padFirst[0],
+						padFirst[1] + style.warn('<no diff data>'),
+						padFirst[1]
+					].join(sep);
+				}
+
+				// checked if string has no whitespace or other fancy characters
+				// RegExp should also pick up empty strings
+				var isSimple:boolean = (diff.identAnyExp.test(actual) && diff.identAnyExp.test(expected));
+				var delim:string = (isSimple ? '' : '"');
 				var delimEmpty = repeatStr(' ', delim.length);
 
-				var padPreTop = this.diff.style.error(this.diff.markRemov);
-				var padPreMid = this.diff.style.plain(this.diff.markEmpty);
-				var padPrBot = this.diff.style.success(this.diff.markAdded);
-
+				// accumulate the 3 rows
 				var top = padFirst[0];
 				var middle = padFirst[1];
 				var bottom = padFirst[2];
 
+				// accumulate styles center
+				var buffer = '';
+
+				// sometimes first set of rows has symbols
 				if (leadSymbols) {
-					top += padPreTop;
-					middle += padPreMid;
-					bottom += padPrBot;
+					top += style.error(this.diff.markRemov);
+					middle += style.plain(this.diff.markEmpty);
+					bottom += style.success(this.diff.markAdded);
 
-					padLength += this.diff.markAdded.length;
+					rowPadLength += this.diff.markAdded.length;
 				}
 
-				var dataLength = maxWidth - padLength;
-				if (padLength + delim.length * 2 >= maxWidth) {
-					return '<no space for padded diff: "' + (padLength + ' >= ' + maxWidth) + '">';
+				// sanity check if we don't break availible space
+				var dataLength = maxWidth - rowPadLength;
+				if (rowPadLength + delim.length * 2 >= maxWidth) {
+					return '<no space for padded diff: "' + (rowPadLength + ' >= ' + maxWidth) + '">';
 				}
 
-				var rowPad = repeatStr(' ', padLength);
-				var counter = padLength - 1; //wtf -1? beeeh
+				var rowPad = repeatStr(' ', rowPadLength);
 
-				//TODO instead of pre-styling per-char use an accumulator
-				var charSame = this.diff.style.warning('|');
-				var charAdded = this.diff.style.success('+');
-				var charMissing = this.diff.style.error('-');
-				var match;
+				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-				var delimLine = function () {
+				var blocks = [];
+				var charSame = '|';
+				var charAdded = '+';
+				var charMissing = '-';
+
+				var charCounter = 0;
+
+				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+				// append wrapping quotes
+				function delimLine() {
 					top += delimEmpty;
 					middle += delim;
 					bottom += delimEmpty;
+				}
 
-					counter += delim.length;
-				};
 				delimLine();
 
-				var flushLine = function () {
+				// concat accumulated lined and add to block buffer
+				function flushLine() {
+					// close open lines
+					flushStyle();
 					delimLine();
-					if (blockCount > 0) {
-						blocks.push(top + sep + middle + sep + bottom);
-					} else {
-						blocks.push(top + sep + middle + sep + bottom);
-					}
-					blockCount += 1;
+					blocks.push(top + sep + middle + sep + bottom);
 
+					// prepare new
 					top = rowPad;
 					middle = rowPad;
 					bottom = rowPad;
-
-					counter = padLength;
+					charCounter = 0;
 					delimLine();
-				};
+				}
 
-				//tight loop diffs
-				for (var i = 0, ii = changes.length; i < ii; i++) {
-					var change = changes[i];
+				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-					//loop lines
-					lineExtractExp.lastIndex = 0;
-					while ((match = lineExtractExp.exec(change.value))) {
-						//make sure to advance at least 1
-						lineExtractExp.lastIndex = match.index + (match[0].length || 1);
-						var blockCount = 0;
-						var line:string = escape(match[0]);
-						var len = line.length;
+				//TODO swap style/row accumulators with some kind of statemachine (not worth it
 
-						//per char
-						for (var j = 0; j < len; j++) {
-							value = line[j];
-							counter += 1;
-							if (counter > dataLength) {
-								flushLine();
-							}
-							if (change.added) {
-								top += ' ';
-								middle += charAdded;
-								bottom += value;
-							}
-							else if (change.removed) {
-								top += value;
-								middle += charMissing;
-								bottom += ' ';
-							}
-							else if (!change.added && !change.removed) {
-								top += value;
-								middle += charSame;
-								bottom += value;
-							}
-						}
-						if (match[2].length > 0) {
-							flushLine();
-						}
+				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+				function appendAdd(value) {
+					for (var i = 0; i < value.length; i++) {
+						top += ' ';
+						buffer += charAdded;
+					}
+					bottom += value;
+				}
+
+				function flushAdd() {
+					if (buffer.length > 0) {
+						middle += style.success(buffer);
+						buffer = '';
 					}
 				}
 
-				if (counter > padLength + delim.length) {
-					flushLine();
+				// - - - - - - - - -
+
+				function appendRem(value) {
+					top += value;
+					for (var i = 0; i < value.length; i++) {
+						buffer += charMissing;
+						bottom += ' ';
+					}
 				}
 
-				return blocks.join('\n\n');
-			}
+				function flushRem() {
+					if (buffer.length > 0) {
+						middle += style.error(buffer);
+						buffer = '';
+					}
+				}
 
+				// - - - - - - - - -
+
+				function appendSame(value) {
+					top += value;
+					for (var i = 0; i < value.length; i++) {
+						buffer += charSame;
+					}
+					bottom += value;
+				}
+
+				function flushSame() {
+					if (buffer.length > 0) {
+						middle += style.warning(buffer);
+						buffer = '';
+					}
+				}
+
+				// - - - - - - - - -
+
+				function appendPlain(value) {
+					top += value;
+					for (var i = 0; i < value.length; i++) {
+						buffer += ' ';
+					}
+					bottom += value;
+				}
+
+				function flushPlainStyle() {
+					middle += buffer;
+					buffer = '';
+				}
+
+				// - - - - - - - - -
+
+				// mini state machine will be set with active style
+				var appendStyle = appendPlain;
+				var flushStyle = flushPlainStyle;
+
+				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+				// auto optimising printer
+
+				// send line to buffer (but never split escaped characters over line)
+				var printLine = (isSimple ? function (line, end) {
+					//simple text
+					appendStyle(line);
+					charCounter += line.length;
+					if (end) {
+						flushLine();
+					}
+				} : function (line, end) {
+					// we have weird characters
+					for (var j = 0, jj = line.length; j < jj; j++) {
+						var value = escape(line[j]);
+						if (charCounter + value.length > dataLength) {
+							flushLine();
+						}
+						appendStyle(value);
+						charCounter += value.length;
+					}
+					if (end) {
+						flushLine();
+					}
+				});
+
+				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+				// loop all changes
+				for (var i = 0, ii = changes.length; i < ii; i++) {
+					var change = changes[i];
+
+					flushStyle();
+
+					//mini state machine
+					if (change.added) {
+						appendStyle = appendAdd;
+						flushStyle = flushAdd;
+					}
+					else if (change.removed) {
+						appendStyle = appendRem;
+						flushStyle = flushRem;
+					}
+					else {
+						appendStyle = appendSame;
+						flushStyle = flushSame;
+					}
+
+					// empty string
+					if (change.value.length === 0) {
+						printLine('', true);
+						continue;
+					}
+
+					var start = 0;
+					var match;
+
+					// split lines
+					lineBreaks.lastIndex = 0;
+					while ((match = lineBreaks.exec(change.value))) {
+						var line = change.value.substring(start, match.index);
+						// console.log('>>' + escape(line) + '<<');
+						start = match.index + match[0].length;
+						lineBreaks.lastIndex = start;
+
+						printLine(line + match[0], true);
+					}
+					// append piece after final linebreak
+					if (start < change.value.length) {
+						printLine(change.value.substr(start), false);
+					}
+				}
+
+				// we got unflushed characters
+				if (charCounter > 0) {
+					flushLine();
+				}
+				// should not happen
+				if (blocks.length === 0) {
+					return [
+						padFirst[0],
+						padFirst[1] + style.warn('<no diff content rendered>'),
+						padFirst[1]
+					].join(sep);
+				}
+				// main exit
+				return blocks.join(sep + sep);
+			}
 		}
 	}
 }

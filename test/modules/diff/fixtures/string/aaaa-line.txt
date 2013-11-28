@@ -1,0 +1,11 @@
+-  aaa b\n 
+  "|||+-||"
++  aaaa \n 
+
+   aaa b\n 
+  "|||+-||"
+   aaaa \n 
+
+   aaa b 
+  "|||+-"
+   aaaa  
