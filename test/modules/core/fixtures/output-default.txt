@@ -5,39 +5,39 @@
 -> running 6 suites
 
    async tests
-      first passes.. {{PASS}} ({TIME_INT})
-      second fails.. FAIL
+      first passes.. ok
+      second fails.. fail
 1:       expected false to be truthy
-      third errors.. {{PASS}} ({TIME_INT})
-      fourth pending.. PENDING
-      fifth passes.. {{PASS}} ({TIME_INT})
-      medium slow.. {{PASS}} ({TIME_INT})
-      very slow.. {{PASS}} ({TIME_INT})
+      third errors.. ok
+      fourth pending.. pending
+      fifth passes.. ok
+      medium slow.. medium ({TIME_INT})
+      very slow.. slow ({TIME_INT})
 
    chai-json-schema
-      fruit failure.. FAIL
+      fruit failure.. fail
 2:       expected value to match json-schema '{"type":"object","properties":...' -> '{"intKey":3,"stringKey":false}'
 
    diffs
       long strings
-         should show big diffs.. PENDING
-         should bail on long diffs.. FAIL
+         should show big diffs.. pending
+         should bail on long diffs.. fail
 3:          long:  long string
 
    errors
-      sync fails.. FAIL
+      sync fails.. fail
 4:       Error: MyError
-      async error.. FAIL
+      async error.. fail
 5:       Error: MyError
 
    q long stack
-      async error.. FAIL
+      async error.. fail
 6:       Error: Q Error
 
    slow test
-      normal.. {{PASS}} ({TIME_INT})
-      medium.. {{PASS}} ({TIME_INT})
-      slow.. {{PASS}} ({TIME_INT})
+      normal.. ok
+      medium.. medium ({TIME_INT})
+      slow.. slow ({TIME_INT})
 
 -> reporting 6 failures
 

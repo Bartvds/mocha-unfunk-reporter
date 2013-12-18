@@ -1,1059 +1,3 @@
-try  {
-    if (!objectDiff) {
-        var objectDiff = require('../lib/objectDiff');
-    }
-} catch (e) {
-}
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-var unfunk;
-(function (unfunk) {
-    (function (writer) {
-        var lineBreak = /\r?\n/g;
-
-        var LineWriter = (function () {
-            function LineWriter() {
-            }
-            LineWriter.prototype.start = function () {
-                this.textBuffer = '';
-            };
-
-            LineWriter.prototype.finish = function () {
-                this.flushLineBuffer();
-            };
-
-            LineWriter.prototype.write = function () {
-                var args = [];
-                for (var _i = 0; _i < (arguments.length - 0); _i++) {
-                    args[_i] = arguments[_i + 0];
-                }
-                if (args.length > 0) {
-                    this.textBuffer += args.join('');
-                }
-                if (lineBreak.test(this.textBuffer)) {
-                    var arr = this.textBuffer.split(lineBreak);
-                    var len = arr.length;
-                    if (len > 0) {
-                        for (var i = 0; i < len - 1; i++) {
-                            this.flushLine(arr[i]);
-                        }
-                        this.textBuffer = arr[len - 1];
-                    }
-                }
-            };
-
-            LineWriter.prototype.writeln = function () {
-                var args = [];
-                for (var _i = 0; _i < (arguments.length - 0); _i++) {
-                    args[_i] = arguments[_i + 0];
-                }
-                var _this = this;
-                if (args.length > 0) {
-                    this.textBuffer += args.join('\n');
-                }
-                if (this.textBuffer.length === 0) {
-                    this.flushLine('');
-                } else {
-                    this.textBuffer.split(lineBreak).forEach(function (line) {
-                        _this.flushLine(line);
-                    });
-                    this.textBuffer = '';
-                }
-            };
-
-            LineWriter.prototype.flushLine = function (str) {
-            };
-
-            LineWriter.prototype.flushLineBuffer = function () {
-                var _this = this;
-                if (this.textBuffer.length > 0) {
-                    this.textBuffer.split(lineBreak).forEach(function (line) {
-                        _this.flushLine(line);
-                    });
-                    this.textBuffer = '';
-                }
-            };
-            return LineWriter;
-        })();
-        writer.LineWriter = LineWriter;
-
-        var ConsoleLineWriter = (function (_super) {
-            __extends(ConsoleLineWriter, _super);
-            function ConsoleLineWriter() {
-                _super.apply(this, arguments);
-            }
-            ConsoleLineWriter.prototype.flushLine = function (str) {
-                console.log(str);
-            };
-            return ConsoleLineWriter;
-        })(LineWriter);
-        writer.ConsoleLineWriter = ConsoleLineWriter;
-
-        var ConsoleBulkWriter = (function () {
-            function ConsoleBulkWriter() {
-            }
-            ConsoleBulkWriter.prototype.start = function () {
-                this.buffer = '';
-            };
-
-            ConsoleBulkWriter.prototype.write = function () {
-                var args = [];
-                for (var _i = 0; _i < (arguments.length - 0); _i++) {
-                    args[_i] = arguments[_i + 0];
-                }
-                if (args.length > 0) {
-                    this.buffer += args.join('');
-                }
-            };
-
-            ConsoleBulkWriter.prototype.writeln = function () {
-                var args = [];
-                for (var _i = 0; _i < (arguments.length - 0); _i++) {
-                    args[_i] = arguments[_i + 0];
-                }
-                if (args.length > 0) {
-                    this.buffer += args.join('\n') + '\n';
-                } else {
-                    this.buffer += '\n';
-                }
-            };
-
-            ConsoleBulkWriter.prototype.finish = function () {
-                if (this.buffer.length > 0) {
-                    console.log(this.buffer);
-                }
-                this.buffer = '';
-            };
-            return ConsoleBulkWriter;
-        })();
-        writer.ConsoleBulkWriter = ConsoleBulkWriter;
-
-        var StdStreamWriter = (function () {
-            function StdStreamWriter(stream) {
-                this.stream = stream;
-                if (!stream.writable) {
-                    throw new Error('stream not writable');
-                }
-            }
-            StdStreamWriter.prototype.start = function () {
-            };
-
-            StdStreamWriter.prototype.finish = function () {
-            };
-
-            StdStreamWriter.prototype.write = function () {
-                var args = [];
-                for (var _i = 0; _i < (arguments.length - 0); _i++) {
-                    args[_i] = arguments[_i + 0];
-                }
-                if (args.length > 0) {
-                    this.stream.write(args.join(''), 'utf8');
-                }
-            };
-
-            StdStreamWriter.prototype.writeln = function () {
-                var args = [];
-                for (var _i = 0; _i < (arguments.length - 0); _i++) {
-                    args[_i] = arguments[_i + 0];
-                }
-                if (args.length > 0) {
-                    this.stream.write(args.join('\n') + '\n', 'utf8');
-                } else {
-                    this.stream.write('\n', 'utf8');
-                }
-            };
-            return StdStreamWriter;
-        })();
-        writer.StdStreamWriter = StdStreamWriter;
-
-        var NullWriter = (function () {
-            function NullWriter() {
-            }
-            NullWriter.prototype.start = function () {
-            };
-
-            NullWriter.prototype.finish = function () {
-            };
-
-            NullWriter.prototype.write = function () {
-                var args = [];
-                for (var _i = 0; _i < (arguments.length - 0); _i++) {
-                    args[_i] = arguments[_i + 0];
-                }
-            };
-
-            NullWriter.prototype.writeln = function () {
-                var args = [];
-                for (var _i = 0; _i < (arguments.length - 0); _i++) {
-                    args[_i] = arguments[_i + 0];
-                }
-            };
-            return NullWriter;
-        })();
-        writer.NullWriter = NullWriter;
-    })(unfunk.writer || (unfunk.writer = {}));
-    var writer = unfunk.writer;
-})(unfunk || (unfunk = {}));
-var unfunk;
-(function (unfunk) {
-    (function (styler) {
-        var NoStyler = (function () {
-            function NoStyler() {
-            }
-            NoStyler.prototype.ok = function (str) {
-                return str;
-            };
-
-            NoStyler.prototype.fail = function (str) {
-                return str;
-            };
-
-            NoStyler.prototype.warn = function (str) {
-                return str;
-            };
-
-            NoStyler.prototype.error = function (str) {
-                return str;
-            };
-
-            NoStyler.prototype.warning = function (str) {
-                return str;
-            };
-
-            NoStyler.prototype.success = function (str) {
-                return str;
-            };
-
-            NoStyler.prototype.accent = function (str) {
-                return str;
-            };
-
-            NoStyler.prototype.plain = function (str) {
-                return str;
-            };
-
-            NoStyler.prototype.zero = function () {
-                return '';
-            };
-            return NoStyler;
-        })();
-        styler.NoStyler = NoStyler;
-
-        var PlainStyler = (function (_super) {
-            __extends(PlainStyler, _super);
-            function PlainStyler() {
-                _super.apply(this, arguments);
-            }
-            PlainStyler.prototype.ok = function (str) {
-                return str.toLocaleUpperCase();
-            };
-
-            PlainStyler.prototype.warn = function (str) {
-                return str.toLocaleUpperCase();
-            };
-
-            PlainStyler.prototype.fail = function (str) {
-                return str.toLocaleUpperCase();
-            };
-            return PlainStyler;
-        })(NoStyler);
-        styler.PlainStyler = PlainStyler;
-
-        var WrapStyler = (function () {
-            function WrapStyler() {
-                this.styles = {};
-            }
-            WrapStyler.prototype.ok = function (str) {
-                return this.success(str);
-            };
-
-            WrapStyler.prototype.warn = function (str) {
-                return this.warning(str);
-            };
-
-            WrapStyler.prototype.fail = function (str) {
-                return this.error(str);
-            };
-
-            WrapStyler.prototype.error = function (str) {
-                return this.wrap(str, 'red');
-            };
-
-            WrapStyler.prototype.warning = function (str) {
-                return this.wrap(str, 'yellow');
-            };
-
-            WrapStyler.prototype.success = function (str) {
-                return this.wrap(str, 'green');
-            };
-
-            WrapStyler.prototype.accent = function (str) {
-                return this.wrap(str, 'cyan');
-            };
-
-            WrapStyler.prototype.plain = function (str) {
-                return str;
-            };
-
-            WrapStyler.prototype.zero = function () {
-                return '';
-            };
-
-            WrapStyler.prototype.wrap = function (str, style) {
-                if (!this.styles.hasOwnProperty(style)) {
-                    return str;
-                }
-                var tmp = this.styles[style];
-                return tmp[0] + str + tmp[1];
-            };
-            return WrapStyler;
-        })();
-        styler.WrapStyler = WrapStyler;
-
-        styler.ansiWrapTable = {
-            'bold': ['\033[1m', '\033[22m'],
-            'italic': ['\033[3m', '\033[23m'],
-            'underline': ['\033[4m', '\033[24m'],
-            'inverse': ['\033[7m', '\033[27m'],
-            'white': ['\033[37m', '\033[39m'],
-            'grey': ['\033[90m', '\033[39m'],
-            'black': ['\033[30m', '\033[39m'],
-            'blue': ['\033[34m', '\033[39m'],
-            'cyan': ['\033[36m', '\033[39m'],
-            'green': ['\033[32m', '\033[39m'],
-            'magenta': ['\033[35m', '\033[39m'],
-            'red': ['\033[31m', '\033[39m'],
-            'yellow': ['\033[33m', '\033[39m']
-        };
-
-        var ANSIWrapStyler = (function (_super) {
-            __extends(ANSIWrapStyler, _super);
-            function ANSIWrapStyler() {
-                _super.call(this);
-                this.styles = styler.ansiWrapTable;
-            }
-            return ANSIWrapStyler;
-        })(WrapStyler);
-        styler.ANSIWrapStyler = ANSIWrapStyler;
-
-        var ANSIStyler = (function () {
-            function ANSIStyler() {
-            }
-            ANSIStyler.prototype.ok = function (str) {
-                return '\033[32m' + str + '\033[39m';
-            };
-
-            ANSIStyler.prototype.fail = function (str) {
-                return '\033[31m' + str + '\033[39m';
-            };
-
-            ANSIStyler.prototype.warn = function (str) {
-                return '\033[33m' + str + '\033[39m';
-            };
-
-            ANSIStyler.prototype.error = function (str) {
-                return '\033[31m' + str + '\033[39m';
-            };
-
-            ANSIStyler.prototype.warning = function (str) {
-                return '\033[33m' + str + '\033[39m';
-            };
-
-            ANSIStyler.prototype.success = function (str) {
-                return '\033[32m' + str + '\033[39m';
-            };
-
-            ANSIStyler.prototype.accent = function (str) {
-                return '\033[36m' + str + '\033[39m';
-            };
-
-            ANSIStyler.prototype.plain = function (str) {
-                return str;
-            };
-
-            ANSIStyler.prototype.zero = function () {
-                return '';
-            };
-            return ANSIStyler;
-        })();
-        styler.ANSIStyler = ANSIStyler;
-
-        styler.htmlWrapTable = {
-            'bold': ['<b>', '</b>'],
-            'italic': ['<i>', '</i>'],
-            'underline': ['<u>', '</u>'],
-            'inverse': ['<span style="background-color:black;color:white;">', '</span>'],
-            'white': ['<span style="color:white;">', '</span>'],
-            'grey': ['<span style="color:grey;">', '</span>'],
-            'black': ['<span style="color:black;">', '</span>'],
-            'blue': ['<span style="color:blue;">', '</span>'],
-            'cyan': ['<span style="color:cyan;">', '</span>'],
-            'green': ['<span style="color:green;">', '</span>'],
-            'magenta': ['<span style="color:magenta;">', '</span>'],
-            'red': ['<span style="color:red;">', '</span>'],
-            'yellow': ['<span style="color:yellow;">', '</span>']
-        };
-
-        var HTMLWrapStyler = (function (_super) {
-            __extends(HTMLWrapStyler, _super);
-            function HTMLWrapStyler() {
-                _super.call(this);
-                this.styles = styler.htmlWrapTable;
-            }
-            return HTMLWrapStyler;
-        })(WrapStyler);
-        styler.HTMLWrapStyler = HTMLWrapStyler;
-
-        var CSSStyler = (function (_super) {
-            __extends(CSSStyler, _super);
-            function CSSStyler(prefix) {
-                _super.call(this);
-                if (typeof prefix === 'string') {
-                    this.prefix = prefix;
-                } else {
-                    this.prefix = 'styler-';
-                }
-            }
-            CSSStyler.prototype.ok = function (str) {
-                return this.wrap(str, 'ok');
-            };
-
-            CSSStyler.prototype.warn = function (str) {
-                return this.wrap(str, 'warn');
-            };
-
-            CSSStyler.prototype.fail = function (str) {
-                return this.wrap(str, 'fail');
-            };
-
-            CSSStyler.prototype.error = function (str) {
-                return this.wrap(str, 'error');
-            };
-
-            CSSStyler.prototype.warning = function (str) {
-                return this.wrap(str, 'warning');
-            };
-
-            CSSStyler.prototype.success = function (str) {
-                return this.wrap(str, 'success');
-            };
-
-            CSSStyler.prototype.accent = function (str) {
-                return this.wrap(str, 'accent');
-            };
-
-            CSSStyler.prototype.plain = function (str) {
-                return this.wrap(str, 'plain');
-            };
-
-            CSSStyler.prototype.wrap = function (str, style) {
-                return '<span class="' + this.prefix + style + '">' + str + '</span>';
-            };
-            return CSSStyler;
-        })(WrapStyler);
-        styler.CSSStyler = CSSStyler;
-
-        var DevStyler = (function () {
-            function DevStyler() {
-            }
-            DevStyler.prototype.ok = function (str) {
-                return '[ok|' + str + ']';
-            };
-
-            DevStyler.prototype.fail = function (str) {
-                return '[fail|' + str + ']';
-            };
-
-            DevStyler.prototype.warn = function (str) {
-                return '[warn|' + str + ']';
-            };
-
-            DevStyler.prototype.error = function (str) {
-                return '[error|' + str + ']';
-            };
-
-            DevStyler.prototype.warning = function (str) {
-                return '[warning|' + str + ']';
-            };
-
-            DevStyler.prototype.success = function (str) {
-                return '[success|' + str + ']';
-            };
-
-            DevStyler.prototype.accent = function (str) {
-                return '[accent|' + str + ']';
-            };
-
-            DevStyler.prototype.plain = function (str) {
-                return '[plain|' + str + ']';
-            };
-
-            DevStyler.prototype.zero = function () {
-                return '[zero]';
-            };
-            return DevStyler;
-        })();
-        styler.DevStyler = DevStyler;
-    })(unfunk.styler || (unfunk.styler = {}));
-    var styler = unfunk.styler;
-})(unfunk || (unfunk = {}));
-var unfunk;
-(function (unfunk) {
-    var util = require('util');
-
-    var lineExtractExp = /(.*?)(\n|(\r\n)|\r|$)/g;
-    var lineBreaks = /\n|(\r\n)|\r/g;
-    var stringDiff = require('diff');
-
-    function repeatStr(str, amount) {
-        var ret = '';
-        for (var i = 0; i < amount; i++) {
-            ret += str;
-        }
-        return ret;
-    }
-
-    (function (diff) {
-        var StringDiffer = (function () {
-            function StringDiffer(diff) {
-                this.diff = diff;
-            }
-            StringDiffer.prototype.getWrappingLines = function (actual, expected, maxWidth, rowPadLength, padFirst, leadSymbols) {
-                if (typeof leadSymbols === "undefined") { leadSymbols = false; }
-                var changes = stringDiff.diffChars(expected, actual);
-
-                var escape = unfunk.escape;
-                var style = this.diff.style;
-                var sep = '\n';
-
-                if (changes.length === 0) {
-                    return [
-                        padFirst[0],
-                        padFirst[1] + style.warn('<no diff data>'),
-                        padFirst[1]
-                    ].join(sep);
-                }
-
-                var isSimple = (diff.identAnyExp.test(actual) && diff.identAnyExp.test(expected));
-                var delim = (isSimple ? '' : '"');
-                var delimEmpty = repeatStr(' ', delim.length);
-
-                var top = padFirst[0];
-                var middle = padFirst[1];
-                var bottom = padFirst[2];
-
-                var buffer = '';
-
-                if (leadSymbols) {
-                    top += style.error(this.diff.markRemov);
-                    middle += style.plain(this.diff.markEmpty);
-                    bottom += style.success(this.diff.markAdded);
-
-                    rowPadLength += this.diff.markAdded.length;
-                }
-
-                var dataLength = maxWidth - rowPadLength;
-                if (rowPadLength + delim.length * 2 >= maxWidth) {
-                    return '<no space for padded diff: "' + (rowPadLength + ' >= ' + maxWidth) + '">';
-                }
-
-                var rowPad = repeatStr(' ', rowPadLength);
-
-                var blocks = [];
-                var charSame = '|';
-                var charAdded = '+';
-                var charMissing = '-';
-
-                var charCounter = 0;
-
-                function delimLine() {
-                    top += delimEmpty;
-                    middle += delim;
-                    bottom += delimEmpty;
-                }
-
-                delimLine();
-
-                function flushLine() {
-                    flushStyle();
-                    delimLine();
-                    blocks.push(top + sep + middle + sep + bottom);
-
-                    top = rowPad;
-                    middle = rowPad;
-                    bottom = rowPad;
-                    charCounter = 0;
-                    delimLine();
-                }
-
-                function appendAdd(value) {
-                    for (var i = 0; i < value.length; i++) {
-                        top += ' ';
-                        buffer += charAdded;
-                    }
-                    bottom += value;
-                }
-
-                function flushAdd() {
-                    if (buffer.length > 0) {
-                        middle += style.success(buffer);
-                        buffer = '';
-                    }
-                }
-
-                function appendRem(value) {
-                    top += value;
-                    for (var i = 0; i < value.length; i++) {
-                        buffer += charMissing;
-                        bottom += ' ';
-                    }
-                }
-
-                function flushRem() {
-                    if (buffer.length > 0) {
-                        middle += style.error(buffer);
-                        buffer = '';
-                    }
-                }
-
-                function appendSame(value) {
-                    top += value;
-                    for (var i = 0; i < value.length; i++) {
-                        buffer += charSame;
-                    }
-                    bottom += value;
-                }
-
-                function flushSame() {
-                    if (buffer.length > 0) {
-                        middle += style.warning(buffer);
-                        buffer = '';
-                    }
-                }
-
-                function appendPlain(value) {
-                    top += value;
-                    for (var i = 0; i < value.length; i++) {
-                        buffer += ' ';
-                    }
-                    bottom += value;
-                }
-
-                function flushPlainStyle() {
-                    middle += buffer;
-                    buffer = '';
-                }
-
-                var appendStyle = appendPlain;
-                var flushStyle = flushPlainStyle;
-
-                var printLine = (isSimple ? function (line, end) {
-                    appendStyle(line);
-                    charCounter += line.length;
-                    if (end) {
-                        flushLine();
-                    }
-                } : function (line, end) {
-                    for (var j = 0, jj = line.length; j < jj; j++) {
-                        var value = escape(line[j]);
-                        if (charCounter + value.length > dataLength) {
-                            flushLine();
-                        }
-                        appendStyle(value);
-                        charCounter += value.length;
-                    }
-                    if (end) {
-                        flushLine();
-                    }
-                });
-
-                for (var i = 0, ii = changes.length; i < ii; i++) {
-                    var change = changes[i];
-
-                    flushStyle();
-
-                    if (change.added) {
-                        appendStyle = appendAdd;
-                        flushStyle = flushAdd;
-                    } else if (change.removed) {
-                        appendStyle = appendRem;
-                        flushStyle = flushRem;
-                    } else {
-                        appendStyle = appendSame;
-                        flushStyle = flushSame;
-                    }
-
-                    if (change.value.length === 0) {
-                        printLine('', true);
-                        continue;
-                    }
-
-                    var start = 0;
-                    var match;
-
-                    lineBreaks.lastIndex = 0;
-                    while ((match = lineBreaks.exec(change.value))) {
-                        var line = change.value.substring(start, match.index);
-
-                        start = match.index + match[0].length;
-                        lineBreaks.lastIndex = start;
-
-                        printLine(line + match[0], true);
-                    }
-
-                    if (start < change.value.length) {
-                        printLine(change.value.substr(start), false);
-                    }
-                }
-
-                if (charCounter > 0) {
-                    flushLine();
-                }
-
-                if (blocks.length === 0) {
-                    return [
-                        padFirst[0],
-                        padFirst[1] + style.warn('<no diff content rendered>'),
-                        padFirst[1]
-                    ].join(sep);
-                }
-
-                return blocks.join(sep + sep);
-            };
-            return StringDiffer;
-        })();
-        diff.StringDiffer = StringDiffer;
-    })(unfunk.diff || (unfunk.diff = {}));
-    var diff = unfunk.diff;
-})(unfunk || (unfunk = {}));
-var unfunk;
-(function (unfunk) {
-    function repeatStr(str, amount) {
-        var ret = '';
-        for (var i = 0; i < amount; i++) {
-            ret += str;
-        }
-        return ret;
-    }
-
-    (function (diff) {
-        var ObjectDiffer = (function () {
-            function ObjectDiffer(diff) {
-                this.diff = diff;
-                this.prefix = '';
-                this.indents = 0;
-            }
-            ObjectDiffer.prototype.addIndent = function (amount) {
-                this.indents += amount;
-                return '';
-            };
-
-            ObjectDiffer.prototype.getWrapping = function (actual, expected, prefix) {
-                if (typeof prefix === "undefined") { prefix = ''; }
-                this.indents = 0;
-                this.prefix = prefix;
-                var changes = objectDiff.diff(actual, expected);
-                return this.getWrappingDiff(changes);
-            };
-
-            ObjectDiffer.prototype.getWrappingDiff = function (changes) {
-                var properties = [];
-
-                var diff = changes.value;
-
-                var indent = this.getIndent();
-
-                if (changes.changed == 'equal') {
-                    for (var prop in diff) {
-                        var res = diff[prop];
-                        properties.push(indent + this.getNameEqual(prop) + this.inspect('', res, 'equal'));
-                    }
-                } else {
-                    for (var prop in diff) {
-                        var res = diff[prop];
-                        var changed = res.changed;
-                        switch (changed) {
-                            case 'object change':
-                                properties.push(indent + this.getNameChanged(prop) + '\n' + this.addIndent(1) + this.getWrappingDiff(res));
-                                break;
-                            case 'primitive change':
-                                if (typeof res.added === 'string' && typeof res.removed === 'string') {
-                                    if (this.diff.inDiffLengthLimit(res.removed) && this.diff.inDiffLengthLimit(res.added)) {
-                                        var plain = this.getNameEmpty(prop);
-                                        var preLen = plain.length;
-                                        var prepend = [
-                                            indent + this.getNameRemoved(prop),
-                                            indent + plain,
-                                            indent + this.getNameAdded(prop)
-                                        ];
-                                        properties.push(this.diff.getStringDiff(res.removed, res.added, indent.length + preLen, prepend));
-                                    } else {
-                                        properties.push(this.diff.printDiffLengthLimit(res.removed, res.added, indent));
-                                    }
-                                } else {
-                                    properties.push(indent + this.getNameRemoved(prop) + this.inspect('', res.added, 'removed') + '\n' + indent + this.getNameAdded(prop) + this.inspect('', res.removed, 'added') + '');
-                                }
-                                break;
-                            case 'removed':
-                                properties.push(indent + this.getNameRemoved(prop) + this.inspect('', res.value, 'removed'));
-                                break;
-                            case 'added':
-                                properties.push(indent + this.getNameAdded(prop) + this.inspect('', res.value, 'added'));
-                                break;
-                            case 'equal':
-                            default:
-                                properties.push(indent + this.getNameEqual(prop) + this.inspect('', res.value, 'equal'));
-                                break;
-                        }
-                    }
-                }
-                return properties.join('\n') + this.addIndent(-1) + this.getIndent() + this.diff.markSpace;
-            };
-
-            ObjectDiffer.prototype.getIndent = function (id) {
-                if (typeof id === "undefined") { id = ''; }
-                var ret = [];
-                for (var i = 0; i < this.indents; i++) {
-                    ret.push(this.diff.indentert);
-                }
-                return id + this.prefix + ret.join('');
-            };
-
-            ObjectDiffer.prototype.encodeName = function (prop) {
-                if (!unfunk.diff.identAnyExp.test(prop)) {
-                    return '"' + unfunk.escape(prop) + '"';
-                }
-                return prop;
-            };
-            ObjectDiffer.prototype.encodeString = function (prop) {
-                return '"' + unfunk.escape(prop) + '"';
-            };
-
-            ObjectDiffer.prototype.getNameAdded = function (prop) {
-                return this.diff.style.success(this.diff.markAdded + this.encodeName(prop)) + ': ';
-            };
-
-            ObjectDiffer.prototype.getNameRemoved = function (prop) {
-                return this.diff.style.error(this.diff.markRemov + this.encodeName(prop)) + ': ';
-            };
-
-            ObjectDiffer.prototype.getNameChanged = function (prop) {
-                return this.diff.style.warning(this.diff.markChang + this.encodeName(prop)) + ': ';
-            };
-
-            ObjectDiffer.prototype.getNameEmpty = function (prop) {
-                return this.diff.markColum + repeatStr(' ', this.encodeName(prop).length) + ': ';
-            };
-
-            ObjectDiffer.prototype.getNameEqual = function (prop) {
-                return this.diff.markEqual + this.encodeName(prop) + ': ';
-            };
-
-            ObjectDiffer.prototype.getName = function (prop, change) {
-                switch (change) {
-                    case 'added':
-                        return this.getNameAdded(prop);
-                    case 'removed':
-                        return this.getNameRemoved(prop);
-                    case 'object change':
-                        return this.getNameChanged(prop);
-                    case 'empty':
-                        return this.getNameEmpty(prop);
-                    case 'plain':
-                    default:
-                        return this.diff.markEqual + this.encodeName(prop) + ': ';
-                }
-            };
-
-            ObjectDiffer.prototype.inspect = function (accumulator, obj, change) {
-                switch (typeof obj) {
-                    case 'object':
-                        if (!obj) {
-                            accumulator += 'null';
-                            break;
-                        }
-                        var length;
-                        if (Array.isArray(obj)) {
-                            length = obj.length;
-                            if (length === 0) {
-                                accumulator += '[]';
-                            } else {
-                                accumulator += '\n';
-                                for (var i = 0; i < length; i++) {
-                                    this.addIndent(1);
-                                    accumulator = this.inspect(accumulator + this.getIndent() + this.getName(String(i), change), obj[i], change);
-                                    if (i < length - 1) {
-                                        accumulator += '\n';
-                                    }
-                                    this.addIndent(-1);
-                                }
-                            }
-                        } else {
-                            var props = Object.keys(obj).sort();
-                            length = props.length;
-                            if (length === 0) {
-                                accumulator += '{}';
-                            } else {
-                                accumulator += '\n';
-                                for (var i = 0; i < length; i++) {
-                                    var prop = props[i];
-                                    this.addIndent(1);
-                                    accumulator = this.inspect(accumulator + this.getIndent() + this.getName(prop, change), obj[prop], change);
-                                    if (i < length - 1) {
-                                        accumulator += '\n';
-                                    }
-                                    this.addIndent(-1);
-                                }
-                            }
-                        }
-                        break;
-                    case 'function':
-                        accumulator += 'function()';
-                        break;
-                    case 'undefined':
-                        accumulator += 'undefined';
-                        break;
-                    case 'string':
-                        accumulator += this.encodeName(obj);
-                        break;
-                    case 'number':
-                        accumulator += String(obj);
-                        break;
-                    default:
-                        accumulator += this.encodeString(String(obj));
-                        break;
-                }
-                return accumulator;
-            };
-            return ObjectDiffer;
-        })();
-        diff.ObjectDiffer = ObjectDiffer;
-    })(unfunk.diff || (unfunk.diff = {}));
-    var diff = unfunk.diff;
-})(unfunk || (unfunk = {}));
-var unfunk;
-(function (unfunk) {
-    (function (diff) {
-        diff.objectNameExp = /(^\[object )|(\]$)/gi;
-        diff.identExp = /^[a-z](?:[a-z0-9_\-]*?[a-z0-9])?$/i;
-        diff.identAnyExp = /^[a-z0-9](?:[a-z0-9_\-]*?[a-z0-9])?$/i;
-
-        var DiffFormatter = (function () {
-            function DiffFormatter(style, maxWidth) {
-                if (typeof maxWidth === "undefined") { maxWidth = 80; }
-                this.style = style;
-                this.maxWidth = maxWidth;
-                this.indentert = '  ';
-                this.markAdded = '+ ';
-                this.markRemov = '- ';
-                this.markChang = '? ';
-                this.markEqual = '. ';
-                this.markEmpty = '  ';
-                this.markColum = '| ';
-                this.markSpace = '';
-                this.stringMaxLength = 2000;
-                this.bufferMaxLength = 100;
-                this.arrayMaxLength = 100;
-                if (maxWidth === 0) {
-                    this.maxWidth = 100;
-                }
-            }
-            DiffFormatter.prototype.forcedDiff = function (actual, expected) {
-                if (typeof actual === 'string' && typeof expected === 'string') {
-                    return true;
-                } else if (typeof actual === 'object' && typeof expected === 'object') {
-                    return true;
-                }
-                return false;
-            };
-
-            DiffFormatter.prototype.inDiffLengthLimit = function (obj, limit) {
-                if (typeof limit === "undefined") { limit = 0; }
-                switch (typeof obj) {
-                    case 'string':
-                        return (obj.length < (limit ? limit : this.stringMaxLength));
-                    case 'object':
-                        switch (this.getObjectType(obj)) {
-                            case 'array':
-                            case 'arguments':
-                                return (obj.length < (limit ? limit : this.arrayMaxLength));
-                            case 'buffer':
-                                return (obj.length < (limit ? limit : this.bufferMaxLength));
-                            case 'object':
-                                return (obj && (Object.keys(obj).length < (limit ? limit : this.arrayMaxLength)));
-                        }
-                    default:
-                        return false;
-                }
-            };
-
-            DiffFormatter.prototype.printDiffLengthLimit = function (actual, expected, prepend, limit) {
-                if (typeof prepend === "undefined") { prepend = ''; }
-                if (typeof limit === "undefined") { limit = 0; }
-                var len = [];
-                if (actual && !this.inDiffLengthLimit(actual, limit)) {
-                    len.push(prepend + this.style.warning('<actual too lengthy for diff: ' + actual.length + '>'));
-                }
-                if (expected && !this.inDiffLengthLimit(expected, limit)) {
-                    len.push(prepend + this.style.warning('<expected too lengthy for diff: ' + expected.length + '>'));
-                }
-                if (len.length > 0) {
-                    return len.join('\n');
-                }
-                return '';
-            };
-
-            DiffFormatter.prototype.getObjectType = function (obj) {
-                return Object.prototype.toString.call(obj).replace(diff.objectNameExp, '').toLowerCase();
-            };
-
-            DiffFormatter.prototype.validType = function (value) {
-                var type = typeof value;
-                if (type === 'string') {
-                    return true;
-                }
-                if (type === 'object') {
-                    return !!value;
-                }
-                return false;
-            };
-
-            DiffFormatter.prototype.getStyledDiff = function (actual, expected, prepend) {
-                if (typeof prepend === "undefined") { prepend = ''; }
-                if ((this.getObjectType(actual) !== this.getObjectType(expected) || !this.validType(actual) || !this.validType(expected))) {
-                    return '';
-                }
-                if (!this.inDiffLengthLimit(actual) || !this.inDiffLengthLimit(expected)) {
-                    return this.printDiffLengthLimit(actual, expected, prepend);
-                }
-
-                if (typeof actual === 'object' && typeof expected === 'object') {
-                    return this.getObjectDiff(actual, expected, prepend);
-                } else if (typeof actual === 'string' && typeof expected === 'string') {
-                    return this.getStringDiff(actual, expected, prepend.length, [prepend, prepend, prepend], true);
-                }
-                return '';
-            };
-
-            DiffFormatter.prototype.getObjectDiff = function (actual, expected, prepend, diffLimit) {
-                if (typeof diffLimit === "undefined") { diffLimit = 0; }
-                return new unfunk.diff.ObjectDiffer(this).getWrapping(actual, expected, prepend);
-            };
-
-            DiffFormatter.prototype.getStringDiff = function (actual, expected, padLength, padFirst, leadSymbols) {
-                if (typeof leadSymbols === "undefined") { leadSymbols = false; }
-                return new unfunk.diff.StringDiffer(this).getWrappingLines(actual, expected, this.maxWidth, padLength, padFirst, leadSymbols);
-            };
-            return DiffFormatter;
-        })();
-        diff.DiffFormatter = DiffFormatter;
-    })(unfunk.diff || (unfunk.diff = {}));
-    var diff = unfunk.diff;
-})(unfunk || (unfunk = {}));
 var unfunk;
 (function (unfunk) {
     (function (error) {
@@ -1238,60 +182,14 @@ var unfunk;
     })(unfunk.error || (unfunk.error = {}));
     var error = unfunk.error;
 })(unfunk || (unfunk = {}));
+
 var unfunk;
 (function (unfunk) {
-    (function (stream) {
-        var StreamBuffer = (function () {
-            function StreamBuffer(stream, start) {
-                if (typeof start === "undefined") { start = true; }
-                this.stream = stream;
-                this.buffer = [];
-                this._running = false;
-                var self = this;
-                this.handle = function (data) {
-                    self.buffer.push(data);
-                };
-                if (start) {
-                    this.start();
-                }
-            }
-            StreamBuffer.prototype.start = function () {
-                if (!this._running) {
-                    this._running = true;
-                    this.stream.addListener('data', this.handle);
-                }
-            };
+    var jsesc = require('jsesc');
+    var ministyle = require('ministyle');
+    var miniwrite = require('miniwrite');
+    var DiffFormatter = require('unfunk-diff').DiffFormatter;
 
-            StreamBuffer.prototype.peek = function () {
-                return Buffer.concat(this.buffer);
-            };
-
-            StreamBuffer.prototype.get = function () {
-                var data = Buffer.concat(this.buffer);
-                this.buffer = [];
-                return data;
-            };
-
-            StreamBuffer.prototype.clear = function () {
-                this.buffer = [];
-            };
-
-            StreamBuffer.prototype.stop = function () {
-                var data = this.get();
-                if (this._running) {
-                    this._running = false;
-                    this.stream.removeListener('data', this.handle);
-                }
-                return data;
-            };
-            return StreamBuffer;
-        })();
-        stream.StreamBuffer = StreamBuffer;
-    })(unfunk.stream || (unfunk.stream = {}));
-    var stream = unfunk.stream;
-})(unfunk || (unfunk = {}));
-var unfunk;
-(function (unfunk) {
     var Stats = (function () {
         function Stats() {
             this.suites = 0;
@@ -1374,8 +272,6 @@ var unfunk;
             }
         }
     }
-
-    var jsesc = require('jsesc');
 
     var escapableExp = /[\\\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;
     var meta = {
@@ -1467,34 +363,33 @@ var unfunk;
         switch (options.style) {
             case 'no':
             case 'none':
-                return new unfunk.styler.NoStyler();
             case 'plain':
-                return new unfunk.styler.PlainStyler();
+                return ministyle.plain();
             case 'dev':
-                return new unfunk.styler.DevStyler();
+                return ministyle.dev();
             case 'html':
-                return new unfunk.styler.HTMLWrapStyler();
+                return ministyle.html();
             case 'css':
-                return new unfunk.styler.CSSStyler();
+                return ministyle.css();
             case 'ansi':
-                return new unfunk.styler.ANSIStyler();
+            default:
+                return ministyle.ansi();
         }
-        return new unfunk.styler.ANSIStyler();
     }
 
     function getWriter() {
         if (options.stream) {
-            return new unfunk.writer.StdStreamWriter(options.stream);
+            return miniwrite.chars(miniwrite.stream(options.stream));
         }
         switch (options.writer) {
             case 'stdout':
-                return new unfunk.writer.StdStreamWriter(process.stdout);
-            case 'bulk':
-                return new unfunk.writer.ConsoleBulkWriter();
+                return miniwrite.chars(miniwrite.stream(process.stdout));
             case 'null':
-                return new unfunk.writer.NullWriter();
+                return miniwrite.chars(miniwrite.base());
+            case 'log':
+            default:
+                return miniwrite.chars(miniwrite.log());
         }
-        return new unfunk.writer.ConsoleLineWriter();
     }
 
     function pluralize(word, amount, plurl) {
@@ -1514,7 +409,7 @@ var unfunk;
             var out = getWriter();
             var style = getStyler();
 
-            var diffFormat = new unfunk.diff.DiffFormatter(style, getViewWidth());
+            var diffFormat = new DiffFormatter(style, getViewWidth());
             var stackFilter = new unfunk.error.StackFilter(style);
             if (options.stackFilter) {
                 stackFilter.addFilters(unfunk.error.nodeFilters);
@@ -1543,8 +438,8 @@ var unfunk;
 
             runner.on('start', function () {
                 stats.start = new Date().getTime();
-                out.start();
-                out.writeln();
+
+                out.writeln(style.plain(''));
             });
 
             runner.on('suite', function (suite) {
@@ -1554,7 +449,7 @@ var unfunk;
                     } else {
                         out.writeln(style.accent('->') + ' running suites');
                     }
-                    out.writeln();
+                    out.writeln('');
                 }
                 suite.parent = currentSuite;
                 suiteStack.push(suite);
@@ -1577,7 +472,7 @@ var unfunk;
                 }
 
                 if (1 == indents && !suite.root) {
-                    out.writeln();
+                    out.writeln('');
                 }
             });
 
@@ -1588,7 +483,7 @@ var unfunk;
 
             runner.on('pending', function (test) {
                 stats.pending++;
-                out.writeln(indent(0) + style.plain(test.title + '.. ') + style.warn('pending'));
+                out.writeln(indent(0) + style.plain(test.title + '.. ') + style.warning('pending'));
                 pending.push(test);
             });
 
@@ -1599,17 +494,17 @@ var unfunk;
                 test.speed = test.duration > test.slow() ? 'slow' : (test.duration > medium ? 'medium' : 'fast');
 
                 if (test.speed === 'slow') {
-                    out.writeln(style.ok(test.speed) + style.error(' (' + test.duration + 'ms)'));
+                    out.writeln(style.success(test.speed) + style.error(' (' + test.duration + 'ms)'));
                 } else if (test.speed === 'medium') {
-                    out.writeln(style.ok(test.speed) + style.warning(' (' + test.duration + 'ms)'));
+                    out.writeln(style.success(test.speed) + style.warning(' (' + test.duration + 'ms)'));
                 } else {
-                    out.writeln(style.ok('ok'));
+                    out.writeln(style.success('ok'));
                 }
             });
 
             runner.on('fail', function (test, err) {
                 stats.failures++;
-                out.writeln(style.fail('fail'));
+                out.writeln(style.error('fail'));
 
                 test.err = err;
                 test.parsed = stackFilter.parse(err, options.stackFilter);
@@ -1653,19 +548,19 @@ var unfunk;
                 }
 
                 if (options.reportPending && pending.length > 0) {
-                    out.writeln(style.accent('->') + ' reporting ' + style.warn(pluralize('pending spec', pending.length)));
-                    out.writeln();
+                    out.writeln(style.accent('->') + ' reporting ' + style.warning(pluralize('pending spec', pending.length)));
+                    out.writeln('');
                     pending.forEach(function (test, num) {
                         var tmp = test.fullTitle();
                         var ind = tmp.lastIndexOf(test.title);
                         var title = style.accent(tmp.substring(0, ind)) + style.plain(tmp.substring(ind));
-                        out.writeln(style.warn(padRight((num + 1) + ': ', indentLen(2), ' ')) + title);
+                        out.writeln(style.warning(padRight((num + 1) + ': ', indentLen(2), ' ')) + title);
                     });
-                    out.writeln();
+                    out.writeln('');
                 }
                 if (failures.length > 0) {
                     out.writeln(style.accent('->') + ' reporting ' + style.error(pluralize('failure', failures.length)));
-                    out.writeln();
+                    out.writeln('');
 
                     failures.forEach(function (test, num) {
                         var tmp = test.fullTitle();
@@ -1677,29 +572,27 @@ var unfunk;
                         var msg = parsed.getHeader();
 
                         out.writeln(style.error(padRight((num + 1) + ': ', indentLen(2), ' ')) + title);
-                        out.writeln();
+                        out.writeln('');
                         out.writeln(indent(2) + style.warning(msg));
 
                         if (parsed.hasStack()) {
                             out.writeln(parsed.getHeadlessStack(indent(2), indenter));
-                            out.writeln();
+                            out.writeln('');
                         } else {
-                            out.writeln();
+                            out.writeln('');
                         }
 
                         if (err.showDiff || diffFormat.forcedDiff(err.actual, err.expected)) {
                             var diff = diffFormat.getStyledDiff(err.actual, err.expected, indent(2));
                             if (diff) {
                                 out.writeln(diff);
-                                out.writeln();
+                                out.writeln('');
                             }
                         }
                     });
                 }
                 out.writeln(style.plain('-> ') + sum + ' (' + (stats.duration) + 'ms)');
-                out.writeln();
-
-                out.finish();
+                out.writeln('');
             });
         };
         return Unfunk;

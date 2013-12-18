@@ -1,3 +1,0 @@
-[error|- ]    bbbbcccc
-[plain|  ][success|++++][error|----][warning|||||]
-[success|+ ]aaaa    cccc

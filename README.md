@@ -13,12 +13,8 @@ Use-case is running mocha's in basic console views embedded in IDE's or setups w
 
 * The reporter does *not* extend mocha's default Base prototype because that is a main source of funkyness. This means not all of mocha's reporter features are supported.
 * There are many features to ease testing usability, like aggressive attempts at getting a sensible error message or a stack filter that attempts to compact the stack trace by dropping mocha function calls.
-
-### Diffs
-
-* There is a diff report with custom display that works even on plain-text display.
-	* Object-diff algorithm is [objectDiff](https://github.com/NV/objectDiff.js) with nested string-diff. May be stricter then your assertions!
-	* String-diff algorithm is [jsDiff](https://github.com/kpdecker/jsdiff). 
+* Object & string diffs by [unfunk-diff](https://github.com/Bartvds/unfunk-diff).
+* Output by [ministyle](https://github.com/Bartvds/ministyle) & [miniwrite](https://github.com/Bartvds/miniwrite).
 
 
 ## Usage
@@ -131,7 +127,7 @@ If you got development install you can use `$ grunt demo` to get a quick demo ov
 Tested with:
 
 * [Chai Assertion Libary](http://chaijs.com) (best of the best, but no IE < 9)
-* [Proclaim](https://github.com/Bartvds/proclaim) (Chai-like `'assert'`, supports IE < 9)
+* [Proclaim](https://github.com/rowanmanning/proclaim) (Chai-like `'assert'`, supports IE < 9)
 * CommonJS-style `'assert'` (Node.js, browserify etc)
 
 Should work with any assertion library, like:
@@ -190,6 +186,8 @@ See the `Gruntfile` for additional commands.
 
 ## Versions
 
+* 0.4.0 - externalised [unfunk-diff](https://github.com/Bartvds/unfunk-diff), using [ministyle](https://github.com/Bartvds/ministyle), [miniwrite](https://github.com/Bartvds/miniwrite), dropped obsolete code.
+* 0.3.7 - fixed some bugs
 * 0.3.6 - relaxed string encoding, cleaned stack code, support Q longStack, support multi-line messages, fixed bugs & hardened output, added `q` and `node.js` to stack filter.
 * 0.3.0 - improved diffs (speed, linebreaks, escape with [jsesc](https://github.com/mathiasbynens/jsesc)), added output testing, added grunt task to set options, updated project
 * 0.2.3 - support bash style uppercased+underscore-style ENV options (tip by @reydelamirienda), skip diff excessively lengthy objects (strings/arrays/arguments/buffers) 
@@ -201,12 +199,6 @@ See the `Gruntfile` for additional commands.
 * 0.1.11 - added mocha bin command test, improved reporting
 * 0.1.10 - objectDiff fix, added option() methods
 * 0.1.8 - compatible with grunt-mocha (PhantomJS)
-
-## Credit
-
-* String diff from [jsDiff](https://github.com/kpdecker/jsdiff) by Kevin Decker
-* Object diff from [objectDiff](https://github.com/NV/objectDiff.js) by Nikita Vasilyev
-* Color codes from [colors.js](https://github.com/marak/colors.js/) by Marak Squires & Alexis Sellier (cloudhead)
 
 ## License
 

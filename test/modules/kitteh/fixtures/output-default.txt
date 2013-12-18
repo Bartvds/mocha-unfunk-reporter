@@ -6,19 +6,19 @@
 
    kitteh
       can
-         meow.. {{PASS}} ({TIME_INT})
+         meow.. ok
          not
-            spell.. FAIL
+            spell.. fail
 1:             expected 'abcdefghijdelm actual' to equal 'abcdfghjklm expected'
          has
-            milk.. {{PASS}} ({TIME_INT})
-            cheeseburgers.. {{PASS}} ({TIME_INT})
-            sushi.. PENDING
+            milk.. ok
+            cheeseburgers.. ok
+            sushi.. pending
             no
-               computer skills.. FAIL
+               computer skills.. fail
 2:                pretty stack trace is pretty
             some
-               fun.. FAIL
+               fun.. fail
 3:                expected { Object (aa, bb, ...) } to deeply equal { Object (aa, bb, ...) }
 
 -> reporting 3 failures

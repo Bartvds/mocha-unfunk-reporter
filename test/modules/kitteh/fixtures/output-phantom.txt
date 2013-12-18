@@ -2,42 +2,42 @@
 
 [4mRunning "mocha:base" (mocha) task[24m
 Testing: index.html
+[plain|]
+[accnt|->] running suites
 
-[accent|->] running suites
+   [accnt|kitteh]
+      [accnt|can]
+         [plain|meow.. ][succs|ok]
+         [accnt|not]
+            [plain|spell.. ][error|fail]
+[error|1:             ][warng|expected 'abcdefghijdelm actual' to equal 'abcdfghjklm expected']
+         [accnt|has]
+            [plain|milk.. ][succs|ok]
+            [plain|cheeseburgers.. ][succs|ok]
+            [plain|sushi.. ][warng|pending]
+            [accnt|no]
+               [plain|computer skills.. ][error|fail]
+[error|2:                ][warng|pretty stack trace is pretty]
+            [accnt|some]
+               [plain|fun.. ][error|fail]
+[error|3:                ][warng|expected { Object (aa, bb, ...) } to deeply equal { Object (aa, bb, ...) }]
 
-   [accent|kitteh]
-      [accent|can]
-         [plain|meow.. ][ok|ok]
-         [accent|not]
-            [plain|spell.. ][fail|fail]
-[error|1:             ][warning|expected 'abcdefghijdelm actual' to equal 'abcdfghjklm expected']
-         [accent|has]
-            [plain|milk.. ][ok|ok]
-            [plain|cheeseburgers.. ][ok|ok]
-            [plain|sushi.. ][warn|pending]
-            [accent|no]
-               [plain|computer skills.. ][fail|fail]
-[error|2:                ][warning|pretty stack trace is pretty]
-            [accent|some]
-               [plain|fun.. ][fail|fail]
-[error|3:                ][warning|expected { Object (aa, bb, ...) } to deeply equal { Object (aa, bb, ...) }]
+[accnt|->] reporting [error|3 failures]
 
-[accent|->] reporting [error|3 failures]
+[error|1:    ][accnt|kitteh can not ][plain|spell]
 
-[error|1:    ][accent|kitteh can not ][plain|spell]
-
-      [warning|expected 'abcdefghijdelm actual' to equal 'abcdfghjklm expected']
+      [warng|expected 'abcdefghijdelm actual' to equal 'abcdfghjklm expected']
          at {PATH}node_modules/chai/chai.js:{Y}
          at {PATH}node_modules/chai/chai.js:{Y}
          at {PATH}test/modules/kitteh/tmp/_tmp.test.js:{Y}
 
       [error|- ] abcd fgh j  klm  expect   ed 
-      [plain|  ]"[warning|||||][success|+][warning||||][success|+][warning||][success|++][error|-][warning||||][success|+][error|----][warning|||][success|+++][error|--]"
-      [success|+ ] abcdefghijde lm a    ctual   
+      [plain|  ]"[warng|||||][succs|+][warng||||][succs|+][warng||][succs|++][error|-][warng||||][succs|+][error|----][warng|||][succs|+++][error|--]"
+      [succs|+ ] abcdefghijde lm a    ctual   
 
-[error|2:    ][accent|kitteh can has no ][plain|computer skills]
+[error|2:    ][accnt|kitteh can has no ][plain|computer skills]
 
-      [warning|pretty stack trace is pretty]
+      [warng|pretty stack trace is pretty]
          at {PATH}node_modules/chai/chai.js:{Y}
          at {PATH}node_modules/chai/chai.js:{Y}
          at chair ({PATH}test/modules/kitteh/tmp/_tmp.test.js:{Y})
@@ -46,9 +46,9 @@ Testing: index.html
          at mouse ({PATH}test/modules/kitteh/tmp/_tmp.test.js:{Y})
          at {PATH}test/modules/kitteh/tmp/_tmp.test.js:{Y}
 
-[error|3:    ][accent|kitteh can has some ][plain|fun]
+[error|3:    ][accnt|kitteh can has some ][plain|fun]
 
-      [warning|expected { Object (aa, bb, ...) } to deeply equal { Object (aa, bb, ...) }]
+      [warng|expected { Object (aa, bb, ...) } to deeply equal { Object (aa, bb, ...) }]
          at {PATH}node_modules/chai/chai.js:{Y}
          at assertEql ({PATH}node_modules/chai/chai.js:{Y})
          at {PATH}node_modules/chai/chai.js:{Y}
@@ -56,35 +56,35 @@ Testing: index.html
          at {PATH}test/modules/kitteh/tmp/_tmp.test.js:{Y}
 
       [error|- aa]:  meow me    ow 
-      |   : "[warning|||][error|----][warning||][success|++++][warning|||]"
-      [success|+ aa]:  me    eeeiiow 
-      [warning|? bb]: 
+      |   : "[warng|||][error|----][warng||][succs|++++][warng|||]"
+      [succs|+ aa]:  me    eeeiiow 
+      [warng|? bb]: 
         [error|- one]: 1
-        [success|+ one]: 33
+        [succs|+ one]: 33
         [error|- two]: 2
-        [success|+ two]: 22
+        [succs|+ two]: 22
         [error|- three]: aab c dd  df eg ehi j k lmnnop   
-        |      : [warning||||][success|+][warning||][success|+][warning|||][success|++][error|-][warning||][success|+][error|-][warning||][success|+][error|-][warning|||][success|+][warning||][success|+][warning||][success|+][warning||||][error|-][warning|||][success|+++]
-        [success|+ three]: aabbccddee ff gg hiijjkklmn oprst      
-      [warning|? uu]: 
+        |      : [warng||||][succs|+][warng||][succs|+][warng|||][succs|++][error|-][warng||][succs|+][error|-][warng||][succs|+][error|-][warng|||][succs|+][warng||][succs|+][warng||][succs|+][warng||||][error|-][warng|||][succs|+++]
+        [succs|+ three]: aabbccddee ff gg hiijjkklmn oprst      
+      [warng|? uu]: 
         [error|- one]: 33
-        [success|+ one]: 1
+        [succs|+ one]: 1
         [error|- two]: 22
-        [success|+ two]: 2
+        [succs|+ two]: 2
         [error|- three]: aabbccdd  e effgghiijjkklmn oprst
-        |      : [warning||||][error|-][warning||][error|-][warning|||][success|++][warning||][success|+][warning||][error|----][warning|||][error|-][warning||][error|-][warning||][error|-][warning||||][success|+][warning|||][error|---]
-        [success|+ three]: aab c dddfege    hi j k lmnnop         
-      [success|+ ff]: purrrrrrr
-      [warning|? cc]: 
+        |      : [warng||||][error|-][warng||][error|-][warng|||][succs|++][warng||][succs|+][warng||][error|----][warng|||][error|-][warng||][error|-][warng||][error|-][warng||||][succs|+][warng|||][error|---]
+        [succs|+ three]: aab c dddfege    hi j k lmnnop         
+      [succs|+ ff]: purrrrrrr
+      [warng|? cc]: 
         [error|- 0]: 1
-        [success|+ 0]: 111
+        [succs|+ 0]: 111
         [error|- 1]: 2
-        [success|+ 1]: 222
+        [succs|+ 1]: 222
         [error|- 2]: 3
-        [success|+ 2]: 555      
+        [succs|+ 2]: 555      
       [error|- dd]: hisss      
 
-[plain|-> ][error|failed 3] and [warning|passed 3] of [accent|6 tests], left [warning|1 pending] ({TIME_INT})
+[plain|-> ][error|failed 3] and [warng|passed 3] of [accnt|6 tests], left [warng|1 pending] ({TIME_INT})
 
 [31m>> [39m3/6 tests failed ({TIME_FLOAT})
 [33mWarning: Task "mocha:base" failed. Use --force to continue.[39m

@@ -6,6 +6,7 @@
 /Gruntfile.js
 /tsd.json
 /tslint.json
+/tscommand.tmp.txt
 /typings
 /tsd-config.json
 /*.tgz

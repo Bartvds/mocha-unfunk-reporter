@@ -1,4 +1,4 @@
-///<reference path="../../../_ref.ts" />
+///<reference path="../../../_bootstrap.ts" />
 
 describe('king kitteh', () => {
 	describe('proclaims they shall', () => {
@@ -9,7 +9,7 @@ describe('king kitteh', () => {
 			it('count', () => {
 				proclaim.deepEqual({one: 1, two: 2, three:3}, {one: 3, two: 2, four:4});
 			});
-		});
+		});DiffFormatter
 		describe('has', () => {
 			it('royal milk', () => {
 				proclaim.ok(true);

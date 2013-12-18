@@ -1,4 +1,4 @@
-///<reference path="_ref.ts" />
+///<reference path="_ref.d.ts" />
 
 module helper {
 

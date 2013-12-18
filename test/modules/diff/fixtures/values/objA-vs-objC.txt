@@ -1,5 +1,0 @@
-- name: obj C
-|     : |||+-
-+ name: objA 
-+ propA: "ü\tspecial\\A \n©♥"
-+ escA: "x\\xü"

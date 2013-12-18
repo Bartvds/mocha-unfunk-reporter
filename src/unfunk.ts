@@ -1,9 +1,5 @@
-///<reference path="_ref.ts" />
-///<reference path="writer.ts" />
-///<reference path="styler.ts" />
-///<reference path="diff.ts" />
+///<reference path="_ref.d.ts" />
 ///<reference path="error.ts" />
-///<reference path="stream.ts" />
 
 //declare mocha reporter data typings
 interface TestError {
@@ -42,6 +38,11 @@ interface Test {
 }
 
 module unfunk {
+
+	var jsesc = require('jsesc');
+	var ministyle = <MiniStyle> require('ministyle');
+	var miniwrite = <MiniWrite> require('miniwrite');
+	var DiffFormatter = require('unfunk-diff').DiffFormatter;
 
 	export interface TextWriter {
 		start();
@@ -135,8 +136,6 @@ module unfunk {
 		}
 	}
 
-	var jsesc = require('jsesc');
-
 	var escapableExp = /[\\\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;
 	var meta = {
 		'\b': '\\b',
@@ -224,38 +223,37 @@ module unfunk {
 		return str;
 	}
 
-	function getStyler():Styler {
+	function getStyler():MiniStyle.Style {
 		switch (options.style) {
 			case 'no':
 			case 'none':
-				return new styler.NoStyler();
 			case 'plain':
-				return new styler.PlainStyler();
+				return ministyle.plain();
 			case 'dev':
-				return new styler.DevStyler();
+				return ministyle.dev();
 			case 'html':
-				return new styler.HTMLWrapStyler();
+				return ministyle.html();
 			case 'css':
-				return new styler.CSSStyler();
+				return ministyle.css();
 			case 'ansi':
-				return new styler.ANSIStyler();
+			default:
+				return ministyle.ansi();
 		}
-		return new styler.ANSIStyler();
 	}
 
-	function getWriter():TextWriter {
+	function getWriter():MiniWrite.Chars {
 		if (options.stream) {
-			return new writer.StdStreamWriter(options.stream);
+			return miniwrite.chars(miniwrite.stream(options.stream));
 		}
 		switch (options.writer) {
 			case 'stdout':
-				return new writer.StdStreamWriter(process.stdout);
-			case 'bulk':
-				return new writer.ConsoleBulkWriter();
+				return miniwrite.chars(miniwrite.stream(process.stdout));
 			case 'null':
-				return new writer.NullWriter();
+				return miniwrite.chars(miniwrite.base());
+			case 'log':
+			default:
+				return miniwrite.chars(miniwrite.log());
 		}
-		return new writer.ConsoleLineWriter();
 	}
 
 	export function pluralize(word:string, amount:number, plurl = 's'):string {
@@ -280,7 +278,7 @@ module unfunk {
 			var out = getWriter();
 			var style = getStyler();
 
-			var diffFormat = new unfunk.diff.DiffFormatter(style, getViewWidth());
+			var diffFormat = new DiffFormatter(style, getViewWidth());
 			var stackFilter = new unfunk.error.StackFilter(style);
 			if (options.stackFilter) {
 				stackFilter.addFilters(unfunk.error.nodeFilters);
@@ -307,8 +305,8 @@ module unfunk {
 
 			runner.on('start', () => {
 				stats.start = new Date().getTime();
-				out.start();
-				out.writeln();
+				// use plain to reset style
+				out.writeln(style.plain(''));
 			});
 
 			runner.on('suite', (suite:TestSuite) => {
@@ -319,7 +317,7 @@ module unfunk {
 					} else {
 						out.writeln(style.accent('->') + ' running suites');
 					}
-					out.writeln();
+					out.writeln('');
 				}
 				suite.parent = currentSuite;
 				suiteStack.push(suite);
@@ -342,7 +340,7 @@ module unfunk {
 				}
 
 				if (1 == indents && !suite.root) {
-					out.writeln();
+					out.writeln('');
 				}
 			});
 
@@ -353,7 +351,7 @@ module unfunk {
 
 			runner.on('pending', (test:Test) => {
 				stats.pending++;
-				out.writeln(indent(0) + style.plain(test.title + '.. ') + style.warn('pending'));
+				out.writeln(indent(0) + style.plain(test.title + '.. ') + style.warning('pending'));
 				pending.push(test);
 			});
 
@@ -364,19 +362,19 @@ module unfunk {
 				test.speed = test.duration > test.slow() ? 'slow' : (test.duration > medium ? 'medium' : 'fast');
 
 				if (test.speed === 'slow') {
-					out.writeln(style.ok(test.speed) + style.error(' (' + test.duration + 'ms)'));
+					out.writeln(style.success(test.speed) + style.error(' (' + test.duration + 'ms)'));
 				}
 				else if (test.speed === 'medium') {
-					out.writeln(style.ok(test.speed) + style.warning(' (' + test.duration + 'ms)'));
+					out.writeln(style.success(test.speed) + style.warning(' (' + test.duration + 'ms)'));
 				}
 				else {
-					out.writeln(style.ok('ok'));
+					out.writeln(style.success('ok'));
 				}
 			});
 
 			runner.on('fail', (test:Test, err:TestError) => {
 				stats.failures++;
-				out.writeln(style.fail('fail'));
+				out.writeln(style.error('fail'));
 
 				test.err = err;
 				test.parsed = stackFilter.parse(err, options.stackFilter);
@@ -425,20 +423,20 @@ module unfunk {
 
 				//details
 				if (options.reportPending && pending.length > 0) {
-					out.writeln(style.accent('->') + ' reporting ' + style.warn(pluralize('pending spec', pending.length)));
-					out.writeln();
+					out.writeln(style.accent('->') + ' reporting ' + style.warning(pluralize('pending spec', pending.length)));
+					out.writeln('');
 					pending.forEach((test:Test, num:number) => {
 						var tmp = test.fullTitle();
 						var ind = tmp.lastIndexOf(test.title);
 						var title = style.accent(tmp.substring(0, ind)) + style.plain(tmp.substring(ind));
-						out.writeln(style.warn(padRight((num + 1) + ': ', indentLen(2), ' ')) + title);
+						out.writeln(style.warning(padRight((num + 1) + ': ', indentLen(2), ' ')) + title);
 					});
-					out.writeln();
+					out.writeln('');
 				}
 				if (failures.length > 0) {
 
 					out.writeln(style.accent('->') + ' reporting ' + style.error(pluralize('failure', failures.length)));
-					out.writeln();
+					out.writeln('');
 
 					failures.forEach((test:Test, num:number) => {
 						//deep get title chain
@@ -452,31 +450,30 @@ module unfunk {
 						var msg = parsed.getHeader();
 
 						out.writeln(style.error(padRight((num + 1) + ': ', indentLen(2), ' ')) + title);
-						out.writeln();
+						out.writeln('');
 						out.writeln(indent(2) + style.warning(msg));
 
 						if (parsed.hasStack()) {
 							out.writeln(parsed.getHeadlessStack(indent(2), indenter));
-							out.writeln();
+							out.writeln('');
 						}
 						else {
-							out.writeln();
+							out.writeln('');
 						}
 
 						if (err.showDiff || diffFormat.forcedDiff(err.actual, err.expected)) {
 							var diff = diffFormat.getStyledDiff(err.actual, err.expected, indent(2));
 							if (diff) {
 								out.writeln(diff);
-								out.writeln();
+								out.writeln('');
 							}
 						}
 					});
 				}
 				out.writeln(style.plain('-> ') + sum + ' (' + (stats.duration) + 'ms)');
-				out.writeln();
+				out.writeln('');
 
 				// bye!
-				out.finish();
 			});
 		}
 	}

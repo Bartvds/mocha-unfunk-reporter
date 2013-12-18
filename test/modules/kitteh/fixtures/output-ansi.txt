@@ -2,40 +2,40 @@
 
 [4mRunning "mochaTest:base" (mochaTest) task[24m
 
-[36m->[39m running [36m1 suite[39m
+[36m->[0m running [36m1 suite[0m
 
-   [36mkitteh[39m
-      [36mcan[39m
-         meow.. [32mok[39m
-         [36mnot[39m
-            spell.. [31mfail[39m
-[31m1:             [39m[33mexpected 'abcdefghijdelm actual' to equal 'abcdfghjklm expected'[39m
-         [36mhas[39m
-            milk.. [32mok[39m
-            cheeseburgers.. [32mok[39m
-            sushi.. [33mpending[39m
-            [36mno[39m
-               computer skills.. [31mfail[39m
-[31m2:                [39m[33mpretty stack trace is pretty[39m
-            [36msome[39m
-               fun.. [31mfail[39m
-[31m3:                [39m[33mexpected { Object (aa, bb, ...) } to deeply equal { Object (aa, bb, ...) }[39m
+   [36mkitteh[0m
+      [36mcan[0m
+         meow.. [32mok[0m
+         [36mnot[0m
+            spell.. [31mfail[0m
+[31m1:             [0m[33mexpected 'abcdefghijdelm actual' to equal 'abcdfghjklm expected'[0m
+         [36mhas[0m
+            milk.. [32mok[0m
+            cheeseburgers.. [32mok[0m
+            sushi.. [33mpending[0m
+            [36mno[0m
+               computer skills.. [31mfail[0m
+[31m2:                [0m[33mpretty stack trace is pretty[0m
+            [36msome[0m
+               fun.. [31mfail[0m
+[31m3:                [0m[33mexpected { Object (aa, bb, ...) } to deeply equal { Object (aa, bb, ...) }[0m
 
-[36m->[39m reporting [31m3 failures[39m
+[36m->[0m reporting [31m3 failures[0m
 
-[31m1:    [39m[36mkitteh can not [39mspell
+[31m1:    [0m[36mkitteh can not [0mspell
 
-      [33mexpected 'abcdefghijdelm actual' to equal 'abcdfghjklm expected'[39m
+      [33mexpected 'abcdefghijdelm actual' to equal 'abcdfghjklm expected'[0m
          at Function.assert.equal ({PATH}node_modules/chai/lib/chai/interface/assert.js:{Y}:{X})
          at Context.<anonymous> ({PATH}test/modules/kitteh/tmp/_tmp.test.js:{Y}:{X})
 
-      [31m- [39m abcd fgh j  klm  expect   ed 
-        "[33m||||[39m[32m+[39m[33m|||[39m[32m+[39m[33m|[39m[32m++[39m[31m-[39m[33m|||[39m[32m+[39m[31m----[39m[33m||[39m[32m+++[39m[31m--[39m"
-      [32m+ [39m abcdefghijde lm a    ctual   
+      [31m- [0m abcd fgh j  klm  expect   ed 
+        "[33m||||[0m[32m+[0m[33m|||[0m[32m+[0m[33m|[0m[32m++[0m[31m-[0m[33m|||[0m[32m+[0m[31m----[0m[33m||[0m[32m+++[0m[31m--[0m"
+      [32m+ [0m abcdefghijde lm a    ctual   
 
-[31m2:    [39m[36mkitteh can has no [39mcomputer skills
+[31m2:    [0m[36mkitteh can has no [0mcomputer skills
 
-      [33mpretty stack trace is pretty[39m
+      [33mpretty stack trace is pretty[0m
          at chai.assert ({PATH}node_modules/chai/lib/chai/interface/assert.js:{Y}:{X})
          at chair ({PATH}test/modules/kitteh/tmp/_tmp.test.js:{Y}:{X})
          at table ({PATH}test/modules/kitteh/tmp/_tmp.test.js:{Y}:{X})
@@ -43,44 +43,44 @@
          at mouse ({PATH}test/modules/kitteh/tmp/_tmp.test.js:{Y}:{X})
          at Context.<anonymous> ({PATH}test/modules/kitteh/tmp/_tmp.test.js:{Y}:{X})
 
-[31m3:    [39m[36mkitteh can has some [39mfun
+[31m3:    [0m[36mkitteh can has some [0mfun
 
-      [33mexpected { Object (aa, bb, ...) } to deeply equal { Object (aa, bb, ...) }[39m
+      [33mexpected { Object (aa, bb, ...) } to deeply equal { Object (aa, bb, ...) }[0m
          at Assertion.assertEql ({PATH}node_modules/chai/lib/chai/core/assertions.js:{Y}:{X})
          at Assertion.ctx.(anonymous function) [as eql] ({PATH}node_modules/chai/lib/chai/utils/addMethod.js:{Y}:{X})
          at Function.assert.deepEqual ({PATH}node_modules/chai/lib/chai/interface/assert.js:{Y}:{X})
          at Context.<anonymous> ({PATH}test/modules/kitteh/tmp/_tmp.test.js:{Y}:{X})
 
-      [31m- aa[39m:  meow me    ow 
-      |   : "[33m||[39m[31m----[39m[33m|[39m[32m++++[39m[33m||[39m"
-      [32m+ aa[39m:  me    eeeiiow 
-      [33m? bb[39m: 
-        [31m- one[39m: 1
-        [32m+ one[39m: 33
-        [31m- two[39m: 2
-        [32m+ two[39m: 22
-        [31m- three[39m: aab c dd  df eg ehi j k lmnnop   
-        |      : [33m|||[39m[32m+[39m[33m|[39m[32m+[39m[33m||[39m[32m++[39m[31m-[39m[33m|[39m[32m+[39m[31m-[39m[33m|[39m[32m+[39m[31m-[39m[33m||[39m[32m+[39m[33m|[39m[32m+[39m[33m|[39m[32m+[39m[33m|||[39m[31m-[39m[33m||[39m[32m+++[39m
-        [32m+ three[39m: aabbccddee ff gg hiijjkklmn oprst      
-      [33m? uu[39m: 
-        [31m- one[39m: 33
-        [32m+ one[39m: 1
-        [31m- two[39m: 22
-        [32m+ two[39m: 2
-        [31m- three[39m: aabbccdd  e effgghiijjkklmn oprst
-        |      : [33m|||[39m[31m-[39m[33m|[39m[31m-[39m[33m||[39m[32m++[39m[33m|[39m[32m+[39m[33m|[39m[31m----[39m[33m||[39m[31m-[39m[33m|[39m[31m-[39m[33m|[39m[31m-[39m[33m|||[39m[32m+[39m[33m||[39m[31m---[39m
-        [32m+ three[39m: aab c dddfege    hi j k lmnnop         
-      [32m+ ff[39m: purrrrrrr
-      [33m? cc[39m: 
-        [31m- 0[39m: 1
-        [32m+ 0[39m: 111
-        [31m- 1[39m: 2
-        [32m+ 1[39m: 222
-        [31m- 2[39m: 3
-        [32m+ 2[39m: 555      
-      [31m- dd[39m: hisss      
+      [31m- aa[0m:  meow me    ow 
+      |   : "[33m||[0m[31m----[0m[33m|[0m[32m++++[0m[33m||[0m"
+      [32m+ aa[0m:  me    eeeiiow 
+      [33m? bb[0m: 
+        [31m- one[0m: 1
+        [32m+ one[0m: 33
+        [31m- two[0m: 2
+        [32m+ two[0m: 22
+        [31m- three[0m: aab c dd  df eg ehi j k lmnnop   
+        |      : [33m|||[0m[32m+[0m[33m|[0m[32m+[0m[33m||[0m[32m++[0m[31m-[0m[33m|[0m[32m+[0m[31m-[0m[33m|[0m[32m+[0m[31m-[0m[33m||[0m[32m+[0m[33m|[0m[32m+[0m[33m|[0m[32m+[0m[33m|||[0m[31m-[0m[33m||[0m[32m+++[0m
+        [32m+ three[0m: aabbccddee ff gg hiijjkklmn oprst      
+      [33m? uu[0m: 
+        [31m- one[0m: 33
+        [32m+ one[0m: 1
+        [31m- two[0m: 22
+        [32m+ two[0m: 2
+        [31m- three[0m: aabbccdd  e effgghiijjkklmn oprst
+        |      : [33m|||[0m[31m-[0m[33m|[0m[31m-[0m[33m||[0m[32m++[0m[33m|[0m[32m+[0m[33m|[0m[31m----[0m[33m||[0m[31m-[0m[33m|[0m[31m-[0m[33m|[0m[31m-[0m[33m|||[0m[32m+[0m[33m||[0m[31m---[0m
+        [32m+ three[0m: aab c dddfege    hi j k lmnnop         
+      [32m+ ff[0m: purrrrrrr
+      [33m? cc[0m: 
+        [31m- 0[0m: 1
+        [32m+ 0[0m: 111
+        [31m- 1[0m: 2
+        [32m+ 1[0m: 222
+        [31m- 2[0m: 3
+        [32m+ 2[0m: 555      
+      [31m- dd[0m: hisss      
 
--> [31mfailed 3[39m and [33mpassed 3[39m of [36m6 tests[39m, left [33m1 pending[39m ({TIME_INT})
+-> [31mfailed 3[0m and [33mpassed 3[0m of [36m6 tests[0m, left [33m1 pending[0m ({TIME_INT})
 
 [33mWarning: Task "mochaTest:base" failed. Use --force to continue.[39m
 

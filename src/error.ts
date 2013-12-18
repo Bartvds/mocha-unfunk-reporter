@@ -87,7 +87,7 @@ module unfunk {
 
 			public filters:RegExp[] = [];
 
-			constructor(public style:Styler) {
+			constructor(public style:MiniStyle.Style) {
 
 			}
 

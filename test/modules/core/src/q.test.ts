@@ -1,4 +1,4 @@
-///<reference path="../../../_ref.ts" />
+///<reference path="../../../_bootstrap.ts" />
 
 describe('q long stack', () => {
 	var Q = require('q');

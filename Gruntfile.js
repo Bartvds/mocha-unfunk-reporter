@@ -23,20 +23,8 @@ module.exports = function (grunt) {
 	}
 
 	var gtx = require('gruntfile-gtx').wrap(grunt);
+	gtx.loadAuto();
 
-	gtx.loadNpmTasks(
-		'grunt-typescript',
-		'grunt-contrib-clean',
-		'grunt-contrib-jshint',
-		'grunt-continue',
-		'grunt-mocha-test',
-		'grunt-bump',
-		'grunt-tslint',
-		'grunt-run-grunt');
-
-	gtx.loadTasks(
-		'./tasks'
-	);
 	var path = require('path');
 	var ansidiff = require('ansidiff');
 
@@ -45,25 +33,8 @@ module.exports = function (grunt) {
 		return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
 	}
 
-	gtx.addConfig({
+	gtx.config({
 		pkg: grunt.file.readJSON('package.json'),
-		bump: {
-			options: {
-				files: ['package.json'],
-				updateConfigs: ['pkg'],
-				commit: true,
-				commitMessage: 'release %VERSION%',
-				commitFiles: ['-a'], // '-a' for all files
-				createTag: true,
-				tagName: '%VERSION%',
-				tagMessage: 'version %VERSION%',
-				push: true,
-				pushTo: 'origin',
-				// cargo cult magic.. wtf?
-				// options to use with '$ git describe'
-				gitDescribeOptions: '--tags --always --abbrev=1 --dirty=-d'
-			}
-		},
 		clean: {
 			build: ['build']
 		},
@@ -97,14 +68,17 @@ module.exports = function (grunt) {
 				src: ['./test/modules/kitteh/Gruntfile.js']
 			}
 		},
-		typescript: {
-			options: { base_path: 'test/', target: 'es5', sourcemap: true },
+		ts: {
+			options: {
+				module: 'commonjs',
+				target: 'es5',
+				declaration: false,
+				sourcemap: true
+			},
 			reporter: {
-				options: {
-					base_path: 'src/'
-				},
+				options: {},
 				src: ['src/unfunk.ts'],
-				dest: 'build/unfunk.js'
+				out: 'build/unfunk.js'
 			}
 		},
 		mochaTest: {
@@ -159,20 +133,17 @@ module.exports = function (grunt) {
 		var assertOutput = macro.getParam('assert', false);
 		var ignore = macro.getParam('ignore', false);
 
-		macro.newTask('clean', [testPath + 'tmp/**/*']);
-		macro.newTask('typescript', {
-			options: {
-				base_path: testPath
-			},
+		macro.add('clean', [testPath + 'tmp/**/*']);
+		macro.add('ts', {
 			src: [testPath + 'src/**/*.ts'],
-			dest: testPath + 'tmp/_tmp.test.js'
+			out: testPath + 'tmp/_tmp.test.js'
 		});
-		/*macro.newTask('tslint', {
+		/*macro.add('tslint', {
 		 src: [testPath + 'src/**  /*.ts']
 		 });*/
 
 		if (assertOutput || ignore) {
-			macro.newTask('continueOn', {});
+			macro.add('continueOn', {});
 		}
 
 		var indentLog = macro.getParam('indentLog', '  |  ');
@@ -181,7 +152,7 @@ module.exports = function (grunt) {
 
 			var taskEscaped = task.replace(':', '__');
 
-			macro.newTask('run_grunt', {
+			macro.add('run_grunt', {
 				options: {
 					task: task,
 					indentLog: indentLog,
@@ -238,14 +209,14 @@ module.exports = function (grunt) {
 		});
 
 		if (assertOutput || ignore) {
-			macro.newTask('continueOff', {});
+			macro.add('continueOff', {});
 		}
 		if (assertOutput) {
 			//re-loop
 			tasks.forEach(function (task) {
 				var taskEscaped = task.replace(':', '__');
 
-				macro.newTask('file_diff', {
+				macro.add('file_diff', {
 					options: {
 						label: 'diffing: ' + id + ' ' + task,
 						actualPath: testPath + 'tmp/output-' + taskEscaped + '.txt',
@@ -269,7 +240,7 @@ module.exports = function (grunt) {
 	]);
 	gtx.alias('build', [
 		'prep',
-		'typescript:reporter',
+		'ts:reporter',
 		'mochaTest:integrity'
 	]);
 	gtx.alias('test', [
@@ -277,7 +248,6 @@ module.exports = function (grunt) {
 		'gtx:kitteh',
 		'gtx:core',
 		'gtx:pending',
-		'gtx:diff',
 		'demo-run',
 	]);
 
@@ -302,11 +272,6 @@ module.exports = function (grunt) {
 	gtx.create('pending', 'moduleTest', {
 		log: true
 	});
-	gtx.create('diff', 'moduleTest', {
-		tasks: ['ansi'],
-		log: true,
-		assert: false
-	});
 	gtx.create('dev', 'moduleTest', {
 		tasks: ['default', 'phantom'],
 		log: true,
@@ -317,7 +282,6 @@ module.exports = function (grunt) {
 	gtx.alias('edit_01', ['build', 'gtx:diff']);
 	gtx.alias('edit_02', ['demo']);
 	gtx.alias('edit_03', ['gtx:kitteh']);
-	gtx.alias('edit_04', ['gtx:diff']);
 
 	gtx.alias('dev', ['demo']);
 

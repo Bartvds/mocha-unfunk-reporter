@@ -3,7 +3,7 @@ function base(grunt) {
 	var path = require('path');
 
 	grunt.loadTasks('../../../node_modules/grunt-contrib-clean/tasks');
-	grunt.loadTasks('../../../node_modules/grunt-typescript/tasks');
+	grunt.loadTasks('../../../node_modules/grunt-ts/tasks');
 	grunt.loadTasks('../../../node_modules/grunt-mocha-test/tasks');
 	grunt.loadTasks('../../../node_modules/grunt-mocha/tasks');
 	grunt.loadTasks('../../../node_modules/grunt-shell/tasks');
@@ -15,15 +15,14 @@ function base(grunt) {
 		config: function (conf) {
 			return grunt.util._.extend({
 				clean: ['./tmp/**/*'],
-				typescript: {
+				ts: {
 					all: {
 						options: {
 							target: 'es5',
-							sourcemap: true,
-							base_path: ''
+							sourcemap: true
 						},
 						src: ['src/**/*.ts'],
-						dest: 'tmp/_tmp.test.js'
+						out: 'tmp/_tmp.test.js'
 					}
 				},
 				mocha_unfunk: {

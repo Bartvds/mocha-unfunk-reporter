@@ -1,4 +1,4 @@
-///<reference path="../../../_ref.ts" />
+///<reference path="../../../_bootstrap.ts" />
 
 describe('errors', () => {
 	it('sync fails', () => {

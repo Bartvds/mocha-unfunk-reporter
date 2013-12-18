@@ -1,4 +1,4 @@
-///<reference path="../../../_ref.ts" />
+///<reference path="../../../_bootstrap.ts" />
 
 describe('async tests', () => {
 	it('first passes', (done:() => void) => {

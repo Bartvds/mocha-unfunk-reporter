@@ -1,4 +1,4 @@
-///<reference path="../../../_ref.ts" />
+///<reference path="../../../_bootstrap.ts" />
 
 describe('pending specs', () => {
 	it.skip('this is the first pending spec', (done:() => void) => {
